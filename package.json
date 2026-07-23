@@ -1,0 +1,17 @@
+{
+  "name": "shopping-center-system",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "web",
+    "mobile",
+    "shared"
+  ],
+  "scripts": {
+    "start:backend": "npm start --workspace=backend",
+    "start:web": "npm run dev --workspace=web",
+    "start:mobile": "npm start --workspace=mobile",
+    "start:all": "concurrently \"npm run start:backend\" \"npm run start:web\" \"npm run start:mobile\""
+  }
+}

@@ -1,0 +1,201 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Shop {
+  id        String   @id @default(uuid())
+  name      String
+  ownerId   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  branches  Branch[]
+  sales     Sale[]
+}
+
+model Branch {
+  id                   String                 @id @default(uuid())
+  name                 String
+  shopId               String
+  shop                 Shop                   @relation(fields: [shopId], references: [id])
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+  users                User[]
+  stockBalances        StockBalance[]
+  inventoryTransactions InventoryTransaction[]
+  expenses             Expense[]
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  role      Role     @default(CASHIER)
+  branchId  String
+  branch    Branch   @relation(fields: [branchId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum Role {
+  OWNER
+  MANAGER
+  CASHIER
+  STORE_KEEPER
+}
+
+model Category {
+  id          String    @id @default(uuid())
+  name        String
+  description String?
+  products    Product[]
+}
+
+model Brand {
+  id       String    @id @default(uuid())
+  name     String
+  products Product[]
+}
+
+model Unit {
+  id       String    @id @default(uuid())
+  name     String    // e.g. kg, pcs, box
+  products Product[]
+}
+
+model Product {
+  id                    String                 @id @default(uuid())
+  name                  String
+  barcode               String?                @unique
+  categoryId            String?
+  category              Category?              @relation(fields: [categoryId], references: [id])
+  brandId               String?
+  brand                 Brand?                 @relation(fields: [brandId], references: [id])
+  unitId                String?
+  unit                  Unit?                  @relation(fields: [unitId], references: [id])
+  price                 Float
+  cost                  Float
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+  saleDetails           SaleDetail[]
+  purchaseDetails       PurchaseDetail[]
+  stockBalances         StockBalance[]
+  inventoryTransactions InventoryTransaction[]
+  priceHistories        PriceHistory[]
+}
+
+model Supplier {
+  id        String     @id @default(uuid())
+  name      String
+  contact   String?
+  email     String?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  purchases Purchase[]
+}
+
+model Purchase {
+  id          String           @id @default(uuid())
+  supplierId  String
+  supplier    Supplier         @relation(fields: [supplierId], references: [id])
+  totalAmount Float
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  details     PurchaseDetail[]
+}
+
+model PurchaseDetail {
+  id         String   @id @default(uuid())
+  purchaseId String
+  purchase   Purchase @relation(fields: [purchaseId], references: [id], onDelete: Cascade)
+  productId  String
+  product    Product  @relation(fields: [productId], references: [id])
+  quantity   Int
+  cost       Float
+}
+
+model Customer {
+  id        String   @id @default(uuid())
+  name      String
+  phone     String?
+  email     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  sales     Sale[]
+}
+
+model Sale {
+  id          String       @id @default(uuid())
+  shopId      String
+  shop        Shop         @relation(fields: [shopId], references: [id])
+  customerId  String?
+  customer    Customer?    @relation(fields: [customerId], references: [id])
+  totalAmount Float
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  details     SaleDetail[]
+}
+
+model SaleDetail {
+  id        String   @id @default(uuid())
+  saleId    String
+  sale      Sale     @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  quantity  Int
+  price     Float
+}
+
+model StockBalance {
+  id        String   @id @default(uuid())
+  branchId  String
+  branch    Branch   @relation(fields: [branchId], references: [id])
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  quantity  Int      @default(0)
+  updatedAt DateTime @updatedAt
+}
+
+model InventoryTransaction {
+  id        String   @id @default(uuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  branchId  String
+  branch    Branch   @relation(fields: [branchId], references: [id])
+  type      String   // IN or OUT
+  quantity  Int
+  reference String?  // e.g. Sale ID or Purchase ID
+  createdAt DateTime @default(now())
+}
+
+model PriceHistory {
+  id        String   @id @default(uuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  oldPrice  Float
+  newPrice  Float
+  changedAt DateTime @default(now())
+}
+
+model Payment {
+  id            String   @id @default(uuid())
+  referenceId   String   // saleId or purchaseId
+  referenceType String   // SALE or PURCHASE
+  amount        Float
+  method        String   // CASH, CARD, TRANSFER
+  createdAt     DateTime @default(now())
+}
+
+model Expense {
+  id          String   @id @default(uuid())
+  branchId    String
+  branch      Branch   @relation(fields: [branchId], references: [id])
+  description String
+  amount      Float
+  date        DateTime @default(now())
+  createdAt   DateTime @default(now())
+}
