@@ -3,7 +3,7 @@ import {
     Box, Drawer, List, ListItemButton, ListItemIcon, ListItemText,
     AppBar, Toolbar, Typography, IconButton, Avatar,
 } from '@mui/material';
-import { Dashboard, Inventory, ShoppingCart, Logout } from '@mui/icons-material';
+import { Dashboard, Inventory, ShoppingCart, Logout, Inventory2 } from '@mui/icons-material';
 
 const drawerWidth = 240;
 
@@ -11,6 +11,7 @@ const menuItems = [
     { text: 'Dashboard', icon: <Dashboard />, path: '/' },
     { text: 'Products', icon: <Inventory />, path: '/products' },
     { text: 'Sales', icon: <ShoppingCart />, path: '/sales' },
+    { text: 'Inventory', icon: <Inventory2 />, path: '/inventory' },
 ];
 
 export default function Layout() {

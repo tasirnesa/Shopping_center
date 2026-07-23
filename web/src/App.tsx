@@ -6,6 +6,7 @@ import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import ProductsPage from './pages/ProductsPage';
 import SalesPage from './pages/SalesPage';
+import InventoryPage from './pages/InventoryPage';
 
 const queryClient = new QueryClient();
 
@@ -41,6 +42,7 @@ function App() {
               <Route index element={<DashboardPage />} />
               <Route path="products" element={<ProductsPage />} />
               <Route path="sales" element={<SalesPage />} />
+              <Route path="inventory" element={<InventoryPage />} />
             </Route>
           </Routes>
         </BrowserRouter>
