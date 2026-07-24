@@ -6,15 +6,24 @@ import { Prisma } from '@prisma/client';
 export class SalesService {
     constructor(private prisma: PrismaService) { }
 
+    private saleInclude = {
+        details: { include: { product: true } },
+        shop: true,
+        customer: true,
+    } as const;
+
     async create(data: Prisma.SaleCreateInput) {
-        return this.prisma.sale.create({ data, include: { details: true } });
+        return this.prisma.sale.create({ data, include: this.saleInclude });
     }
 
     async findAll() {
-        return this.prisma.sale.findMany({ include: { details: true } });
+        return this.prisma.sale.findMany({
+            include: this.saleInclude,
+            orderBy: { createdAt: 'desc' },
+        });
     }
 
     async findOne(id: string) {
-        return this.prisma.sale.findUnique({ where: { id }, include: { details: true } });
+        return this.prisma.sale.findUnique({ where: { id }, include: this.saleInclude });
     }
 }

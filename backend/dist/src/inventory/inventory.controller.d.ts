@@ -8,35 +8,35 @@ export declare class InventoryController {
     constructor(inventoryService: InventoryService);
     getSuppliers(): Promise<{
         id: string;
-        name: string;
+        email: string | null;
         createdAt: Date;
         updatedAt: Date;
-        email: string | null;
+        name: string;
         contact: string | null;
     }[]>;
     createSupplier(dto: CreateSupplierDto): Promise<{
         id: string;
-        name: string;
+        email: string | null;
         createdAt: Date;
         updatedAt: Date;
-        email: string | null;
+        name: string;
         contact: string | null;
     }>;
     getPurchases(): Promise<({
         supplier: {
             id: string;
-            name: string;
+            email: string | null;
             createdAt: Date;
             updatedAt: Date;
-            email: string | null;
+            name: string;
             contact: string | null;
         };
         details: ({
             product: {
                 id: string;
-                name: string;
                 createdAt: Date;
                 updatedAt: Date;
+                name: string;
                 barcode: string | null;
                 price: number;
                 cost: number;
@@ -76,9 +76,9 @@ export declare class InventoryController {
     getStockBalance(branchId?: string): Promise<({
         branch: {
             id: string;
-            name: string;
             createdAt: Date;
             updatedAt: Date;
+            name: string;
             shopId: string;
         };
         product: {
@@ -93,9 +93,9 @@ export declare class InventoryController {
             } | null;
         } & {
             id: string;
-            name: string;
             createdAt: Date;
             updatedAt: Date;
+            name: string;
             barcode: string | null;
             price: number;
             cost: number;
@@ -113,16 +113,16 @@ export declare class InventoryController {
     getTransactions(branchId?: string): Promise<({
         branch: {
             id: string;
-            name: string;
             createdAt: Date;
             updatedAt: Date;
+            name: string;
             shopId: string;
         };
         product: {
             id: string;
-            name: string;
             createdAt: Date;
             updatedAt: Date;
+            name: string;
             barcode: string | null;
             price: number;
             cost: number;

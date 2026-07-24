@@ -17,14 +17,22 @@ let SalesService = class SalesService {
     constructor(prisma) {
         this.prisma = prisma;
     }
+    saleInclude = {
+        details: { include: { product: true } },
+        shop: true,
+        customer: true,
+    };
     async create(data) {
-        return this.prisma.sale.create({ data, include: { details: true } });
+        return this.prisma.sale.create({ data, include: this.saleInclude });
     }
     async findAll() {
-        return this.prisma.sale.findMany({ include: { details: true } });
+        return this.prisma.sale.findMany({
+            include: this.saleInclude,
+            orderBy: { createdAt: 'desc' },
+        });
     }
     async findOne(id) {
-        return this.prisma.sale.findUnique({ where: { id }, include: { details: true } });
+        return this.prisma.sale.findUnique({ where: { id }, include: this.saleInclude });
     }
 };
 exports.SalesService = SalesService;

@@ -5,9 +5,9 @@ export declare class ProductService {
     constructor(prisma: PrismaService);
     create(data: Prisma.ProductCreateInput): Promise<{
         id: string;
-        name: string;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
         barcode: string | null;
         price: number;
         cost: number;
@@ -17,9 +17,9 @@ export declare class ProductService {
     }>;
     findAll(): Promise<{
         id: string;
-        name: string;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
         barcode: string | null;
         price: number;
         cost: number;
@@ -29,9 +29,9 @@ export declare class ProductService {
     }[]>;
     findOne(id: string): Promise<{
         id: string;
-        name: string;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
         barcode: string | null;
         price: number;
         cost: number;
@@ -41,9 +41,9 @@ export declare class ProductService {
     } | null>;
     findByBarcode(barcode: string): Promise<{
         id: string;
-        name: string;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
         barcode: string | null;
         price: number;
         cost: number;
@@ -53,9 +53,9 @@ export declare class ProductService {
     } | null>;
     update(id: string, data: Prisma.ProductUpdateInput): Promise<{
         id: string;
-        name: string;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
         barcode: string | null;
         price: number;
         cost: number;
@@ -65,9 +65,9 @@ export declare class ProductService {
     }>;
     remove(id: string): Promise<{
         id: string;
-        name: string;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
         barcode: string | null;
         price: number;
         cost: number;

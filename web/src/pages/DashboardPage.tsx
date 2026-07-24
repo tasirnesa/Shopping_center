@@ -1,119 +1,238 @@
 import { useEffect, useState } from 'react';
 import {
-    Box, Typography, Paper, Grid,
+  Box, Paper, Grid, Typography, Chip, Skeleton, Fade, useTheme, alpha
 } from '@mui/material';
 import {
-    BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-    PieChart, Pie, Cell,
+  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  AreaChart, Area,
 } from 'recharts';
+import {
+  Inventory2, ShoppingCart, WarningAmber, AttachMoney, TrendingUp, ShowChart
+} from '@mui/icons-material';
 import api from '../api';
+import PageHeader from '../components/PageHeader';
+import StatCard from '../components/StatCard';
 
-const COLORS = ['#6366f1', '#22c55e', '#f59e0b', '#ef4444'];
+const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-const summaryCards = [
-    { title: 'Total Products', key: 'products', color: '#6366f1', icon: '📦' },
-    { title: 'Total Sales', key: 'sales', color: '#22c55e', icon: '💰' },
-    { title: 'Low Stock', key: 'lowStock', color: '#f59e0b', icon: '⚠️' },
-    { title: 'Revenue', key: 'revenue', color: '#ef4444', icon: '📊' },
-];
+function formatCurrency(n: number) {
+  return `$${n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+}
 
 export default function DashboardPage() {
-    const [stats, setStats] = useState({ products: 0, sales: 0, lowStock: 0, revenue: 0 });
-    const [salesData, setSalesData] = useState<{ name: string; amount: number }[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({ products: 0, sales: 0, lowStock: 0, revenue: 0 });
+  const [salesData, setSalesData] = useState<{ name: string; amount: number }[]>([]);
+  const [recentSales, setRecentSales] = useState<any[]>([]);
+  const [lowStockItems, setLowStockItems] = useState<any[]>([]);
+  const theme = useTheme();
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const [productsRes, salesRes] = await Promise.all([
-                    api.get('/products'),
-                    api.get('/sales'),
-                ]);
-                const products = productsRes.data;
-                const sales = salesRes.data;
-                const revenue = sales.reduce((sum: number, s: any) => sum + s.totalAmount, 0);
-                setStats({
-                    products: products.length,
-                    sales: sales.length,
-                    lowStock: 0,
-                    revenue,
-                });
-                // Mock weekly sales data
-                setSalesData([
-                    { name: 'Mon', amount: Math.floor(Math.random() * 5000) },
-                    { name: 'Tue', amount: Math.floor(Math.random() * 5000) },
-                    { name: 'Wed', amount: Math.floor(Math.random() * 5000) },
-                    { name: 'Thu', amount: Math.floor(Math.random() * 5000) },
-                    { name: 'Fri', amount: Math.floor(Math.random() * 5000) },
-                    { name: 'Sat', amount: Math.floor(Math.random() * 5000) },
-                    { name: 'Sun', amount: Math.floor(Math.random() * 5000) },
-                ]);
-            } catch (err) {
-                console.error(err);
-            }
-        };
-        fetchData();
-    }, []);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [productsRes, salesRes, stockRes] = await Promise.all([
+          api.get('/products'),
+          api.get('/sales'),
+          api.get('/inventory/stock-balance'),
+        ]);
+        const products = productsRes.data;
+        const sales = salesRes.data;
+        const stock = stockRes.data;
 
-    const pieData = [
-        { name: 'Products', value: stats.products || 1 },
-        { name: 'Sales', value: stats.sales || 1 },
-        { name: 'Low Stock', value: stats.lowStock || 1 },
-    ];
+        const revenue = sales.reduce((sum: number, s: any) => sum + s.totalAmount, 0);
+        const lowItems = stock.filter((s: any) => s.quantity < 10);
 
+        // Group sales by day of week (last 7 days)
+        const dayMap: Record<string, number> = {};
+        DAYS.forEach((d) => { dayMap[d] = 0; });
+        sales.forEach((s: any) => {
+          const day = DAYS[new Date(s.createdAt).getDay()];
+          dayMap[day] = (dayMap[day] || 0) + s.totalAmount;
+        });
+        const chartData = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((name) => ({
+          name,
+          amount: Math.round(dayMap[name] || 0),
+        }));
+
+        setStats({
+          products: products.length,
+          sales: sales.length,
+          lowStock: lowItems.length,
+          revenue,
+        });
+        setSalesData(chartData);
+        setRecentSales(sales.slice(-5).reverse());
+        setLowStockItems(lowItems.slice(0, 5));
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  if (loading) {
     return (
+      <Box>
+        <Skeleton variant="text" width={200} height={48} />
+        <Grid container spacing={3} mt={1}>
+          {[1, 2, 3, 4].map((i) => (
+            <Grid item xs={12} sm={6} md={3} key={i}>
+              <Skeleton variant="rounded" height={100} sx={{ borderRadius: 3 }} />
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
+    );
+  }
+
+  const glassStyle = {
+    background: `linear-gradient(135deg, ${alpha(theme.palette.background.paper, 0.9)}, ${alpha(theme.palette.background.paper, 0.7)})`,
+    backdropFilter: 'blur(10px)',
+    border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+    boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.05)',
+  };
+
+  return (
+    <Box sx={{ pb: { xs: 8, md: 2 } }}>
+      <Fade in={true} timeout={500}>
         <Box>
-            <Typography variant="h4" fontWeight={700} mb={3}>Dashboard</Typography>
-            <Grid container spacing={3} mb={4}>
-                {summaryCards.map((card) => (
-                    <Grid size={{ xs: 12, sm: 6, md: 3 }} key={card.key}>
-                        <Paper sx={{
-                            p: 3, borderRadius: 3, display: 'flex', alignItems: 'center', gap: 2,
-                            background: `linear-gradient(135deg, ${card.color}22, ${card.color}11)`,
-                            border: `1px solid ${card.color}33`,
-                        }}>
-                            <Typography fontSize={36}>{card.icon}</Typography>
-                            <Box>
-                                <Typography variant="body2" color="text.secondary">{card.title}</Typography>
-                                <Typography variant="h5" fontWeight={700}>
-                                    {card.key === 'revenue' ? `$${stats[card.key].toLocaleString()}` : stats[card.key as keyof typeof stats]}
-                                </Typography>
-                            </Box>
-                        </Paper>
-                    </Grid>
-                ))}
+          <PageHeader
+            title="Dashboard"
+            subtitle="Overview of your shop performance"
+          />
+
+          <Grid container spacing={2} mb={3}>
+            <Grid item xs={12} sm={6} md={3}>
+              <StatCard
+                title="Total Products"
+                value={stats.products}
+                icon={<Inventory2 />}
+                color="#6366f1"
+              />
+            </Grid>
+            <Grid item xs={12} sm={6} md={3}>
+              <StatCard
+                title="Total Sales"
+                value={stats.sales}
+                icon={<ShoppingCart />}
+                color="#10b981"
+              />
+            </Grid>
+            <Grid item xs={12} sm={6} md={3}>
+              <StatCard
+                title="Low Stock Items"
+                value={stats.lowStock}
+                icon={<WarningAmber />}
+                color="#f59e0b"
+                trend={stats.lowStock > 0 ? 'Needs attention' : 'All good'}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6} md={3}>
+              <StatCard
+                title="Total Revenue"
+                value={formatCurrency(stats.revenue)}
+                icon={<AttachMoney />}
+                color="#ef4444"
+              />
+            </Grid>
+          </Grid>
+
+          <Grid container spacing={3}>
+            <Grid item xs={12} md={8}>
+              <Paper sx={{ p: { xs: 2, md: 3 }, borderRadius: 4, ...glassStyle }}>
+                <Box display="flex" alignItems="center" gap={1} mb={3}>
+                  <Box sx={{ p: 1, borderRadius: 2, bgcolor: alpha(theme.palette.primary.main, 0.1) }}>
+                    <ShowChart color="primary" />
+                  </Box>
+                  <Typography variant="h6" fontWeight={700}>Sales Overview</Typography>
+                </Box>
+                <ResponsiveContainer width="100%" height={300}>
+                  <AreaChart data={salesData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                    <defs>
+                      <linearGradient id="salesGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#6366f1" stopOpacity={0.4} />
+                        <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke={alpha(theme.palette.divider, 0.5)} vertical={false} />
+                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: theme.palette.text.secondary }} dy={10} />
+                    <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: theme.palette.text.secondary }} tickFormatter={(v) => `$${v}`} />
+                    <Tooltip
+                      contentStyle={{ borderRadius: 12, border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}
+                      formatter={(v: number) => [formatCurrency(v), 'Revenue']}
+                    />
+                    <Area type="monotone" dataKey="amount" stroke="#6366f1" strokeWidth={3} fill="url(#salesGrad)" animationDuration={1500} />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </Paper>
             </Grid>
 
-            <Grid container spacing={3}>
-                <Grid size={{ xs: 12, md: 8 }}>
-                    <Paper sx={{ p: 3, borderRadius: 3 }}>
-                        <Typography variant="h6" fontWeight={600} mb={2}>Weekly Sales</Typography>
-                        <ResponsiveContainer width="100%" height={300}>
-                            <BarChart data={salesData}>
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="name" />
-                                <YAxis />
-                                <Tooltip />
-                                <Bar dataKey="amount" fill="#6366f1" radius={[6, 6, 0, 0]} />
-                            </BarChart>
-                        </ResponsiveContainer>
-                    </Paper>
-                </Grid>
-                <Grid size={{ xs: 12, md: 4 }}>
-                    <Paper sx={{ p: 3, borderRadius: 3 }}>
-                        <Typography variant="h6" fontWeight={600} mb={2}>Overview</Typography>
-                        <ResponsiveContainer width="100%" height={300}>
-                            <PieChart>
-                                <Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={100}>
-                                    {pieData.map((_, index) => (
-                                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                                    ))}
-                                </Pie>
-                                <Tooltip />
-                            </PieChart>
-                        </ResponsiveContainer>
-                    </Paper>
-                </Grid>
+            <Grid item xs={12} md={4}>
+              <Paper sx={{ p: { xs: 2, md: 3 }, borderRadius: 4, mb: 3, ...glassStyle }}>
+                <Box display="flex" alignItems="center" gap={1} mb={2}>
+                  <Box sx={{ p: 1, borderRadius: 2, bgcolor: alpha(theme.palette.warning.main, 0.1) }}>
+                    <WarningAmber color="warning" />
+                  </Box>
+                  <Typography variant="h6" fontWeight={700}>Low Stock Alert</Typography>
+                </Box>
+                {lowStockItems.length === 0 ? (
+                  <Typography variant="body2" color="text.secondary" p={2} textAlign="center">
+                    All items are well stocked.
+                  </Typography>
+                ) : (
+                  <Box display="flex" flexDirection="column" gap={1.5}>
+                    {lowStockItems.map((item: any) => (
+                      <Box key={item.id} display="flex" justifyContent="space-between" alignItems="center" p={1.5} sx={{ bgcolor: alpha(theme.palette.background.default, 0.5), borderRadius: 2 }}>
+                        <Typography variant="body2" fontWeight={600} noWrap sx={{ maxWidth: '65%' }}>
+                          {item.product.name}
+                        </Typography>
+                        <Chip
+                          label={`${item.quantity} left`}
+                          size="small"
+                          color={item.quantity <= 0 ? 'error' : 'warning'}
+                          sx={{ fontWeight: 'bold' }}
+                        />
+                      </Box>
+                    ))}
+                  </Box>
+                )}
+              </Paper>
+
+              <Paper sx={{ p: { xs: 2, md: 3 }, borderRadius: 4, ...glassStyle }}>
+                <Box display="flex" alignItems="center" gap={1} mb={2}>
+                  <Box sx={{ p: 1, borderRadius: 2, bgcolor: alpha(theme.palette.success.main, 0.1) }}>
+                    <TrendingUp color="success" />
+                  </Box>
+                  <Typography variant="h6" fontWeight={700}>Recent Transactions</Typography>
+                </Box>
+                {recentSales.length === 0 ? (
+                  <Typography variant="body2" color="text.secondary" p={2} textAlign="center">
+                    No sales recorded yet.
+                  </Typography>
+                ) : (
+                  <Box display="flex" flexDirection="column" gap={1.5}>
+                    {recentSales.map((sale: any) => (
+                      <Box key={sale.id} display="flex" justifyContent="space-between" alignItems="center" p={1.5} sx={{ bgcolor: alpha(theme.palette.background.default, 0.5), borderRadius: 2 }}>
+                        <Box>
+                          <Typography variant="body2" fontWeight={700} color="primary.main">
+                            {formatCurrency(sale.totalAmount)}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            {new Date(sale.createdAt).toLocaleDateString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                          </Typography>
+                        </Box>
+                        <Chip label={`${sale.details?.length || 0} ${sale.details?.length === 1 ? 'item' : 'items'}`} size="small" sx={{ bgcolor: 'background.paper', border: `1px solid ${theme.palette.divider}` }} />
+                      </Box>
+                    ))}
+                  </Box>
+                )}
+              </Paper>
             </Grid>
+          </Grid>
         </Box>
-    );
+      </Fade>
+    </Box>
+  );
 }
