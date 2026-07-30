@@ -7,10 +7,19 @@ import { ProductModule } from './product/product.module';
 import { SalesModule } from './sales/sales.module';
 import { InventoryModule } from './inventory/inventory.module';
 import { FoundationModule } from './foundation/foundation.module';
+import { OrganizationModule } from './organization/organization.module';
 
 @Module({
-  imports: [PrismaModule, AuthModule, ProductModule, SalesModule, InventoryModule, FoundationModule],
+  imports: [
+    PrismaModule,
+    AuthModule,
+    OrganizationModule,
+    ProductModule,
+    SalesModule,
+    InventoryModule,
+    FoundationModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

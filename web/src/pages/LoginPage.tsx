@@ -1,164 +1,292 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
-  Box, Button, TextField, Typography, Paper, Alert, InputAdornment, alpha,
-} from '@mui/material';
-import { Email, Lock, Storefront } from '@mui/icons-material';
-import api from '../api';
+  Box,
+  Button,
+  TextField,
+  Typography,
+  Alert,
+  InputAdornment,
+  alpha,
+} from "@mui/material";
+import { Email, Lock, Storefront, ArrowForward } from "@mui/icons-material";
+import api from "../api";
 
 export default function LoginPage() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async (e?: React.FormEvent) => {
     e?.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
     try {
-      const res = await api.post('/auth/login', { email, password });
-      localStorage.setItem('token', res.data.access_token);
-      localStorage.setItem('user', JSON.stringify(res.data.user));
-      navigate('/');
+      const res = await api.post("/auth/login", { email, password });
+      localStorage.setItem("token", res.data.access_token);
+      localStorage.setItem("user", JSON.stringify(res.data.user));
+      navigate("/");
     } catch {
-      setError('Invalid email or password. Please try again.');
+      setError("Invalid email or password. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <Box sx={{ minHeight: '100vh', display: 'flex' }}>
-      {/* Brand panel */}
+    <Box
+      sx={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background:
+          "linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%)",
+        position: "relative",
+        overflow: "hidden",
+        p: 2,
+      }}
+    >
+      {/* Background Decorative Bloom Elements */}
       <Box
         sx={{
-          flex: 1,
-          display: { xs: 'none', md: 'flex' },
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-          background: 'linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #6366f1 100%)',
-          color: '#fff',
-          p: 6,
-          position: 'relative',
-          overflow: 'hidden',
+          position: "absolute",
+          top: "-10%",
+          right: "-5%",
+          width: "50vw",
+          height: "50vw",
+          minWidth: 400,
+          minHeight: 400,
+          bgcolor: "rgba(99, 102, 241, 0.3)",
+          filter: "blur(100px)",
+          borderRadius: "50%",
+          animation: "pulse 8s ease-in-out infinite alternate",
+          "@keyframes pulse": {
+            "0%": { transform: "scale(1)", opacity: 0.6 },
+            "100%": { transform: "scale(1.2)", opacity: 0.9 },
+          },
         }}
-      >
-        <Box
-          sx={{
-            position: 'absolute',
-            width: 400,
-            height: 400,
-            borderRadius: '50%',
-            bgcolor: alpha('#fff', 0.05),
-            top: -100,
-            right: -100,
-          }}
-        />
-        <Box
-          sx={{
-            position: 'absolute',
-            width: 300,
-            height: 300,
-            borderRadius: '50%',
-            bgcolor: alpha('#fff', 0.05),
-            bottom: -80,
-            left: -80,
-          }}
-        />
-        <Storefront sx={{ fontSize: 72, mb: 3, opacity: 0.9 }} />
-        <Typography variant="h3" fontWeight={800} textAlign="center" sx={{ letterSpacing: '-0.03em', mb: 2 }}>
-          Shop Center
-        </Typography>
-        <Typography variant="h6" textAlign="center" sx={{ opacity: 0.85, maxWidth: 360, fontWeight: 400, lineHeight: 1.6 }}>
-          Manage products, inventory, sales, and your team — all in one place.
-        </Typography>
-        <Box sx={{ mt: 5, display: 'flex', gap: 3 }}>
-          {['Products', 'Inventory', 'Sales', 'Reports'].map((f) => (
-            <Box key={f} sx={{ textAlign: 'center', opacity: 0.75 }}>
-              <Typography variant="caption" fontWeight={600}>{f}</Typography>
-            </Box>
-          ))}
-        </Box>
-      </Box>
+      />
+      <Box
+        sx={{
+          position: "absolute",
+          bottom: "-15%",
+          left: "-10%",
+          width: "40vw",
+          height: "40vw",
+          minWidth: 300,
+          minHeight: 300,
+          bgcolor: "rgba(236, 72, 153, 0.25)",
+          filter: "blur(100px)",
+          borderRadius: "50%",
+          animation: "pulse2 10s ease-in-out infinite alternate",
+          "@keyframes pulse2": {
+            "0%": { transform: "scale(1) translate(0px, 0px)", opacity: 0.5 },
+            "100%": {
+              transform: "scale(1.3) translate(20px, -40px)",
+              opacity: 0.8,
+            },
+          },
+        }}
+      />
 
-      {/* Login form */}
+      {/* Glassmorphism Card */}
       <Box
+        component="form"
+        onSubmit={handleLogin}
         sx={{
-          flex: { xs: 1, md: 0.55 },
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          bgcolor: 'background.default',
-          p: { xs: 3, sm: 6 },
+          position: "relative",
+          width: "100%",
+          maxWidth: 480,
+          p: { xs: 4, sm: 6 },
+          borderRadius: 6,
+          background: "rgba(255, 255, 255, 0.08)",
+          backdropFilter: "blur(24px)",
+          WebkitBackdropFilter: "blur(24px)",
+          border: "1px solid rgba(255, 255, 255, 0.2)",
+          boxShadow:
+            "0 24px 64px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.2)",
+          color: "#fff",
+          display: "flex",
+          flexDirection: "column",
+          gap: 3,
+          zIndex: 1,
         }}
       >
-        <Paper
-          elevation={0}
-          component="form"
-          onSubmit={handleLogin}
+        <Box
           sx={{
-            p: { xs: 3, sm: 4 },
-            borderRadius: 4,
-            width: '100%',
-            maxWidth: 420,
-            border: '1px solid',
-            borderColor: 'divider',
+            display: "flex",
+            alignItems: "center",
+            mb: 1,
+            gap: 1.5,
+            justifyContent: "center",
           }}
         >
-          <Box sx={{ display: { xs: 'flex', md: 'none' }, alignItems: 'center', gap: 1, mb: 3 }}>
-            <Storefront color="primary" />
-            <Typography variant="h6" fontWeight={800}>Shop Center</Typography>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              width: 54,
+              height: 54,
+              borderRadius: 3,
+              background: "linear-gradient(135deg, #6366f1 0%, #a855f7 100%)",
+              boxShadow: "0 8px 16px rgba(99, 102, 241, 0.4)",
+            }}
+          >
+            <Storefront sx={{ fontSize: 32, color: "#fff" }} />
           </Box>
+        </Box>
 
-          <Typography variant="h5" fontWeight={800} mb={0.5} sx={{ letterSpacing: '-0.02em' }}>
-            Welcome back
+        <Box sx={{ textAlign: "center", mb: 2 }}>
+          <Typography
+            variant="h4"
+            sx={{
+              fontWeight: 900,
+              letterSpacing: "-0.02em",
+              mb: 1,
+              background: "linear-gradient(to right, #ffffff, #c7d2fe)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+            }}
+          >
+            Shop Center Pro
           </Typography>
-          <Typography variant="body2" color="text.secondary" mb={3}>
-            Sign in to your account to continue
+          <Typography
+            variant="body1"
+            sx={{ color: alpha("#fff", 0.7), fontWeight: 500 }}
+          >
+            Sign in to access your business dashboard.
           </Typography>
+        </Box>
 
-          {error && <Alert severity="error" sx={{ mb: 2, borderRadius: 2 }}>{error}</Alert>}
+        {error && (
+          <Alert
+            severity="error"
+            sx={{
+              borderRadius: 3,
+              backgroundColor: "rgba(239, 68, 68, 0.1)",
+              color: "#ffb3b3",
+              "& .MuiAlert-icon": { color: "#ef4444" },
+            }}
+          >
+            {error}
+          </Alert>
+        )}
 
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 2.5 }}>
           <TextField
-            label="Email address"
-            type="email"
             fullWidth
-            margin="normal"
+            placeholder="Email address"
+            type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                color: "#fff",
+                backgroundColor: "rgba(0, 0, 0, 0.2)",
+                borderRadius: 3,
+                transition: "all 0.2s",
+                "& fieldset": { borderColor: "rgba(255, 255, 255, 0.1)" },
+                "&:hover fieldset": { borderColor: "rgba(255, 255, 255, 0.2)" },
+                "&.Mui-focused fieldset": {
+                  borderColor: "#818cf8",
+                  borderWidth: "2px",
+                },
+                "&.Mui-focused": { backgroundColor: "rgba(0, 0, 0, 0.3)" },
+              },
+            }}
             InputProps={{
               startAdornment: (
-                <InputAdornment position="start"><Email fontSize="small" color="action" /></InputAdornment>
+                <InputAdornment position="start">
+                  <Email sx={{ color: "rgba(255,255,255,0.6)" }} />
+                </InputAdornment>
               ),
             }}
           />
           <TextField
-            label="Password"
-            type="password"
             fullWidth
-            margin="normal"
+            placeholder="Password"
+            type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                color: "#fff",
+                backgroundColor: "rgba(0, 0, 0, 0.2)",
+                borderRadius: 3,
+                transition: "all 0.2s",
+                "& fieldset": { borderColor: "rgba(255, 255, 255, 0.1)" },
+                "&:hover fieldset": { borderColor: "rgba(255, 255, 255, 0.2)" },
+                "&.Mui-focused fieldset": {
+                  borderColor: "#818cf8",
+                  borderWidth: "2px",
+                },
+                "&.Mui-focused": { backgroundColor: "rgba(0, 0, 0, 0.3)" },
+              },
+            }}
             InputProps={{
               startAdornment: (
-                <InputAdornment position="start"><Lock fontSize="small" color="action" /></InputAdornment>
+                <InputAdornment position="start">
+                  <Lock sx={{ color: "rgba(255,255,255,0.6)" }} />
+                </InputAdornment>
               ),
             }}
           />
-          <Button
-            type="submit"
-            variant="contained"
-            fullWidth
-            size="large"
-            disabled={loading || !email || !password}
-            sx={{ mt: 3, py: 1.5, borderRadius: 2.5, fontWeight: 700, fontSize: '1rem' }}
-          >
-            {loading ? 'Signing in…' : 'Sign In'}
-          </Button>
-        </Paper>
+        </Box>
+
+        <Button
+          type="submit"
+          variant="contained"
+          fullWidth
+          disabled={loading || !email || !password}
+          endIcon={!loading && <ArrowForward />}
+          sx={{
+            mt: 2,
+            py: 1.8,
+            borderRadius: 3,
+            fontWeight: 800,
+            fontSize: "1.05rem",
+            textTransform: "none",
+            background: "linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)",
+            boxShadow: "0 8px 24px rgba(99, 102, 241, 0.4)",
+            transition: "all 0.3s ease",
+            color: "#ffffff",
+            "&:hover": {
+              background: "linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)",
+              boxShadow: "0 12px 32px rgba(99, 102, 241, 0.6)",
+              transform: "translateY(-2px)",
+            },
+            "&.Mui-disabled": {
+              background: "rgba(255, 255, 255, 0.1)",
+              color: "rgba(255, 255, 255, 0.3)",
+            },
+          }}
+        >
+          {loading ? "Authenticating..." : "Sign In"}
+        </Button>
+
+        <Box
+          sx={{
+            mt: 3,
+            display: "flex",
+            justifyContent: "center",
+            gap: 3,
+            opacity: 0.6,
+          }}
+        >
+          <Typography variant="caption" sx={{ fontWeight: 600 }}>
+            Products
+          </Typography>
+          <Typography variant="caption" sx={{ fontWeight: 600 }}>
+            Inventory
+          </Typography>
+          <Typography variant="caption" sx={{ fontWeight: 600 }}>
+            Analytics
+          </Typography>
+        </Box>
       </Box>
     </Box>
   );

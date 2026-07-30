@@ -4,8 +4,8 @@ import { InventoryController } from './inventory.controller';
 import { PrismaModule } from '../prisma/prisma.module';
 
 @Module({
-    imports: [PrismaModule],
-    controllers: [InventoryController],
-    providers: [InventoryService],
+  imports: [PrismaModule],
+  controllers: [InventoryController],
+  providers: [InventoryService],
 })
-export class InventoryModule { }
+export class InventoryModule {}

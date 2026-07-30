@@ -7,105 +7,197 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Shop {
-  id        String   @id @default(uuid())
-  name      String
-  ownerId   String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  branches  Branch[]
-  sales     Sale[]
+// ─────────────────────────────────────────────────────────────
+// TENANT ROOT
+// ─────────────────────────────────────────────────────────────
+
+model Organization {
+  id           String   @id @default(uuid())
+  name         String
+  businessType String?  // RETAIL, SUPERMARKET, PHARMACY, HARDWARE, etc.
+  tin          String?  // Tax Identification Number
+  phone        String?
+  email        String?
+  address      String?
+  logo         String?
+  status       String   @default("ACTIVE") // ACTIVE, SUSPENDED
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  branches   Branch[]
+  users      User[]
+  products   Product[]
+  categories Category[]
+  brands     Brand[]
+  units      Unit[]
+  suppliers  Supplier[]
+  customers  Customer[]
+  sales      Sale[]
+  purchases  Purchase[]
+  expenses   Expense[]
+  settings   OrganizationSettings?
 }
+
+model OrganizationSettings {
+  id             String       @id @default(uuid())
+  organizationId String       @unique
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  currency       String       @default("ETB")
+  taxRate        Float        @default(15)
+  receiptFooter  String?
+  language       String       @default("en")
+  fiscalYear     String?
+  timezone       String       @default("Africa/Addis_Ababa")
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+// ─────────────────────────────────────────────────────────────
+// BRANCH
+// ─────────────────────────────────────────────────────────────
 
 model Branch {
-  id                   String                 @id @default(uuid())
-  name                 String
-  shopId               String
-  shop                 Shop                   @relation(fields: [shopId], references: [id])
-  createdAt            DateTime               @default(now())
-  updatedAt            DateTime               @updatedAt
-  users                User[]
-  stockBalances        StockBalance[]
+  id             String       @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  name           String
+  code           String?
+  phone          String?
+  address        String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  // Relations
+  users                 User[]
+  stockBalances         StockBalance[]
   inventoryTransactions InventoryTransaction[]
-  expenses             Expense[]
+  expenses              Expense[]
+  sales                 Sale[]
+  purchases             Purchase[]
 }
 
+// ─────────────────────────────────────────────────────────────
+// USER & AUTH
+// ─────────────────────────────────────────────────────────────
+
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  password  String
-  role      Role     @default(CASHIER)
-  branchId  String
-  branch    Branch   @relation(fields: [branchId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id             String       @id @default(uuid())
+  organizationId String?      // null for SYSTEM_ADMIN
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  branchId       String?      // null for OWNER (has access to all branches)
+  branch         Branch?      @relation(fields: [branchId], references: [id])
+  email          String       @unique
+  password       String
+  name           String?
+  role           Role         @default(CASHIER)
+  status         String       @default("ACTIVE") // ACTIVE, INACTIVE
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
 }
 
 enum Role {
+  SYSTEM_ADMIN
   OWNER
   MANAGER
   CASHIER
   STORE_KEEPER
 }
 
+// ─────────────────────────────────────────────────────────────
+// MASTER DATA (all scoped to Organization)
+// ─────────────────────────────────────────────────────────────
+
 model Category {
-  id          String    @id @default(uuid())
-  name        String
-  description String?
-  products    Product[]
+  id             String       @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  name           String
+  description    String?
+  products       Product[]
 }
 
 model Brand {
-  id       String    @id @default(uuid())
-  name     String
-  products Product[]
+  id             String       @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  name           String
+  products       Product[]
 }
 
 model Unit {
-  id       String    @id @default(uuid())
-  name     String    // e.g. kg, pcs, box
-  products Product[]
+  id             String       @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  name           String       // e.g. kg, pcs, box
+  products       Product[]
 }
 
 model Product {
-  id                    String                 @id @default(uuid())
-  name                  String
-  barcode               String?                @unique
-  categoryId            String?
-  category              Category?              @relation(fields: [categoryId], references: [id])
-  brandId               String?
-  brand                 Brand?                 @relation(fields: [brandId], references: [id])
-  unitId                String?
-  unit                  Unit?                  @relation(fields: [unitId], references: [id])
-  price                 Float
-  cost                  Float
-  createdAt             DateTime               @default(now())
-  updatedAt             DateTime               @updatedAt
+  id             String       @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  name           String
+  barcode        String?      @unique
+  categoryId     String?
+  category       Category?    @relation(fields: [categoryId], references: [id])
+  brandId        String?
+  brand          Brand?       @relation(fields: [brandId], references: [id])
+  unitId         String?
+  unit           Unit?        @relation(fields: [unitId], references: [id])
+  price          Float
+  cost           Float
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
   saleDetails           SaleDetail[]
   purchaseDetails       PurchaseDetail[]
   stockBalances         StockBalance[]
   inventoryTransactions InventoryTransaction[]
   priceHistories        PriceHistory[]
+  returnDetails         ReturnDetail[]
 }
 
 model Supplier {
-  id        String     @id @default(uuid())
-  name      String
-  contact   String?
-  email     String?
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  purchases Purchase[]
+  id             String       @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  name           String
+  contact        String?
+  email          String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  purchases      Purchase[]
 }
 
+model Customer {
+  id             String       @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  name           String
+  phone          String?
+  email          String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  sales          Sale[]
+}
+
+// ─────────────────────────────────────────────────────────────
+// PURCHASING
+// ─────────────────────────────────────────────────────────────
+
 model Purchase {
-  id          String           @id @default(uuid())
-  supplierId  String
-  supplier    Supplier         @relation(fields: [supplierId], references: [id])
-  totalAmount Float
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
-  details     PurchaseDetail[]
+  id             String       @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  branchId       String
+  branch         Branch       @relation(fields: [branchId], references: [id])
+  supplierId     String
+  supplier       Supplier     @relation(fields: [supplierId], references: [id])
+  totalAmount    Float
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  details        PurchaseDetail[]
 }
 
 model PurchaseDetail {
@@ -118,37 +210,40 @@ model PurchaseDetail {
   cost       Float
 }
 
-model Customer {
-  id        String   @id @default(uuid())
-  name      String
-  phone     String?
-  email     String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  sales     Sale[]
-}
+// ─────────────────────────────────────────────────────────────
+// SALES
+// ─────────────────────────────────────────────────────────────
 
 model Sale {
-  id          String       @id @default(uuid())
-  shopId      String
-  shop        Shop         @relation(fields: [shopId], references: [id])
-  customerId  String?
-  customer    Customer?    @relation(fields: [customerId], references: [id])
-  totalAmount Float
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  details     SaleDetail[]
+  id             String       @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  branchId       String
+  branch         Branch       @relation(fields: [branchId], references: [id])
+  customerId     String?
+  customer       Customer?    @relation(fields: [customerId], references: [id])
+  subTotal       Float        @default(0)
+  discount       Float        @default(0)
+  totalAmount    Float
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  details        SaleDetail[]
+  returns        Return[]
 }
 
 model SaleDetail {
-  id        String   @id @default(uuid())
+  id        String  @id @default(uuid())
   saleId    String
-  sale      Sale     @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  sale      Sale    @relation(fields: [saleId], references: [id], onDelete: Cascade)
   productId String
-  product   Product  @relation(fields: [productId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
   quantity  Int
   price     Float
 }
+
+// ─────────────────────────────────────────────────────────────
+// INVENTORY
+// ─────────────────────────────────────────────────────────────
 
 model StockBalance {
   id        String   @id @default(uuid())
@@ -181,6 +276,10 @@ model PriceHistory {
   changedAt DateTime @default(now())
 }
 
+// ─────────────────────────────────────────────────────────────
+// FINANCE
+// ─────────────────────────────────────────────────────────────
+
 model Payment {
   id            String   @id @default(uuid())
   referenceId   String   // saleId or purchaseId
@@ -191,11 +290,37 @@ model Payment {
 }
 
 model Expense {
-  id          String   @id @default(uuid())
-  branchId    String
-  branch      Branch   @relation(fields: [branchId], references: [id])
-  description String
-  amount      Float
-  date        DateTime @default(now())
-  createdAt   DateTime @default(now())
+  id             String       @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  branchId       String
+  branch         Branch       @relation(fields: [branchId], references: [id])
+  description    String
+  amount         Float
+  date           DateTime     @default(now())
+  createdAt      DateTime     @default(now())
+}
+
+// ─────────────────────────────────────────────────────────────
+// RETURNS
+// ─────────────────────────────────────────────────────────────
+
+model Return {
+  id          String         @id @default(uuid())
+  saleId      String
+  sale        Sale           @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  totalRefund Float
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  details     ReturnDetail[]
+}
+
+model ReturnDetail {
+  id        String  @id @default(uuid())
+  returnId  String
+  return    Return  @relation(fields: [returnId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+  quantity  Int
+  price     Float
 }

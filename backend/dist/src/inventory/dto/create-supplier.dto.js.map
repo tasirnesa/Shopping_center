@@ -1,1 +1,1 @@
-{"version":3,"file":"create-supplier.dto.js","sourceRoot":"","sources":["../../../../src/inventory/dto/create-supplier.dto.ts"],"names":[],"mappings":";;;AAAA,MAAa,iBAAiB;IAC1B,IAAI,CAAU;IACd,OAAO,CAAU;IACjB,KAAK,CAAU;CAClB;AAJD,8CAIC"}
+{"version":3,"file":"create-supplier.dto.js","sourceRoot":"","sources":["../../../../src/inventory/dto/create-supplier.dto.ts"],"names":[],"mappings":";;;AAAA,MAAa,iBAAiB;IAC5B,IAAI,CAAU;IACd,OAAO,CAAU;IACjB,KAAK,CAAU;CAChB;AAJD,8CAIC"}

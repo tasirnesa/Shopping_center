@@ -1,28 +1,63 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 import {
-  Box, Paper, Grid, Typography, Chip, Skeleton, Fade, useTheme, alpha
-} from '@mui/material';
+  Box,
+  Paper,
+  Grid,
+  Typography,
+  Chip,
+  Skeleton,
+  Fade,
+  useTheme,
+  alpha,
+} from "@mui/material";
 import {
-  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  AreaChart, Area,
-} from 'recharts';
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  AreaChart,
+  Area,
+} from "recharts";
 import {
-  Inventory2, ShoppingCart, WarningAmber, AttachMoney, TrendingUp, ShowChart
-} from '@mui/icons-material';
-import api from '../api';
-import PageHeader from '../components/PageHeader';
-import StatCard from '../components/StatCard';
+  Inventory2,
+  ShoppingCart,
+  WarningAmber,
+  AttachMoney,
+  TrendingUp,
+  ShowChart,
+} from "@mui/icons-material";
+import api from "../api";
+import PageHeader from "../components/PageHeader";
+import StatCard from "../components/StatCard";
 
-const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 function formatCurrency(n: number) {
   return `$${n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
+function getUser() {
+  try {
+    const stored = localStorage.getItem("user");
+    if (stored && stored !== "undefined") return JSON.parse(stored);
+  } catch {
+    /* ignore */
+  }
+  return {};
+}
+
 export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState({ products: 0, sales: 0, lowStock: 0, revenue: 0 });
-  const [salesData, setSalesData] = useState<{ name: string; amount: number }[]>([]);
+  const [stats, setStats] = useState({
+    products: 0,
+    sales: 0,
+    lowStock: 0,
+    revenue: 0,
+  });
+  const [salesData, setSalesData] = useState<
+    { name: string; amount: number }[]
+  >([]);
   const [recentSales, setRecentSales] = useState<any[]>([]);
   const [lowStockItems, setLowStockItems] = useState<any[]>([]);
   const theme = useTheme();
@@ -31,28 +66,35 @@ export default function DashboardPage() {
     const fetchData = async () => {
       try {
         const [productsRes, salesRes, stockRes] = await Promise.all([
-          api.get('/products'),
-          api.get('/sales'),
-          api.get('/inventory/stock-balance'),
+          api.get("/products"),
+          api.get("/sales"),
+          api.get("/inventory/stock-balance"),
         ]);
         const products = productsRes.data;
         const sales = salesRes.data;
         const stock = stockRes.data;
 
-        const revenue = sales.reduce((sum: number, s: any) => sum + s.totalAmount, 0);
+        const revenue = sales.reduce(
+          (sum: number, s: any) => sum + s.totalAmount,
+          0,
+        );
         const lowItems = stock.filter((s: any) => s.quantity < 10);
 
         // Group sales by day of week (last 7 days)
         const dayMap: Record<string, number> = {};
-        DAYS.forEach((d) => { dayMap[d] = 0; });
+        DAYS.forEach((d) => {
+          dayMap[d] = 0;
+        });
         sales.forEach((s: any) => {
           const day = DAYS[new Date(s.createdAt).getDay()];
           dayMap[day] = (dayMap[day] || 0) + s.totalAmount;
         });
-        const chartData = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((name) => ({
-          name,
-          amount: Math.round(dayMap[name] || 0),
-        }));
+        const chartData = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map(
+          (name) => ({
+            name,
+            amount: Math.round(dayMap[name] || 0),
+          }),
+        );
 
         setStats({
           products: products.length,
@@ -79,7 +121,11 @@ export default function DashboardPage() {
         <Grid container spacing={3} mt={1}>
           {[1, 2, 3, 4].map((i) => (
             <Grid item xs={12} sm={6} md={3} key={i}>
-              <Skeleton variant="rounded" height={100} sx={{ borderRadius: 3 }} />
+              <Skeleton
+                variant="rounded"
+                height={100}
+                sx={{ borderRadius: 3 }}
+              />
             </Grid>
           ))}
         </Grid>
@@ -87,23 +133,38 @@ export default function DashboardPage() {
     );
   }
 
+  const user = getUser();
+  const userName = user?.email ? user.email.split("@")[0] : "Admin";
+  const friendlyName = userName.charAt(0).toUpperCase() + userName.slice(1);
+
   const glassStyle = {
-    background: `linear-gradient(135deg, ${alpha(theme.palette.background.paper, 0.9)}, ${alpha(theme.palette.background.paper, 0.7)})`,
-    backdropFilter: 'blur(10px)',
-    border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
-    boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.05)',
+    background: `linear-gradient(135deg, ${alpha(theme.palette.background.paper, 0.95)}, ${alpha(theme.palette.background.paper, 0.75)})`,
+    backdropFilter: "blur(12px)",
+    border: `1px solid ${alpha(theme.palette.divider, 0.15)}`,
+    borderRadius: "16px",
+    boxShadow: `0 8px 32px 0 ${alpha(theme.palette.common.black, 0.05)}`,
+    transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+    "&:hover": {
+      transform: "translateY(-6px)",
+      boxShadow: `0 16px 40px 0 ${alpha(theme.palette.common.black, 0.1)}`,
+      border: `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
+    },
   };
 
   return (
-    <Box sx={{ pb: { xs: 8, md: 2 } }}>
-      <Fade in={true} timeout={500}>
+    <Box
+      sx={{ pb: { xs: 8, md: 2 }, mt: { xs: 3, sm: 4, md: 5 }, px: { md: 1 } }}
+    >
+      <Fade in={true} timeout={700}>
         <Box>
-          <PageHeader
-            title="Dashboard"
-            subtitle="Overview of your shop performance"
-          />
+          <Box mb={2}>
+            <PageHeader
+              title={`Welcome back, ${friendlyName}! 👋`}
+              subtitle="Here's a quick overview of your shop's performance today."
+            />
+          </Box>
 
-          <Grid container spacing={2} mb={3}>
+          <Grid container spacing={2} mb={4}>
             <Grid item xs={12} sm={6} md={3}>
               <StatCard
                 title="Total Products"
@@ -126,7 +187,7 @@ export default function DashboardPage() {
                 value={stats.lowStock}
                 icon={<WarningAmber />}
                 color="#f59e0b"
-                trend={stats.lowStock > 0 ? 'Needs attention' : 'All good'}
+                trend={stats.lowStock > 0 ? "Needs attention" : "All good"}
               />
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
@@ -141,58 +202,152 @@ export default function DashboardPage() {
 
           <Grid container spacing={3}>
             <Grid item xs={12} md={8}>
-              <Paper sx={{ p: { xs: 2, md: 3 }, borderRadius: 4, ...glassStyle }}>
+              <Paper
+                sx={{ p: { xs: 2, md: 3 }, borderRadius: 4, ...glassStyle }}
+              >
                 <Box display="flex" alignItems="center" gap={1} mb={3}>
-                  <Box sx={{ p: 1, borderRadius: 2, bgcolor: alpha(theme.palette.primary.main, 0.1) }}>
+                  <Box
+                    sx={{
+                      p: 1,
+                      borderRadius: 2,
+                      bgcolor: alpha(theme.palette.primary.main, 0.1),
+                    }}
+                  >
                     <ShowChart color="primary" />
                   </Box>
-                  <Typography variant="h6" fontWeight={700}>Sales Overview</Typography>
+                  <Typography variant="h6" sx={{ fontWeight: 700 }}>
+                    Sales Overview
+                  </Typography>
                 </Box>
                 <ResponsiveContainer width="100%" height={300}>
-                  <AreaChart data={salesData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <AreaChart
+                    data={salesData}
+                    margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+                  >
                     <defs>
-                      <linearGradient id="salesGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#6366f1" stopOpacity={0.4} />
-                        <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
+                      <linearGradient
+                        id="salesGrad"
+                        x1="0"
+                        y1="0"
+                        x2="0"
+                        y2="1"
+                      >
+                        <stop
+                          offset="5%"
+                          stopColor="#6366f1"
+                          stopOpacity={0.4}
+                        />
+                        <stop
+                          offset="95%"
+                          stopColor="#6366f1"
+                          stopOpacity={0}
+                        />
                       </linearGradient>
                     </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke={alpha(theme.palette.divider, 0.5)} vertical={false} />
-                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: theme.palette.text.secondary }} dy={10} />
-                    <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: theme.palette.text.secondary }} tickFormatter={(v) => `$${v}`} />
-                    <Tooltip
-                      contentStyle={{ borderRadius: 12, border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}
-                      formatter={(v: number) => [formatCurrency(v), 'Revenue']}
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      stroke={alpha(theme.palette.divider, 0.5)}
+                      vertical={false}
                     />
-                    <Area type="monotone" dataKey="amount" stroke="#6366f1" strokeWidth={3} fill="url(#salesGrad)" animationDuration={1500} />
+                    <XAxis
+                      dataKey="name"
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{
+                        fontSize: 12,
+                        fill: theme.palette.text.secondary,
+                      }}
+                      dy={10}
+                    />
+                    <YAxis
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{
+                        fontSize: 12,
+                        fill: theme.palette.text.secondary,
+                      }}
+                      tickFormatter={(v) => `$${v}`}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        borderRadius: 12,
+                        border: "none",
+                        boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                      }}
+                      formatter={(v: number) => [formatCurrency(v), "Revenue"]}
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="amount"
+                      stroke="#6366f1"
+                      strokeWidth={3}
+                      fill="url(#salesGrad)"
+                      animationDuration={1500}
+                    />
                   </AreaChart>
                 </ResponsiveContainer>
               </Paper>
             </Grid>
 
             <Grid item xs={12} md={4}>
-              <Paper sx={{ p: { xs: 2, md: 3 }, borderRadius: 4, mb: 3, ...glassStyle }}>
+              <Paper
+                sx={{
+                  p: { xs: 2, md: 3 },
+                  borderRadius: 4,
+                  mb: 3,
+                  ...glassStyle,
+                }}
+              >
                 <Box display="flex" alignItems="center" gap={1} mb={2}>
-                  <Box sx={{ p: 1, borderRadius: 2, bgcolor: alpha(theme.palette.warning.main, 0.1) }}>
+                  <Box
+                    sx={{
+                      p: 1,
+                      borderRadius: 2,
+                      bgcolor: alpha(theme.palette.warning.main, 0.1),
+                    }}
+                  >
                     <WarningAmber color="warning" />
                   </Box>
-                  <Typography variant="h6" fontWeight={700}>Low Stock Alert</Typography>
+                  <Typography variant="h6" sx={{ fontWeight: 700 }}>
+                    Low Stock Alert
+                  </Typography>
                 </Box>
                 {lowStockItems.length === 0 ? (
-                  <Typography variant="body2" color="text.secondary" p={2} textAlign="center">
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    p={2}
+                    textAlign="center"
+                  >
                     All items are well stocked.
                   </Typography>
                 ) : (
                   <Box display="flex" flexDirection="column" gap={1.5}>
                     {lowStockItems.map((item: any) => (
-                      <Box key={item.id} display="flex" justifyContent="space-between" alignItems="center" p={1.5} sx={{ bgcolor: alpha(theme.palette.background.default, 0.5), borderRadius: 2 }}>
-                        <Typography variant="body2" fontWeight={600} noWrap sx={{ maxWidth: '65%' }}>
+                      <Box
+                        key={item.id}
+                        display="flex"
+                        justifyContent="space-between"
+                        alignItems="center"
+                        p={1.5}
+                        sx={{
+                          bgcolor: alpha(theme.palette.background.default, 0.5),
+                          borderRadius: 2,
+                        }}
+                      >
+                        <Typography
+                          variant="body2"
+                          sx={{ fontWeight: 600 }}
+                          noWrap
+                          sx={{ maxWidth: "65%" }}
+                        >
                           {item.product.name}
                         </Typography>
                         <Chip
                           label={`${item.quantity} left`}
                           size="small"
-                          color={item.quantity <= 0 ? 'error' : 'warning'}
-                          sx={{ fontWeight: 'bold' }}
+                          color={item.quantity <= 0 ? "error" : "warning"}
+                          sx={{ fontWeight: "bold" }}
                         />
                       </Box>
                     ))}
@@ -200,30 +355,71 @@ export default function DashboardPage() {
                 )}
               </Paper>
 
-              <Paper sx={{ p: { xs: 2, md: 3 }, borderRadius: 4, ...glassStyle }}>
+              <Paper
+                sx={{ p: { xs: 2, md: 3 }, borderRadius: 4, ...glassStyle }}
+              >
                 <Box display="flex" alignItems="center" gap={1} mb={2}>
-                  <Box sx={{ p: 1, borderRadius: 2, bgcolor: alpha(theme.palette.success.main, 0.1) }}>
+                  <Box
+                    sx={{
+                      p: 1,
+                      borderRadius: 2,
+                      bgcolor: alpha(theme.palette.success.main, 0.1),
+                    }}
+                  >
                     <TrendingUp color="success" />
                   </Box>
-                  <Typography variant="h6" fontWeight={700}>Recent Transactions</Typography>
+                  <Typography variant="h6" sx={{ fontWeight: 700 }}>
+                    Recent Transactions
+                  </Typography>
                 </Box>
                 {recentSales.length === 0 ? (
-                  <Typography variant="body2" color="text.secondary" p={2} textAlign="center">
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    p={2}
+                    textAlign="center"
+                  >
                     No sales recorded yet.
                   </Typography>
                 ) : (
                   <Box display="flex" flexDirection="column" gap={1.5}>
                     {recentSales.map((sale: any) => (
-                      <Box key={sale.id} display="flex" justifyContent="space-between" alignItems="center" p={1.5} sx={{ bgcolor: alpha(theme.palette.background.default, 0.5), borderRadius: 2 }}>
+                      <Box
+                        key={sale.id}
+                        display="flex"
+                        justifyContent="space-between"
+                        alignItems="center"
+                        p={1.5}
+                        sx={{
+                          bgcolor: alpha(theme.palette.background.default, 0.5),
+                          borderRadius: 2,
+                        }}
+                      >
                         <Box>
-                          <Typography variant="body2" fontWeight={700} color="primary.main">
+                          <Typography
+                            variant="body2"
+                            sx={{ fontWeight: 700 }}
+                            color="primary.main"
+                          >
                             {formatCurrency(sale.totalAmount)}
                           </Typography>
                           <Typography variant="caption" color="text.secondary">
-                            {new Date(sale.createdAt).toLocaleDateString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                            {new Date(sale.createdAt).toLocaleDateString([], {
+                              month: "short",
+                              day: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
                           </Typography>
                         </Box>
-                        <Chip label={`${sale.details?.length || 0} ${sale.details?.length === 1 ? 'item' : 'items'}`} size="small" sx={{ bgcolor: 'background.paper', border: `1px solid ${theme.palette.divider}` }} />
+                        <Chip
+                          label={`${sale.details?.length || 0} ${sale.details?.length === 1 ? "item" : "items"}`}
+                          size="small"
+                          sx={{
+                            bgcolor: "background.paper",
+                            border: `1px solid ${theme.palette.divider}`,
+                          }}
+                        />
                       </Box>
                     ))}
                   </Box>

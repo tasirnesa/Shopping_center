@@ -1,13 +1,38 @@
 import { PrismaService } from '../prisma/prisma.service';
-import { Prisma } from '@prisma/client';
 export declare class ProductService {
     private prisma;
     constructor(prisma: PrismaService);
-    create(data: Prisma.ProductCreateInput): Promise<{
+    create(orgId: string, data: {
+        name: string;
+        barcode?: string;
+        categoryId?: string;
+        brandId?: string;
+        unitId?: string;
+        price: number;
+        cost: number;
+    }): Promise<{
+        category: {
+            id: string;
+            name: string;
+            organizationId: string;
+            description: string | null;
+        } | null;
+        brand: {
+            id: string;
+            name: string;
+            organizationId: string;
+        } | null;
+        unit: {
+            id: string;
+            name: string;
+            organizationId: string;
+        } | null;
+    } & {
         id: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
+        organizationId: string;
         barcode: string | null;
         price: number;
         cost: number;
@@ -15,23 +40,132 @@ export declare class ProductService {
         brandId: string | null;
         unitId: string | null;
     }>;
-    findAll(): Promise<{
+    findAll(orgId: string): Promise<({
+        category: {
+            id: string;
+            name: string;
+            organizationId: string;
+            description: string | null;
+        } | null;
+        brand: {
+            id: string;
+            name: string;
+            organizationId: string;
+        } | null;
+        unit: {
+            id: string;
+            name: string;
+            organizationId: string;
+        } | null;
+    } & {
         id: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
+        organizationId: string;
         barcode: string | null;
         price: number;
         cost: number;
         categoryId: string | null;
         brandId: string | null;
         unitId: string | null;
-    }[]>;
-    findOne(id: string): Promise<{
+    })[]>;
+    findOne(orgId: string, id: string): Promise<({
+        category: {
+            id: string;
+            name: string;
+            organizationId: string;
+            description: string | null;
+        } | null;
+        brand: {
+            id: string;
+            name: string;
+            organizationId: string;
+        } | null;
+        unit: {
+            id: string;
+            name: string;
+            organizationId: string;
+        } | null;
+    } & {
         id: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
+        organizationId: string;
+        barcode: string | null;
+        price: number;
+        cost: number;
+        categoryId: string | null;
+        brandId: string | null;
+        unitId: string | null;
+    }) | null>;
+    findByBarcode(orgId: string, barcode: string): Promise<({
+        category: {
+            id: string;
+            name: string;
+            organizationId: string;
+            description: string | null;
+        } | null;
+        brand: {
+            id: string;
+            name: string;
+            organizationId: string;
+        } | null;
+        unit: {
+            id: string;
+            name: string;
+            organizationId: string;
+        } | null;
+    } & {
+        id: string;
         name: string;
+        createdAt: Date;
+        updatedAt: Date;
+        organizationId: string;
+        barcode: string | null;
+        price: number;
+        cost: number;
+        categoryId: string | null;
+        brandId: string | null;
+        unitId: string | null;
+    }) | null>;
+    update(orgId: string, id: string, data: any): Promise<({
+        category: {
+            id: string;
+            name: string;
+            organizationId: string;
+            description: string | null;
+        } | null;
+        brand: {
+            id: string;
+            name: string;
+            organizationId: string;
+        } | null;
+        unit: {
+            id: string;
+            name: string;
+            organizationId: string;
+        } | null;
+    } & {
+        id: string;
+        name: string;
+        createdAt: Date;
+        updatedAt: Date;
+        organizationId: string;
+        barcode: string | null;
+        price: number;
+        cost: number;
+        categoryId: string | null;
+        brandId: string | null;
+        unitId: string | null;
+    }) | null>;
+    remove(orgId: string, id: string): Promise<{
+        id: string;
+        name: string;
+        createdAt: Date;
+        updatedAt: Date;
+        organizationId: string;
         barcode: string | null;
         price: number;
         cost: number;
@@ -39,40 +173,4 @@ export declare class ProductService {
         brandId: string | null;
         unitId: string | null;
     } | null>;
-    findByBarcode(barcode: string): Promise<{
-        id: string;
-        createdAt: Date;
-        updatedAt: Date;
-        name: string;
-        barcode: string | null;
-        price: number;
-        cost: number;
-        categoryId: string | null;
-        brandId: string | null;
-        unitId: string | null;
-    } | null>;
-    update(id: string, data: Prisma.ProductUpdateInput): Promise<{
-        id: string;
-        createdAt: Date;
-        updatedAt: Date;
-        name: string;
-        barcode: string | null;
-        price: number;
-        cost: number;
-        categoryId: string | null;
-        brandId: string | null;
-        unitId: string | null;
-    }>;
-    remove(id: string): Promise<{
-        id: string;
-        createdAt: Date;
-        updatedAt: Date;
-        name: string;
-        barcode: string | null;
-        price: number;
-        cost: number;
-        categoryId: string | null;
-        brandId: string | null;
-        unitId: string | null;
-    }>;
 }

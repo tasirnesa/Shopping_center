@@ -1,35 +1,70 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class ProductService {
-    constructor(private prisma: PrismaService) { }
+  constructor(private prisma: PrismaService) {}
 
-    async create(data: Prisma.ProductCreateInput) {
-        return this.prisma.product.create({ data });
-    }
+  async create(
+    orgId: string,
+    data: {
+      name: string;
+      barcode?: string;
+      categoryId?: string;
+      brandId?: string;
+      unitId?: string;
+      price: number;
+      cost: number;
+    },
+  ) {
+    return this.prisma.product.create({
+      data: { ...data, organizationId: orgId },
+      include: { category: true, brand: true, unit: true },
+    });
+  }
 
-    async findAll() {
-        return this.prisma.product.findMany();
-    }
+  async findAll(orgId: string) {
+    return this.prisma.product.findMany({
+      where: { organizationId: orgId },
+      include: { category: true, brand: true, unit: true },
+      orderBy: { name: 'asc' },
+    });
+  }
 
-    async findOne(id: string) {
-        return this.prisma.product.findUnique({ where: { id } });
-    }
+  async findOne(orgId: string, id: string) {
+    return this.prisma.product.findFirst({
+      where: { id, organizationId: orgId },
+      include: { category: true, brand: true, unit: true },
+    });
+  }
 
-    async findByBarcode(barcode: string) {
-        return this.prisma.product.findUnique({ where: { barcode } });
-    }
+  async findByBarcode(orgId: string, barcode: string) {
+    return this.prisma.product.findFirst({
+      where: { barcode, organizationId: orgId },
+      include: { category: true, brand: true, unit: true },
+    });
+  }
 
-    async update(id: string, data: Prisma.ProductUpdateInput) {
-        return this.prisma.product.update({
-            where: { id },
-            data,
-        });
-    }
+  async update(orgId: string, id: string, data: any) {
+    // Ensure we only update products belonging to this org
+    const product = await this.prisma.product.findFirst({
+      where: { id, organizationId: orgId },
+    });
+    if (!product) return null;
 
-    async remove(id: string) {
-        return this.prisma.product.delete({ where: { id } });
-    }
+    return this.prisma.product.update({
+      where: { id },
+      data,
+      include: { category: true, brand: true, unit: true },
+    });
+  }
+
+  async remove(orgId: string, id: string) {
+    const product = await this.prisma.product.findFirst({
+      where: { id, organizationId: orgId },
+    });
+    if (!product) return null;
+
+    return this.prisma.product.delete({ where: { id } });
+  }
 }

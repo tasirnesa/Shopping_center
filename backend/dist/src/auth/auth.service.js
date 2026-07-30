@@ -55,7 +55,10 @@ let AuthService = class AuthService {
         this.jwtService = jwtService;
     }
     async validateUser(email, pass) {
-        const user = await this.prisma.user.findUnique({ where: { email } });
+        const user = await this.prisma.user.findUnique({
+            where: { email },
+            include: { organization: true, branch: true },
+        });
         if (user && (await bcrypt.compare(pass, user.password))) {
             const { password, ...result } = user;
             return result;
@@ -67,20 +70,68 @@ let AuthService = class AuthService {
         if (!user) {
             throw new common_1.UnauthorizedException('Invalid credentials');
         }
-        const payload = { email: user.email, sub: user.id, role: user.role };
+        const payload = {
+            email: user.email,
+            sub: user.id,
+            role: user.role,
+            organizationId: user.organizationId,
+            branchId: user.branchId,
+        };
         return {
             access_token: this.jwtService.sign(payload),
-            user: payload,
+            user: {
+                id: user.id,
+                email: user.email,
+                name: user.name,
+                role: user.role,
+                organizationId: user.organizationId,
+                branchId: user.branchId,
+                organization: user.organization
+                    ? {
+                        id: user.organization.id,
+                        name: user.organization.name,
+                        businessType: user.organization.businessType,
+                    }
+                    : null,
+                branch: user.branch
+                    ? {
+                        id: user.branch.id,
+                        name: user.branch.name,
+                    }
+                    : null,
+            },
         };
     }
     async register(registerDto) {
         try {
+            if (registerDto.organizationId) {
+                const org = await this.prisma.organization.findUnique({
+                    where: { id: registerDto.organizationId },
+                });
+                if (!org) {
+                    throw new common_1.BadRequestException('Invalid Organization ID.');
+                }
+            }
+            if (registerDto.branchId) {
+                const branch = await this.prisma.branch.findUnique({
+                    where: { id: registerDto.branchId },
+                });
+                if (!branch) {
+                    throw new common_1.BadRequestException('Invalid Branch ID.');
+                }
+                if (registerDto.organizationId &&
+                    branch.organizationId !== registerDto.organizationId) {
+                    throw new common_1.BadRequestException('Branch does not belong to the specified organization.');
+                }
+            }
             const hashedPassword = await bcrypt.hash(registerDto.password, 10);
             const user = await this.prisma.user.create({
                 data: {
                     email: registerDto.email,
                     password: hashedPassword,
+                    name: registerDto.name,
                     role: registerDto.role,
+                    organizationId: registerDto.organizationId,
                     branchId: registerDto.branchId?.trim(),
                 },
             });
@@ -88,13 +139,15 @@ let AuthService = class AuthService {
             return result;
         }
         catch (error) {
+            if (error instanceof common_1.BadRequestException)
+                throw error;
             if (error.code === 'P2002') {
                 throw new common_1.BadRequestException('Email is already registered!');
             }
             if (error.code === 'P2003') {
-                throw new common_1.BadRequestException('Invalid Branch ID. Please check and try again.');
+                throw new common_1.BadRequestException('Invalid Organization or Branch ID.');
             }
-            throw new common_1.InternalServerErrorException('Server Error: Ensure the Branch ID is a valid system ID.');
+            throw new common_1.InternalServerErrorException('Server Error: ' + error.message);
         }
     }
 };

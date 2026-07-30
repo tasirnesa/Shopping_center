@@ -1,5 +1,5 @@
 export class CreateSupplierDto {
-    name!: string;
-    contact?: string;
-    email?: string;
+  name!: string;
+  contact?: string;
+  email?: string;
 }

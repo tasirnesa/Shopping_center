@@ -4,7 +4,9 @@ exports.RegisterDto = void 0;
 class RegisterDto {
     email;
     password;
+    name;
     role;
+    organizationId;
     branchId;
 }
 exports.RegisterDto = RegisterDto;

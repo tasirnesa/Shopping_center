@@ -17,30 +17,84 @@ let FoundationService = class FoundationService {
     constructor(prisma) {
         this.prisma = prisma;
     }
-    async getCategories() { return this.prisma.category.findMany({ orderBy: { name: 'asc' } }); }
-    async createCategory(data) { return this.prisma.category.create({ data }); }
-    async deleteCategory(id) { return this.prisma.category.delete({ where: { id } }); }
-    async getBrands() { return this.prisma.brand.findMany({ orderBy: { name: 'asc' } }); }
-    async createBrand(data) { return this.prisma.brand.create({ data }); }
-    async deleteBrand(id) { return this.prisma.brand.delete({ where: { id } }); }
-    async getUnits() { return this.prisma.unit.findMany({ orderBy: { name: 'asc' } }); }
-    async createUnit(data) { return this.prisma.unit.create({ data }); }
-    async deleteUnit(id) { return this.prisma.unit.delete({ where: { id } }); }
-    async getShops() { return this.prisma.shop.findMany({ orderBy: { name: 'asc' }, include: { branches: true } }); }
-    async createShop(data) { return this.prisma.shop.create({ data }); }
-    async getBranches() { return this.prisma.branch.findMany({ orderBy: { name: 'asc' }, include: { shop: true } }); }
-    async createBranch(data) { return this.prisma.branch.create({ data }); }
-    async getUsers() {
-        return this.prisma.user.findMany({
-            select: { id: true, email: true, role: true, branchId: true, branch: true, createdAt: true },
-            orderBy: { createdAt: 'desc' }
+    async getCategories(orgId) {
+        return this.prisma.category.findMany({
+            where: { organizationId: orgId },
+            orderBy: { name: 'asc' },
         });
     }
-    async updateUserRole(id, role) {
-        return this.prisma.user.update({
-            where: { id },
+    async createCategory(orgId, data) {
+        return this.prisma.category.create({
+            data: { ...data, organizationId: orgId },
+        });
+    }
+    async deleteCategory(orgId, id) {
+        return this.prisma.category.deleteMany({
+            where: { id, organizationId: orgId },
+        });
+    }
+    async getBrands(orgId) {
+        return this.prisma.brand.findMany({
+            where: { organizationId: orgId },
+            orderBy: { name: 'asc' },
+        });
+    }
+    async createBrand(orgId, data) {
+        return this.prisma.brand.create({
+            data: { ...data, organizationId: orgId },
+        });
+    }
+    async deleteBrand(orgId, id) {
+        return this.prisma.brand.deleteMany({
+            where: { id, organizationId: orgId },
+        });
+    }
+    async getUnits(orgId) {
+        return this.prisma.unit.findMany({
+            where: { organizationId: orgId },
+            orderBy: { name: 'asc' },
+        });
+    }
+    async createUnit(orgId, data) {
+        return this.prisma.unit.create({
+            data: { ...data, organizationId: orgId },
+        });
+    }
+    async deleteUnit(orgId, id) {
+        return this.prisma.unit.deleteMany({
+            where: { id, organizationId: orgId },
+        });
+    }
+    async getBranches(orgId) {
+        return this.prisma.branch.findMany({
+            where: { organizationId: orgId },
+            orderBy: { name: 'asc' },
+        });
+    }
+    async createBranch(orgId, data) {
+        return this.prisma.branch.create({
+            data: { ...data, organizationId: orgId },
+        });
+    }
+    async getUsers(orgId) {
+        return this.prisma.user.findMany({
+            where: { organizationId: orgId },
+            select: {
+                id: true,
+                email: true,
+                name: true,
+                role: true,
+                branchId: true,
+                branch: true,
+                createdAt: true,
+            },
+            orderBy: { createdAt: 'desc' },
+        });
+    }
+    async updateUserRole(orgId, id, role) {
+        return this.prisma.user.updateMany({
+            where: { id, organizationId: orgId },
             data: { role },
-            select: { id: true, email: true, role: true }
         });
     }
 };

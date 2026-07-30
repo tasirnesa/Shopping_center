@@ -17,26 +17,35 @@ let InventoryService = class InventoryService {
     constructor(prisma) {
         this.prisma = prisma;
     }
-    async getSuppliers() {
-        return this.prisma.supplier.findMany({ orderBy: { name: 'asc' } });
+    async getSuppliers(orgId) {
+        return this.prisma.supplier.findMany({
+            where: { organizationId: orgId },
+            orderBy: { name: 'asc' },
+        });
     }
-    async createSupplier(dto) {
-        return this.prisma.supplier.create({ data: dto });
+    async createSupplier(orgId, dto) {
+        return this.prisma.supplier.create({
+            data: { ...dto, organizationId: orgId },
+        });
     }
-    async getPurchases() {
+    async getPurchases(orgId) {
         return this.prisma.purchase.findMany({
+            where: { organizationId: orgId },
             include: {
                 supplier: true,
+                branch: true,
                 details: { include: { product: true } },
             },
             orderBy: { createdAt: 'desc' },
         });
     }
-    async createPurchase(dto) {
+    async createPurchase(orgId, dto) {
         const totalAmount = dto.details.reduce((sum, d) => sum + d.quantity * d.cost, 0);
         return this.prisma.$transaction(async (tx) => {
             const purchase = await tx.purchase.create({
                 data: {
+                    organizationId: orgId,
+                    branchId: dto.branchId,
                     supplierId: dto.supplierId,
                     totalAmount,
                     details: {
@@ -64,9 +73,16 @@ let InventoryService = class InventoryService {
             return purchase;
         });
     }
-    async getStockBalance(branchId) {
+    async getStockBalance(orgId, branchId) {
+        const where = {};
+        if (branchId) {
+            where.branchId = branchId;
+        }
+        else {
+            where.branch = { organizationId: orgId };
+        }
         return this.prisma.stockBalance.findMany({
-            where: branchId ? { branchId } : undefined,
+            where,
             include: {
                 product: { include: { category: true, unit: true } },
                 branch: true,
@@ -74,15 +90,22 @@ let InventoryService = class InventoryService {
             orderBy: { product: { name: 'asc' } },
         });
     }
-    async getTransactions(branchId) {
+    async getTransactions(orgId, branchId) {
+        const where = {};
+        if (branchId) {
+            where.branchId = branchId;
+        }
+        else {
+            where.branch = { organizationId: orgId };
+        }
         return this.prisma.inventoryTransaction.findMany({
-            where: branchId ? { branchId } : undefined,
+            where,
             include: { product: true, branch: true },
             orderBy: { createdAt: 'desc' },
             take: 200,
         });
     }
-    async adjustStock(dto) {
+    async adjustStock(orgId, dto) {
         return this.prisma.$transaction(async (tx) => {
             if (dto.quantityChange < 0) {
                 const current = await tx.stockBalance.findFirst({
@@ -104,7 +127,7 @@ let InventoryService = class InventoryService {
             });
         });
     }
-    async transferStock(dto) {
+    async transferStock(orgId, dto) {
         if (dto.quantity <= 0) {
             throw new common_1.BadRequestException('Transfer quantity must be positive.');
         }
@@ -138,7 +161,10 @@ let InventoryService = class InventoryService {
                     reference: `Transfer from branch ${dto.fromBranchId}`,
                 },
             });
-            return { message: 'Stock transferred successfully', quantity: dto.quantity };
+            return {
+                message: 'Stock transferred successfully',
+                quantity: dto.quantity,
+            };
         });
     }
     async upsertStockBalance(tx, branchId, productId, quantityDelta) {

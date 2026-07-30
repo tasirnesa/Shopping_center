@@ -2,6 +2,8 @@ import { Role } from '@prisma/client';
 export declare class RegisterDto {
     email: string;
     password: string;
+    name?: string;
     role: Role;
-    branchId: string;
+    organizationId?: string;
+    branchId?: string;
 }

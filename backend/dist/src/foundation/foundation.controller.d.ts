@@ -3,121 +3,92 @@ import { Role } from '@prisma/client';
 export declare class FoundationController {
     private readonly foundationService;
     constructor(foundationService: FoundationService);
-    getCategories(): Promise<{
+    getCategories(orgId: string): Promise<{
         id: string;
         name: string;
+        organizationId: string;
         description: string | null;
     }[]>;
-    createCategory(body: {
+    createCategory(orgId: string, body: {
         name: string;
         description?: string;
     }): Promise<{
         id: string;
         name: string;
+        organizationId: string;
         description: string | null;
     }>;
-    deleteCategory(id: string): Promise<{
+    deleteCategory(orgId: string, id: string): Promise<import(".prisma/client").Prisma.BatchPayload>;
+    getBrands(orgId: string): Promise<{
         id: string;
         name: string;
-        description: string | null;
-    }>;
-    getBrands(): Promise<{
-        id: string;
-        name: string;
+        organizationId: string;
     }[]>;
-    createBrand(body: {
+    createBrand(orgId: string, body: {
         name: string;
     }): Promise<{
         id: string;
         name: string;
+        organizationId: string;
     }>;
-    deleteBrand(id: string): Promise<{
+    deleteBrand(orgId: string, id: string): Promise<import(".prisma/client").Prisma.BatchPayload>;
+    getUnits(orgId: string): Promise<{
         id: string;
         name: string;
-    }>;
-    getUnits(): Promise<{
-        id: string;
-        name: string;
+        organizationId: string;
     }[]>;
-    createUnit(body: {
+    createUnit(orgId: string, body: {
         name: string;
     }): Promise<{
         id: string;
         name: string;
+        organizationId: string;
     }>;
-    deleteUnit(id: string): Promise<{
+    deleteUnit(orgId: string, id: string): Promise<import(".prisma/client").Prisma.BatchPayload>;
+    getBranches(orgId: string): Promise<{
         id: string;
         name: string;
-    }>;
-    getShops(): Promise<({
-        branches: {
-            id: string;
-            createdAt: Date;
-            updatedAt: Date;
-            name: string;
-            shopId: string;
-        }[];
-    } & {
-        id: string;
         createdAt: Date;
         updatedAt: Date;
+        organizationId: string;
+        phone: string | null;
+        address: string | null;
+        code: string | null;
+    }[]>;
+    createBranch(orgId: string, body: {
         name: string;
-        ownerId: string;
-    })[]>;
-    createShop(body: {
-        name: string;
-        ownerId: string;
+        code?: string;
+        phone?: string;
+        address?: string;
     }): Promise<{
         id: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
-        ownerId: string;
+        organizationId: string;
+        phone: string | null;
+        address: string | null;
+        code: string | null;
     }>;
-    getBranches(): Promise<({
-        shop: {
-            id: string;
-            createdAt: Date;
-            updatedAt: Date;
-            name: string;
-            ownerId: string;
-        };
-    } & {
-        id: string;
-        createdAt: Date;
-        updatedAt: Date;
-        name: string;
-        shopId: string;
-    })[]>;
-    createBranch(body: {
-        name: string;
-        shopId: string;
-    }): Promise<{
-        id: string;
-        createdAt: Date;
-        updatedAt: Date;
-        name: string;
-        shopId: string;
-    }>;
-    getUsers(): Promise<{
+    getUsers(orgId: string): Promise<{
         id: string;
         email: string;
+        name: string | null;
         role: import(".prisma/client").$Enums.Role;
         createdAt: Date;
-        branchId: string;
+        branchId: string | null;
         branch: {
             id: string;
+            name: string;
             createdAt: Date;
             updatedAt: Date;
-            name: string;
-            shopId: string;
-        };
+            organizationId: string;
+            phone: string | null;
+            address: string | null;
+            code: string | null;
+        } | null;
     }[]>;
-    updateUserRole(id: string, body: {
+    updateUserRole(orgId: string, id: string, body: {
         role: Role;
-    }): Promise<{
-        id: string;
-        email: string;
-        role: import(".prisma/client").$Enums.Role;
-    }>;
+    }): Promise<import(".prisma/client").Prisma.BatchPayload>;
 }

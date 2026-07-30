@@ -15,49 +15,74 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SalesController = void 0;
 const common_1 = require("@nestjs/common");
 const sales_service_1 = require("./sales.service");
-const client_1 = require("@prisma/client");
 const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 const roles_guard_1 = require("../auth/roles.guard");
 const roles_decorator_1 = require("../auth/roles.decorator");
+const org_decorator_1 = require("../auth/org.decorator");
 let SalesController = class SalesController {
     salesService;
     constructor(salesService) {
         this.salesService = salesService;
     }
-    create(createSaleDto) {
-        return this.salesService.create(createSaleDto);
+    create(orgId, userBranchId, dto) {
+        const branchId = dto.branchId || userBranchId;
+        if (!branchId) {
+            throw new common_1.BadRequestException('branchId is required');
+        }
+        return this.salesService.create(orgId, { ...dto, branchId });
     }
-    findAll() {
-        return this.salesService.findAll();
+    findAll(orgId) {
+        return this.salesService.findAll(orgId);
     }
-    findOne(id) {
-        return this.salesService.findOne(id);
+    findOne(orgId, id) {
+        return this.salesService.findOne(orgId, id);
+    }
+    processReturn(orgId, userBranchId, dto) {
+        const branchId = dto.branchId || userBranchId;
+        if (!dto.saleId || !branchId) {
+            throw new common_1.BadRequestException('saleId and branchId are required');
+        }
+        return this.salesService.processReturn(orgId, { ...dto, branchId });
     }
 };
 exports.SalesController = SalesController;
 __decorate([
     (0, common_1.Post)(),
     (0, roles_decorator_1.Roles)('OWNER', 'MANAGER', 'CASHIER'),
-    __param(0, (0, common_1.Body)()),
+    __param(0, (0, org_decorator_1.CurrentOrg)()),
+    __param(1, (0, org_decorator_1.CurrentBranch)()),
+    __param(2, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [String, String, Object]),
     __metadata("design:returntype", void 0)
 ], SalesController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)(),
     (0, roles_decorator_1.Roles)('OWNER', 'MANAGER', 'CASHIER'),
+    __param(0, (0, org_decorator_1.CurrentOrg)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], SalesController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Get)(':id'),
     (0, roles_decorator_1.Roles)('OWNER', 'MANAGER', 'CASHIER'),
-    __param(0, (0, common_1.Param)('id')),
+    __param(0, (0, org_decorator_1.CurrentOrg)()),
+    __param(1, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", void 0)
 ], SalesController.prototype, "findOne", null);
+__decorate([
+    (0, common_1.Post)('returns'),
+    (0, roles_decorator_1.Roles)('OWNER', 'MANAGER', 'CASHIER'),
+    __param(0, (0, org_decorator_1.CurrentOrg)()),
+    __param(1, (0, org_decorator_1.CurrentBranch)()),
+    __param(2, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, Object]),
+    __metadata("design:returntype", void 0)
+], SalesController.prototype, "processReturn", null);
 exports.SalesController = SalesController = __decorate([
     (0, common_1.Controller)('sales'),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),

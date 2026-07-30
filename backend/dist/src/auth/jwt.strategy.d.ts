@@ -9,11 +9,33 @@ export declare class JwtStrategy extends JwtStrategy_base {
     validate(payload: any): Promise<{
         id: string;
         email: string;
-        password: string;
+        name: string | null;
         role: import(".prisma/client").$Enums.Role;
-        createdAt: Date;
-        updatedAt: Date;
-        branchId: string;
+        organizationId: string | null;
+        branchId: string | null;
+        organization: {
+            id: string;
+            email: string | null;
+            name: string;
+            status: string;
+            createdAt: Date;
+            updatedAt: Date;
+            businessType: string | null;
+            tin: string | null;
+            phone: string | null;
+            address: string | null;
+            logo: string | null;
+        } | null;
+        branch: {
+            id: string;
+            name: string;
+            createdAt: Date;
+            updatedAt: Date;
+            organizationId: string;
+            phone: string | null;
+            address: string | null;
+            code: string | null;
+        } | null;
     }>;
 }
 export {};

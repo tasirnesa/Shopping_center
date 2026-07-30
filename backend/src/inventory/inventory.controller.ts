@@ -5,61 +5,68 @@ import { CreatePurchaseDto } from './dto/create-purchase.dto';
 import { AdjustStockDto } from './dto/adjust-stock.dto';
 import { TransferStockDto } from './dto/transfer-stock.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { CurrentOrg } from '../auth/org.decorator';
 
 @Controller()
 @UseGuards(JwtAuthGuard)
 export class InventoryController {
-    constructor(private readonly inventoryService: InventoryService) { }
+  constructor(private readonly inventoryService: InventoryService) {}
 
-    // ───── Suppliers ─────
+  // ───── Suppliers ─────
 
-    @Get('suppliers')
-    getSuppliers() {
-        return this.inventoryService.getSuppliers();
-    }
+  @Get('suppliers')
+  getSuppliers(@CurrentOrg() orgId: string) {
+    return this.inventoryService.getSuppliers(orgId);
+  }
 
-    @Post('suppliers')
-    createSupplier(@Body() dto: CreateSupplierDto) {
-        return this.inventoryService.createSupplier(dto);
-    }
+  @Post('suppliers')
+  createSupplier(@CurrentOrg() orgId: string, @Body() dto: CreateSupplierDto) {
+    return this.inventoryService.createSupplier(orgId, dto);
+  }
 
-    // ───── Purchases / Goods Receipt ─────
+  // ───── Purchases / Goods Receipt ─────
 
-    @Get('inventory/purchases')
-    getPurchases() {
-        return this.inventoryService.getPurchases();
-    }
+  @Get('inventory/purchases')
+  getPurchases(@CurrentOrg() orgId: string) {
+    return this.inventoryService.getPurchases(orgId);
+  }
 
-    @Post('inventory/purchases')
-    createPurchase(@Body() dto: CreatePurchaseDto) {
-        return this.inventoryService.createPurchase(dto);
-    }
+  @Post('inventory/purchases')
+  createPurchase(@CurrentOrg() orgId: string, @Body() dto: CreatePurchaseDto) {
+    return this.inventoryService.createPurchase(orgId, dto);
+  }
 
-    // ───── Stock Balance ─────
+  // ───── Stock Balance ─────
 
-    @Get('inventory/stock-balance')
-    getStockBalance(@Query('branchId') branchId?: string) {
-        return this.inventoryService.getStockBalance(branchId);
-    }
+  @Get('inventory/stock-balance')
+  getStockBalance(
+    @CurrentOrg() orgId: string,
+    @Query('branchId') branchId?: string,
+  ) {
+    return this.inventoryService.getStockBalance(orgId, branchId);
+  }
 
-    // ───── Inventory Transactions (audit log) ─────
+  // ───── Inventory Transactions (audit log) ─────
 
-    @Get('inventory/transactions')
-    getTransactions(@Query('branchId') branchId?: string) {
-        return this.inventoryService.getTransactions(branchId);
-    }
+  @Get('inventory/transactions')
+  getTransactions(
+    @CurrentOrg() orgId: string,
+    @Query('branchId') branchId?: string,
+  ) {
+    return this.inventoryService.getTransactions(orgId, branchId);
+  }
 
-    // ───── Stock Adjustment ─────
+  // ───── Stock Adjustment ─────
 
-    @Post('inventory/adjustments')
-    adjustStock(@Body() dto: AdjustStockDto) {
-        return this.inventoryService.adjustStock(dto);
-    }
+  @Post('inventory/adjustments')
+  adjustStock(@CurrentOrg() orgId: string, @Body() dto: AdjustStockDto) {
+    return this.inventoryService.adjustStock(orgId, dto);
+  }
 
-    // ───── Stock Transfer ─────
+  // ───── Stock Transfer ─────
 
-    @Post('inventory/transfers')
-    transferStock(@Body() dto: TransferStockDto) {
-        return this.inventoryService.transferStock(dto);
-    }
+  @Post('inventory/transfers')
+  transferStock(@CurrentOrg() orgId: string, @Body() dto: TransferStockDto) {
+    return this.inventoryService.transferStock(orgId, dto);
+  }
 }

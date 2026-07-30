@@ -17,25 +17,49 @@ let ProductService = class ProductService {
     constructor(prisma) {
         this.prisma = prisma;
     }
-    async create(data) {
-        return this.prisma.product.create({ data });
+    async create(orgId, data) {
+        return this.prisma.product.create({
+            data: { ...data, organizationId: orgId },
+            include: { category: true, brand: true, unit: true },
+        });
     }
-    async findAll() {
-        return this.prisma.product.findMany();
+    async findAll(orgId) {
+        return this.prisma.product.findMany({
+            where: { organizationId: orgId },
+            include: { category: true, brand: true, unit: true },
+            orderBy: { name: 'asc' },
+        });
     }
-    async findOne(id) {
-        return this.prisma.product.findUnique({ where: { id } });
+    async findOne(orgId, id) {
+        return this.prisma.product.findFirst({
+            where: { id, organizationId: orgId },
+            include: { category: true, brand: true, unit: true },
+        });
     }
-    async findByBarcode(barcode) {
-        return this.prisma.product.findUnique({ where: { barcode } });
+    async findByBarcode(orgId, barcode) {
+        return this.prisma.product.findFirst({
+            where: { barcode, organizationId: orgId },
+            include: { category: true, brand: true, unit: true },
+        });
     }
-    async update(id, data) {
+    async update(orgId, id, data) {
+        const product = await this.prisma.product.findFirst({
+            where: { id, organizationId: orgId },
+        });
+        if (!product)
+            return null;
         return this.prisma.product.update({
             where: { id },
             data,
+            include: { category: true, brand: true, unit: true },
         });
     }
-    async remove(id) {
+    async remove(orgId, id) {
+        const product = await this.prisma.product.findFirst({
+            where: { id, organizationId: orgId },
+        });
+        if (!product)
+            return null;
         return this.prisma.product.delete({ where: { id } });
     }
 };

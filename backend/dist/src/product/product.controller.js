@@ -15,81 +15,87 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ProductController = void 0;
 const common_1 = require("@nestjs/common");
 const product_service_1 = require("./product.service");
-const client_1 = require("@prisma/client");
 const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 const roles_guard_1 = require("../auth/roles.guard");
 const roles_decorator_1 = require("../auth/roles.decorator");
+const org_decorator_1 = require("../auth/org.decorator");
 let ProductController = class ProductController {
     productService;
     constructor(productService) {
         this.productService = productService;
     }
-    create(createProductDto) {
-        return this.productService.create(createProductDto);
+    create(orgId, dto) {
+        return this.productService.create(orgId, dto);
     }
-    findAll() {
-        return this.productService.findAll();
+    findAll(orgId) {
+        return this.productService.findAll(orgId);
     }
-    findByBarcode(barcode) {
-        return this.productService.findByBarcode(barcode);
+    findByBarcode(orgId, barcode) {
+        return this.productService.findByBarcode(orgId, barcode);
     }
-    findOne(id) {
-        return this.productService.findOne(id);
+    findOne(orgId, id) {
+        return this.productService.findOne(orgId, id);
     }
-    update(id, updateProductDto) {
-        return this.productService.update(id, updateProductDto);
+    update(orgId, id, dto) {
+        return this.productService.update(orgId, id, dto);
     }
-    remove(id) {
-        return this.productService.remove(id);
+    remove(orgId, id) {
+        return this.productService.remove(orgId, id);
     }
 };
 exports.ProductController = ProductController;
 __decorate([
     (0, common_1.Post)(),
     (0, roles_decorator_1.Roles)('OWNER', 'MANAGER', 'STORE_KEEPER'),
-    __param(0, (0, common_1.Body)()),
+    __param(0, (0, org_decorator_1.CurrentOrg)()),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", void 0)
 ], ProductController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)(),
     (0, roles_decorator_1.Roles)('OWNER', 'MANAGER', 'CASHIER', 'STORE_KEEPER'),
+    __param(0, (0, org_decorator_1.CurrentOrg)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], ProductController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Get)('barcode/:barcode'),
     (0, roles_decorator_1.Roles)('OWNER', 'MANAGER', 'CASHIER', 'STORE_KEEPER'),
-    __param(0, (0, common_1.Param)('barcode')),
+    __param(0, (0, org_decorator_1.CurrentOrg)()),
+    __param(1, (0, common_1.Param)('barcode')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", void 0)
 ], ProductController.prototype, "findByBarcode", null);
 __decorate([
     (0, common_1.Get)(':id'),
     (0, roles_decorator_1.Roles)('OWNER', 'MANAGER', 'CASHIER', 'STORE_KEEPER'),
-    __param(0, (0, common_1.Param)('id')),
+    __param(0, (0, org_decorator_1.CurrentOrg)()),
+    __param(1, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", void 0)
 ], ProductController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Patch)(':id'),
     (0, roles_decorator_1.Roles)('OWNER', 'MANAGER'),
-    __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Body)()),
+    __param(0, (0, org_decorator_1.CurrentOrg)()),
+    __param(1, (0, common_1.Param)('id')),
+    __param(2, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:paramtypes", [String, String, Object]),
     __metadata("design:returntype", void 0)
 ], ProductController.prototype, "update", null);
 __decorate([
     (0, common_1.Delete)(':id'),
     (0, roles_decorator_1.Roles)('OWNER'),
-    __param(0, (0, common_1.Param)('id')),
+    __param(0, (0, org_decorator_1.CurrentOrg)()),
+    __param(1, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", void 0)
 ], ProductController.prototype, "remove", null);
 exports.ProductController = ProductController = __decorate([
