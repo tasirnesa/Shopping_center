@@ -7,7 +7,12 @@ import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 export const CurrentOrg = createParamDecorator(
   (data: unknown, ctx: ExecutionContext): string | null => {
     const request = ctx.switchToHttp().getRequest();
-    return request.user?.organizationId || null;
+    const user = request.user;
+    if (user?.role === 'SYSTEM_ADMIN') {
+      const headerOrg = request.headers['x-organization-id'];
+      if (headerOrg) return headerOrg;
+    }
+    return user?.organizationId || null;
   },
 );
 

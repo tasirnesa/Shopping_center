@@ -76,6 +76,22 @@ let FoundationService = class FoundationService {
             data: { ...data, organizationId: orgId },
         });
     }
+    async updateBranch(orgId, id, data) {
+        const branch = await this.prisma.branch.findFirst({
+            where: { id, organizationId: orgId },
+        });
+        if (!branch)
+            throw new common_1.NotFoundException('Branch not found');
+        return this.prisma.branch.update({ where: { id }, data });
+    }
+    async deleteBranch(orgId, id) {
+        const branch = await this.prisma.branch.findFirst({
+            where: { id, organizationId: orgId },
+        });
+        if (!branch)
+            throw new common_1.NotFoundException('Branch not found');
+        return this.prisma.branch.delete({ where: { id } });
+    }
     async getUsers(orgId) {
         return this.prisma.user.findMany({
             where: { organizationId: orgId },
@@ -84,6 +100,7 @@ let FoundationService = class FoundationService {
                 email: true,
                 name: true,
                 role: true,
+                status: true,
                 branchId: true,
                 branch: true,
                 createdAt: true,
@@ -95,6 +112,12 @@ let FoundationService = class FoundationService {
         return this.prisma.user.updateMany({
             where: { id, organizationId: orgId },
             data: { role },
+        });
+    }
+    async updateUserStatus(orgId, id, status) {
+        return this.prisma.user.updateMany({
+            where: { id, organizationId: orgId },
+            data: { status },
         });
     }
 };

@@ -91,6 +91,9 @@ export default function AdminPage() {
             label="Brands"
           />
           <Tab icon={<Straighten />} iconPosition="start" label="Units" />
+          {!isSysAdmin && (
+            <Tab icon={<Business />} iconPosition="start" label="Org Settings" />
+          )}
         </Tabs>
       </Paper>
 
@@ -120,6 +123,46 @@ export default function AdminPage() {
       <TabPanel value={tab} index={isSysAdmin ? 5 : 4}>
         <SimpleListTab endpoint="/foundation/units" title="Unit" />
       </TabPanel>
+      {!isSysAdmin && (
+        <TabPanel value={tab} index={5}>
+          <OrganizationSettingsTab />
+        </TabPanel>
+      )}
+    </Box>
+  );
+}
+
+function OrganizationSettingsTab() {
+  const [settings, setSettings] = useState<any>({ currency: "ETB", taxRate: 15, language: "en", fiscalYear: "Jan-Dec" });
+
+  // In a real app, you would fetch and save from the backend
+  const handleSave = () => {
+    alert("Settings saved successfully!");
+  }
+
+  return (
+    <Box maxWidth="600px">
+      <Typography variant="h6" sx={{ mb: 3, fontWeight: 700 }}>
+        Organization Settings
+      </Typography>
+      <Paper sx={{ p: 4, borderRadius: 3 }}>
+        <Grid container spacing={3}>
+          <Grid item xs={12} sm={6}>
+            <TextField fullWidth label="Currency" value={settings.currency} onChange={(e) => setSettings({ ...settings, currency: e.target.value })} />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField fullWidth label="Tax Rate (%)" type="number" value={settings.taxRate} onChange={(e) => setSettings({ ...settings, taxRate: e.target.value })} />
+          </Grid>
+          <Grid item xs={12}>
+            <TextField fullWidth label="Receipt Footer" placeholder="Thank you for shopping with us!" value={settings.receiptFooter || ""} onChange={(e) => setSettings({ ...settings, receiptFooter: e.target.value })} />
+          </Grid>
+          <Grid item xs={12}>
+            <Button variant="contained" onClick={handleSave} size="large">
+              Save Settings
+            </Button>
+          </Grid>
+        </Grid>
+      </Paper>
     </Box>
   );
 }

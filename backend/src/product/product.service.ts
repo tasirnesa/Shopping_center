@@ -3,7 +3,7 @@ import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class ProductService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   async create(
     orgId: string,
@@ -51,6 +51,17 @@ export class ProductService {
       where: { id, organizationId: orgId },
     });
     if (!product) return null;
+
+    // Log price change if price is being updated
+    if (data.price !== undefined && data.price !== product.price) {
+      await this.prisma.priceHistory.create({
+        data: {
+          productId: id,
+          oldPrice: product.price,
+          newPrice: data.price,
+        },
+      });
+    }
 
     return this.prisma.product.update({
       where: { id },

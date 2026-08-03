@@ -5,6 +5,7 @@ export declare class SalesController {
     create(orgId: string, userBranchId: string, dto: {
         customerId?: string;
         discount?: number;
+        paymentMethod?: string;
         details: {
             productId: string;
             quantity: number;
@@ -16,8 +17,8 @@ export declare class SalesController {
             details: {
                 id: string;
                 price: number;
-                quantity: number;
                 productId: string;
+                quantity: number;
                 returnId: string;
             }[];
         } & {
@@ -76,8 +77,8 @@ export declare class SalesController {
         } & {
             id: string;
             price: number;
-            quantity: number;
             productId: string;
+            quantity: number;
             saleId: string;
         })[];
     } & {
@@ -96,8 +97,8 @@ export declare class SalesController {
             details: {
                 id: string;
                 price: number;
-                quantity: number;
                 productId: string;
+                quantity: number;
                 returnId: string;
             }[];
         } & {
@@ -156,8 +157,8 @@ export declare class SalesController {
         } & {
             id: string;
             price: number;
-            quantity: number;
             productId: string;
+            quantity: number;
             saleId: string;
         })[];
     } & {
@@ -176,8 +177,8 @@ export declare class SalesController {
             details: {
                 id: string;
                 price: number;
-                quantity: number;
                 productId: string;
+                quantity: number;
                 returnId: string;
             }[];
         } & {
@@ -236,8 +237,8 @@ export declare class SalesController {
         } & {
             id: string;
             price: number;
-            quantity: number;
             productId: string;
+            quantity: number;
             saleId: string;
         })[];
     } & {
@@ -263,8 +264,8 @@ export declare class SalesController {
         details: {
             id: string;
             price: number;
-            quantity: number;
             productId: string;
+            quantity: number;
             returnId: string;
         }[];
     } & {

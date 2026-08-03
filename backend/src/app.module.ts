@@ -8,6 +8,8 @@ import { SalesModule } from './sales/sales.module';
 import { InventoryModule } from './inventory/inventory.module';
 import { FoundationModule } from './foundation/foundation.module';
 import { OrganizationModule } from './organization/organization.module';
+import { CustomersModule } from './customers/customers.module';
+import { ExpensesModule } from './expenses/expenses.module';
 
 @Module({
   imports: [
@@ -18,6 +20,8 @@ import { OrganizationModule } from './organization/organization.module';
     SalesModule,
     InventoryModule,
     FoundationModule,
+    CustomersModule,
+    ExpensesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

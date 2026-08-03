@@ -6,6 +6,7 @@ export declare class SalesService {
     create(orgId: string, data: {
         customerId?: string;
         discount?: number;
+        paymentMethod?: string;
         details: {
             productId: string;
             quantity: number;
@@ -17,8 +18,8 @@ export declare class SalesService {
             details: {
                 id: string;
                 price: number;
-                quantity: number;
                 productId: string;
+                quantity: number;
                 returnId: string;
             }[];
         } & {
@@ -77,8 +78,8 @@ export declare class SalesService {
         } & {
             id: string;
             price: number;
-            quantity: number;
             productId: string;
+            quantity: number;
             saleId: string;
         })[];
     } & {
@@ -97,8 +98,8 @@ export declare class SalesService {
             details: {
                 id: string;
                 price: number;
-                quantity: number;
                 productId: string;
+                quantity: number;
                 returnId: string;
             }[];
         } & {
@@ -157,8 +158,8 @@ export declare class SalesService {
         } & {
             id: string;
             price: number;
-            quantity: number;
             productId: string;
+            quantity: number;
             saleId: string;
         })[];
     } & {
@@ -177,8 +178,8 @@ export declare class SalesService {
             details: {
                 id: string;
                 price: number;
-                quantity: number;
                 productId: string;
+                quantity: number;
                 returnId: string;
             }[];
         } & {
@@ -237,8 +238,8 @@ export declare class SalesService {
         } & {
             id: string;
             price: number;
-            quantity: number;
             productId: string;
+            quantity: number;
             saleId: string;
         })[];
     } & {
@@ -264,8 +265,8 @@ export declare class SalesService {
         details: {
             id: string;
             price: number;
-            quantity: number;
             productId: string;
+            quantity: number;
             returnId: string;
         }[];
     } & {

@@ -64,6 +64,14 @@ let SalesService = class SalesService {
                 },
                 include: this.saleInclude,
             });
+            await tx.payment.create({
+                data: {
+                    referenceId: sale.id,
+                    referenceType: 'SALE',
+                    amount: totalAmount,
+                    method: data.paymentMethod || 'CASH',
+                },
+            });
             for (const item of data.details) {
                 await tx.stockBalance.updateMany({
                     where: { branchId: data.branchId, productId: item.productId },

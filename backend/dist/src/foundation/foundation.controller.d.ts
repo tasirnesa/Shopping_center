@@ -70,11 +70,37 @@ export declare class FoundationController {
         address: string | null;
         code: string | null;
     }>;
+    updateBranch(orgId: string, id: string, body: {
+        name?: string;
+        code?: string;
+        phone?: string;
+        address?: string;
+    }): Promise<{
+        id: string;
+        name: string;
+        createdAt: Date;
+        updatedAt: Date;
+        organizationId: string;
+        phone: string | null;
+        address: string | null;
+        code: string | null;
+    }>;
+    deleteBranch(orgId: string, id: string): Promise<{
+        id: string;
+        name: string;
+        createdAt: Date;
+        updatedAt: Date;
+        organizationId: string;
+        phone: string | null;
+        address: string | null;
+        code: string | null;
+    }>;
     getUsers(orgId: string): Promise<{
         id: string;
         email: string;
         name: string | null;
         role: import(".prisma/client").$Enums.Role;
+        status: string;
         createdAt: Date;
         branchId: string | null;
         branch: {
@@ -90,5 +116,8 @@ export declare class FoundationController {
     }[]>;
     updateUserRole(orgId: string, id: string, body: {
         role: Role;
+    }): Promise<import(".prisma/client").Prisma.BatchPayload>;
+    updateUserStatus(orgId: string, id: string, body: {
+        status: 'ACTIVE' | 'INACTIVE';
     }): Promise<import(".prisma/client").Prisma.BatchPayload>;
 }

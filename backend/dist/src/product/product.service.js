@@ -48,6 +48,15 @@ let ProductService = class ProductService {
         });
         if (!product)
             return null;
+        if (data.price !== undefined && data.price !== product.price) {
+            await this.prisma.priceHistory.create({
+                data: {
+                    productId: id,
+                    oldPrice: product.price,
+                    newPrice: data.price,
+                },
+            });
+        }
         return this.prisma.product.update({
             where: { id },
             data,

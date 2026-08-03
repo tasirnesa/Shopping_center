@@ -25,23 +25,33 @@ let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(pas
         this.prisma = prisma;
     }
     async validate(payload) {
-        const user = await this.prisma.user.findUnique({
-            where: { id: payload.sub },
-            include: { organization: true, branch: true },
-        });
-        if (!user) {
-            throw new common_1.UnauthorizedException();
+        try {
+            const user = await this.prisma.user.findUnique({
+                where: { id: payload.sub },
+                include: { organization: true, branch: true },
+            });
+            if (!user) {
+                throw new common_1.UnauthorizedException('User not found');
+            }
+            if (user.status === 'INACTIVE') {
+                throw new common_1.UnauthorizedException('Account is inactive');
+            }
+            return {
+                id: user.id,
+                email: user.email,
+                name: user.name,
+                role: user.role,
+                organizationId: user.organizationId,
+                branchId: user.branchId,
+                organization: user.organization,
+                branch: user.branch,
+            };
         }
-        return {
-            id: user.id,
-            email: user.email,
-            name: user.name,
-            role: user.role,
-            organizationId: user.organizationId,
-            branchId: user.branchId,
-            organization: user.organization,
-            branch: user.branch,
-        };
+        catch (error) {
+            if (error instanceof common_1.UnauthorizedException)
+                throw error;
+            throw new common_1.UnauthorizedException('Token validation failed');
+        }
     }
 };
 exports.JwtStrategy = JwtStrategy;

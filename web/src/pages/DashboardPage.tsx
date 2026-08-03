@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Box,
   Paper,
@@ -26,6 +27,7 @@ import {
   AttachMoney,
   TrendingUp,
   ShowChart,
+  AdminPanelSettings,
 } from "@mui/icons-material";
 import api from "../api";
 import PageHeader from "../components/PageHeader";
@@ -48,6 +50,7 @@ function getUser() {
 }
 
 export default function DashboardPage() {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
     products: 0,
@@ -290,6 +293,39 @@ export default function DashboardPage() {
             </Grid>
 
             <Grid item xs={12} md={4}>
+              {(user?.role === "SYSTEM_ADMIN" || user?.role === "OWNER" || user?.role === "MANAGER") && (
+                <Paper
+                  sx={{
+                    p: { xs: 2, md: 3 },
+                    borderRadius: 4,
+                    mb: 3,
+                    cursor: "pointer",
+                    ...glassStyle,
+                  }}
+                  onClick={() => navigate("/admin")}
+                >
+                  <Box display="flex" alignItems="center" gap={1.5}>
+                    <Box
+                      sx={{
+                        p: 1.5,
+                        borderRadius: 2,
+                        bgcolor: alpha(theme.palette.info.main, 0.1),
+                      }}
+                    >
+                      <AdminPanelSettings color="info" />
+                    </Box>
+                    <Box>
+                      <Typography variant="h6" sx={{ fontWeight: 700, lineHeight: 1.2 }}>
+                        Administration
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Manage {user?.role === "SYSTEM_ADMIN" ? "Organizations" : "Users & Settings"}
+                      </Typography>
+                    </Box>
+                  </Box>
+                </Paper>
+              )}
+
               <Paper
                 sx={{
                   p: { xs: 2, md: 3 },
@@ -337,9 +373,8 @@ export default function DashboardPage() {
                       >
                         <Typography
                           variant="body2"
-                          sx={{ fontWeight: 600 }}
                           noWrap
-                          sx={{ maxWidth: "65%" }}
+                          sx={{ fontWeight: 600, maxWidth: "65%" }}
                         >
                           {item.product.name}
                         </Typography>

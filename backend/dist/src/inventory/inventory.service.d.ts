@@ -61,8 +61,8 @@ export declare class InventoryService {
         } & {
             id: string;
             cost: number;
-            quantity: number;
             productId: string;
+            quantity: number;
             purchaseId: string;
         })[];
     } & {
@@ -78,8 +78,8 @@ export declare class InventoryService {
         details: {
             id: string;
             cost: number;
-            quantity: number;
             productId: string;
+            quantity: number;
             purchaseId: string;
         }[];
     } & {
@@ -131,8 +131,8 @@ export declare class InventoryService {
         id: string;
         updatedAt: Date;
         branchId: string;
-        quantity: number;
         productId: string;
+        quantity: number;
     })[]>;
     getTransactions(orgId: string, branchId?: string): Promise<({
         branch: {
@@ -162,8 +162,8 @@ export declare class InventoryService {
         id: string;
         createdAt: Date;
         branchId: string;
-        quantity: number;
         productId: string;
+        quantity: number;
         type: string;
         reference: string | null;
     })[]>;
@@ -171,8 +171,8 @@ export declare class InventoryService {
         id: string;
         createdAt: Date;
         branchId: string;
-        quantity: number;
         productId: string;
+        quantity: number;
         type: string;
         reference: string | null;
     }>;

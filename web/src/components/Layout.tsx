@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import {
   Box,
@@ -14,6 +15,11 @@ import {
   Chip,
   Tooltip,
   alpha,
+  Select,
+  MenuItem,
+  FormControl,
+  Menu,
+  Divider,
 } from "@mui/material";
 import {
   Dashboard,
@@ -26,6 +32,7 @@ import {
   BarChart,
 } from "@mui/icons-material";
 import { sidebarGradient } from "../theme";
+import api from "../api";
 
 const drawerWidth = 260;
 
@@ -49,20 +56,78 @@ const allMenuItems = [
     text: "Admin",
     icon: <AdminPanelSettings />,
     path: "/admin",
-    roles: ["OWNER", "MANAGER"],
+    roles: ["SYSTEM_ADMIN", "OWNER", "MANAGER"], // Fixed: added SYSTEM_ADMIN
   },
 ];
+
+function AdminOrgSwitcher() {
+  const [orgs, setOrgs] = useState<any[]>([]);
+  const [selected, setSelected] = useState(
+    localStorage.getItem("admin_active_org") || "",
+  );
+
+  useEffect(() => {
+    api
+      .get("/organizations")
+      .then((res) => {
+        setOrgs(res.data);
+      })
+      .catch((err) => console.error("Could not fetch orgs", err));
+  }, []);
+
+  const handleChange = (e: any) => {
+    const val = e.target.value;
+    setSelected(val);
+    if (val) {
+      localStorage.setItem("admin_active_org", val);
+    } else {
+      localStorage.removeItem("admin_active_org");
+    }
+    window.location.reload(); // Global strict reload on context switch
+  };
+
+  return (
+    <FormControl size="small" sx={{ minWidth: 150 }}>
+      <Select
+        value={selected}
+        onChange={handleChange}
+        displayEmpty
+        sx={{
+          height: 36,
+          fontSize: "0.875rem",
+          fontWeight: 600,
+          bgcolor: "action.hover",
+          borderRadius: 2,
+        }}
+      >
+        <MenuItem value="">
+          <em>-- All Platform --</em>
+        </MenuItem>
+        {orgs.map((o) => (
+          <MenuItem key={o.id} value={o.id}>
+            {o.name}
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
+  );
+}
 
 export default function Layout() {
   const navigate = useNavigate();
   const location = useLocation();
   const user = getUser();
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+  const handleMenuOpen = (e: React.MouseEvent<HTMLElement>) => setAnchorEl(e.currentTarget);
+  const handleMenuClose = () => setAnchorEl(null);
 
   const menuItems = allMenuItems.filter(
     (item) => !item.roles || item.roles.includes(user?.role),
   );
 
   const handleLogout = () => {
+    setAnchorEl(null);
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     navigate("/login");
@@ -91,56 +156,46 @@ export default function Layout() {
           <Storefront sx={{ color: "primary.main", fontSize: 28 }} />
           <Typography
             variant="h6"
-            sx={{ fontWeight: 800 }}
-            sx={{ flexGrow: 1, letterSpacing: "-0.02em" }}
+            sx={{ fontWeight: 800, flexGrow: 1, letterSpacing: "-0.02em" }}
           >
             {user?.organization?.name || "Shop Center"}
           </Typography>
-          <Box display="flex" alignItems="center" gap={1.5}>
-            {user?.role && (
-              <Chip
-                label={user.role.replace("_", " ")}
-                size="small"
-                color="primary"
-                variant="outlined"
-                sx={{ fontWeight: 600, display: { xs: "none", sm: "flex" } }}
-              />
+
+          <IconButton onClick={handleMenuOpen} size="small" sx={{ ml: 2, p: 0.5, border: '2px solid transparent', transition: '0.2s', '&:hover': { borderColor: 'primary.main' } }}>
+            <Avatar sx={{ width: 36, height: 36, bgcolor: "primary.main", fontSize: 14, fontWeight: 700 }}>
+              {(user?.name || user?.email)?.[0]?.toUpperCase() || "U"}
+            </Avatar>
+          </IconButton>
+
+          <Menu
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={handleMenuClose}
+            slotProps={{ paper: { sx: { width: 260, mt: 1.5, borderRadius: 2, boxShadow: '0 8px 32px rgba(0,0,0,0.08)', overflow: 'visible', '&:before': { content: '""', display: 'block', position: 'absolute', top: 0, right: 14, width: 10, height: 10, bgcolor: 'background.paper', transform: 'translateY(-50%) rotate(45deg)', zIndex: 0 } } } }}
+            transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+            anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+          >
+            <Box sx={{ px: 2.5, py: 2 }}>
+              <Typography variant="subtitle2" sx={{ fontWeight: 700, color: "text.primary" }} noWrap>{user?.name || user?.email}</Typography>
+              {user?.role && <Typography variant="caption" sx={{ color: "text.secondary", textTransform: 'capitalize', fontWeight: 500 }}>{user.role.replace("_", " ").toLowerCase()} Account</Typography>}
+            </Box>
+
+            {user?.role === "SYSTEM_ADMIN" && (
+              <Box>
+                <Divider />
+                <Box sx={{ px: 2.5, py: 2, bgcolor: 'action.hover' }}>
+                  <Typography variant="overline" sx={{ display: 'block', mb: 1, color: "text.secondary", fontWeight: 700, letterSpacing: '0.05em' }}>Switch Organization</Typography>
+                  <AdminOrgSwitcher />
+                </Box>
+              </Box>
             )}
-            <Tooltip title={user?.email || "User"}>
-              <Avatar
-                sx={{
-                  width: 36,
-                  height: 36,
-                  bgcolor: "primary.main",
-                  fontSize: 14,
-                  fontWeight: 700,
-                }}
-              >
-                {(user?.name || user?.email)?.[0]?.toUpperCase() || "U"}
-              </Avatar>
-            </Tooltip>
-            <Typography
-              variant="body2"
-              sx={{ fontWeight: 500 }}
-              sx={{ display: { xs: "none", md: "block" } }}
-            >
-              {user?.name || user?.email}
-            </Typography>
-            <Tooltip title="Sign out">
-              <IconButton
-                onClick={handleLogout}
-                size="small"
-                sx={{
-                  color: "text.secondary",
-                  mt: 1.5,
-                  transition: "0.2s",
-                  "&:hover": { color: "error.main", transform: "scale(1.1)" },
-                }}
-              >
-                <Logout fontSize="small" />
-              </IconButton>
-            </Tooltip>
-          </Box>
+
+            <Divider />
+            <MenuItem onClick={handleLogout} sx={{ color: 'error.main', py: 1.5, px: 2.5 }}>
+              <ListItemIcon><Logout fontSize="small" color="error" /></ListItemIcon>
+              <ListItemText primary="Sign out" primaryTypographyProps={{ fontWeight: 600 }} />
+            </MenuItem>
+          </Menu>
         </Toolbar>
       </AppBar>
 

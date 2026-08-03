@@ -27,6 +27,7 @@ export class SalesController {
     dto: {
       customerId?: string;
       discount?: number;
+      paymentMethod?: string;
       details: { productId: string; quantity: number; price: number }[];
       branchId?: string;
     },

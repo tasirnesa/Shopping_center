@@ -28,10 +28,10 @@ export declare class JwtStrategy extends JwtStrategy_base {
         } | null;
         branch: {
             id: string;
+            organizationId: string;
             name: string;
             createdAt: Date;
             updatedAt: Date;
-            organizationId: string;
             phone: string | null;
             address: string | null;
             code: string | null;

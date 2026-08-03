@@ -94,6 +94,23 @@ export class FoundationController {
     return this.foundationService.createBranch(orgId, body);
   }
 
+  @Patch('branches/:id')
+  @Roles('OWNER')
+  updateBranch(
+    @CurrentOrg() orgId: string,
+    @Param('id') id: string,
+    @Body()
+    body: { name?: string; code?: string; phone?: string; address?: string },
+  ) {
+    return this.foundationService.updateBranch(orgId, id, body);
+  }
+
+  @Delete('branches/:id')
+  @Roles('OWNER')
+  deleteBranch(@CurrentOrg() orgId: string, @Param('id') id: string) {
+    return this.foundationService.deleteBranch(orgId, id);
+  }
+
   // Users Management
   @Get('users')
   @Roles('OWNER', 'MANAGER')
@@ -109,5 +126,15 @@ export class FoundationController {
     @Body() body: { role: Role },
   ) {
     return this.foundationService.updateUserRole(orgId, id, body.role);
+  }
+
+  @Patch('users/:id/status')
+  @Roles('OWNER')
+  updateUserStatus(
+    @CurrentOrg() orgId: string,
+    @Param('id') id: string,
+    @Body() body: { status: 'ACTIVE' | 'INACTIVE' },
+  ) {
+    return this.foundationService.updateUserStatus(orgId, id, body.status);
   }
 }

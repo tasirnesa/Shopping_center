@@ -8,7 +8,7 @@ import { Role } from '@prisma/client';
 
 @Injectable()
 export class FoundationService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   // ───── Categories ─────
   async getCategories(orgId: string) {
@@ -90,6 +90,26 @@ export class FoundationService {
     });
   }
 
+  async updateBranch(
+    orgId: string,
+    id: string,
+    data: { name?: string; code?: string; phone?: string; address?: string },
+  ) {
+    const branch = await this.prisma.branch.findFirst({
+      where: { id, organizationId: orgId },
+    });
+    if (!branch) throw new NotFoundException('Branch not found');
+    return this.prisma.branch.update({ where: { id }, data });
+  }
+
+  async deleteBranch(orgId: string, id: string) {
+    const branch = await this.prisma.branch.findFirst({
+      where: { id, organizationId: orgId },
+    });
+    if (!branch) throw new NotFoundException('Branch not found');
+    return this.prisma.branch.delete({ where: { id } });
+  }
+
   // ───── Users (Org-scoped) ─────
   async getUsers(orgId: string) {
     return this.prisma.user.findMany({
@@ -99,6 +119,7 @@ export class FoundationService {
         email: true,
         name: true,
         role: true,
+        status: true,
         branchId: true,
         branch: true,
         createdAt: true,
@@ -111,6 +132,13 @@ export class FoundationService {
     return this.prisma.user.updateMany({
       where: { id, organizationId: orgId },
       data: { role },
+    });
+  }
+
+  async updateUserStatus(orgId: string, id: string, status: string) {
+    return this.prisma.user.updateMany({
+      where: { id, organizationId: orgId },
+      data: { status },
     });
   }
 }

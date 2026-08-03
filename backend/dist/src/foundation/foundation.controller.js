@@ -57,11 +57,20 @@ let FoundationController = class FoundationController {
     createBranch(orgId, body) {
         return this.foundationService.createBranch(orgId, body);
     }
+    updateBranch(orgId, id, body) {
+        return this.foundationService.updateBranch(orgId, id, body);
+    }
+    deleteBranch(orgId, id) {
+        return this.foundationService.deleteBranch(orgId, id);
+    }
     getUsers(orgId) {
         return this.foundationService.getUsers(orgId);
     }
     updateUserRole(orgId, id, body) {
         return this.foundationService.updateUserRole(orgId, id, body.role);
+    }
+    updateUserStatus(orgId, id, body) {
+        return this.foundationService.updateUserStatus(orgId, id, body.status);
     }
 };
 exports.FoundationController = FoundationController;
@@ -157,6 +166,25 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], FoundationController.prototype, "createBranch", null);
 __decorate([
+    (0, common_1.Patch)('branches/:id'),
+    (0, roles_decorator_1.Roles)('OWNER'),
+    __param(0, (0, org_decorator_1.CurrentOrg)()),
+    __param(1, (0, common_1.Param)('id')),
+    __param(2, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, Object]),
+    __metadata("design:returntype", void 0)
+], FoundationController.prototype, "updateBranch", null);
+__decorate([
+    (0, common_1.Delete)('branches/:id'),
+    (0, roles_decorator_1.Roles)('OWNER'),
+    __param(0, (0, org_decorator_1.CurrentOrg)()),
+    __param(1, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", void 0)
+], FoundationController.prototype, "deleteBranch", null);
+__decorate([
     (0, common_1.Get)('users'),
     (0, roles_decorator_1.Roles)('OWNER', 'MANAGER'),
     __param(0, (0, org_decorator_1.CurrentOrg)()),
@@ -174,6 +202,16 @@ __decorate([
     __metadata("design:paramtypes", [String, String, Object]),
     __metadata("design:returntype", void 0)
 ], FoundationController.prototype, "updateUserRole", null);
+__decorate([
+    (0, common_1.Patch)('users/:id/status'),
+    (0, roles_decorator_1.Roles)('OWNER'),
+    __param(0, (0, org_decorator_1.CurrentOrg)()),
+    __param(1, (0, common_1.Param)('id')),
+    __param(2, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, Object]),
+    __metadata("design:returntype", void 0)
+], FoundationController.prototype, "updateUserStatus", null);
 exports.FoundationController = FoundationController = __decorate([
     (0, common_1.Controller)('foundation'),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),

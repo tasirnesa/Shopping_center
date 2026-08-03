@@ -7,7 +7,7 @@ import { TransferStockDto } from './dto/transfer-stock.dto';
 
 @Injectable()
 export class InventoryService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   // ───── Suppliers ─────
 

@@ -3,7 +3,7 @@ import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class SalesService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   private saleInclude = {
     details: { include: { product: true } },
@@ -18,6 +18,7 @@ export class SalesService {
     data: {
       customerId?: string;
       discount?: number;
+      paymentMethod?: string;
       details: { productId: string; quantity: number; price: number }[];
       branchId: string;
     },
@@ -69,6 +70,16 @@ export class SalesService {
           },
         },
         include: this.saleInclude,
+      });
+
+      // Record payment
+      await tx.payment.create({
+        data: {
+          referenceId: sale.id,
+          referenceType: 'SALE',
+          amount: totalAmount,
+          method: data.paymentMethod || 'CASH',
+        },
       });
 
       for (const item of data.details) {

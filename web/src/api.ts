@@ -9,6 +9,12 @@ api.interceptors.request.use((config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+
+  const adminActiveOrg = localStorage.getItem("admin_active_org");
+  if (adminActiveOrg) {
+    config.headers["x-organization-id"] = adminActiveOrg;
+  }
+
   return config;
 });
 
