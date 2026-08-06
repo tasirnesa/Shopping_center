@@ -113,13 +113,15 @@ export class FoundationController {
 
   // Users Management
   @Get('users')
-  @Roles('OWNER', 'MANAGER')
-  getUsers(@CurrentOrg() orgId: string) {
-    return this.foundationService.getUsers(orgId);
+  @Roles(Role.OWNER, Role.MANAGER, Role.SYSTEM_ADMIN)
+  getUsers(@CurrentOrg() orgId: string, @Req() req: any) {
+    // SYSTEM_ADMIN gets all users across orgs; others get their own org
+    const effectiveOrgId = req.user.role === Role.SYSTEM_ADMIN ? undefined : orgId;
+    return this.foundationService.getUsers(effectiveOrgId);
   }
 
   @Patch('users/:id/role')
-  @Roles('OWNER')
+  @Roles(Role.OWNER, Role.SYSTEM_ADMIN)
   updateUserRole(
     @CurrentOrg() orgId: string,
     @Param('id') id: string,
@@ -129,7 +131,7 @@ export class FoundationController {
   }
 
   @Patch('users/:id/status')
-  @Roles('OWNER')
+  @Roles(Role.OWNER, Role.SYSTEM_ADMIN)
   updateUserStatus(
     @CurrentOrg() orgId: string,
     @Param('id') id: string,

@@ -1,6 +1,8 @@
-import { createParamDecorator, ExecutionContext } from '@nestjs/common';
-
-/**
+import {
+  createParamDecorator,
+  ExecutionContext,
+  BadRequestException,
+} from '@nestjs/common';/**
  * Extract the current user's organizationId from the JWT-authenticated request.
  * Usage: @CurrentOrg() orgId: string
  */
@@ -11,6 +13,9 @@ export const CurrentOrg = createParamDecorator(
     if (user?.role === 'SYSTEM_ADMIN') {
       const headerOrg = request.headers['x-organization-id'];
       if (headerOrg) return headerOrg;
+      throw new BadRequestException(
+        'Organization context (x-organization-id) is required for SYSTEM_ADMIN.',
+      );
     }
     return user?.organizationId || null;
   },

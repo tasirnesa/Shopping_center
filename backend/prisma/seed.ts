@@ -85,7 +85,54 @@ async function main() {
       branchId: mainBranch.id,
     },
   });
-  console.log('✅ Users:', owner.email, ',', cashier.email);
+
+  const salesRepPassword = await bcrypt.hash('sales123', 10);
+  const salesRep = await prisma.user.create({
+    data: {
+      email: 'sales@abc.com',
+      password: salesRepPassword,
+      name: 'Daniel Sales',
+      role: Role.SALES_REP,
+      organizationId: org1.id,
+      branchId: boleBranch.id,
+    },
+  });
+
+  const storeKeeperPassword = await bcrypt.hash('store123', 10);
+  const storeKeeper = await prisma.user.create({
+    data: {
+      email: 'store@abc.com',
+      password: storeKeeperPassword,
+      name: 'Yonas Warehouse',
+      role: Role.STORE_KEEPER,
+      organizationId: org1.id,
+      branchId: mainBranch.id,
+    },
+  });
+
+  const invoiceMakerPassword = await bcrypt.hash('invoice123', 10);
+  const invoiceMaker = await prisma.user.create({
+    data: {
+      email: 'invoice@abc.com',
+      password: invoiceMakerPassword,
+      name: 'Helina Finance',
+      role: Role.INVOICE_MAKER,
+      organizationId: org1.id,
+    },
+  });
+
+  const driverPassword = await bcrypt.hash('driver123', 10);
+  const driver = await prisma.user.create({
+    data: {
+      email: 'driver@abc.com',
+      password: driverPassword,
+      name: 'Kebede Driver',
+      role: Role.DRIVER,
+      organizationId: org1.id,
+    },
+  });
+
+  console.log('✅ Users Created Successfully');
 
   // 5. Create Master Data (scoped to organization)
   const cat1 = await prisma.category.create({
@@ -165,6 +212,10 @@ async function main() {
   console.log('  System Admin:  admin@system.com / admin123');
   console.log('  Owner:         owner@abc.com / owner123');
   console.log('  Cashier:       cashier@abc.com / cashier123');
+  console.log('  Sales Rep:     sales@abc.com / sales123');
+  console.log('  Store Keeper:  store@abc.com / store123');
+  console.log('  Invoice Maker: invoice@abc.com / invoice123');
+  console.log('  Driver:        driver@abc.com / driver123');
   console.log(`\n📍 Organization ID: ${org1.id}`);
   console.log(`📍 Main Branch ID:  ${mainBranch.id}`);
   console.log(`📍 Bole Branch ID:  ${boleBranch.id}`);

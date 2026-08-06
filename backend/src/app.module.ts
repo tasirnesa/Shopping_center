@@ -10,6 +10,8 @@ import { FoundationModule } from './foundation/foundation.module';
 import { OrganizationModule } from './organization/organization.module';
 import { CustomersModule } from './customers/customers.module';
 import { ExpensesModule } from './expenses/expenses.module';
+import { OrdersModule } from './orders/orders.module';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
@@ -22,8 +24,10 @@ import { ExpensesModule } from './expenses/expenses.module';
     FoundationModule,
     CustomersModule,
     ExpensesModule,
+    OrdersModule,
+    NotificationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

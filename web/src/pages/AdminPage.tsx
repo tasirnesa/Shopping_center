@@ -336,7 +336,9 @@ function UsersTab({ isSysAdmin }: { isSysAdmin: boolean }) {
         const o = await api.get("/organizations");
         setOrgs(o.data);
       }
-    } catch { }
+    } catch (e: any) {
+      console.error("Failed to load users:", e.response?.data || e.message);
+    }
     setLoading(false);
   };
   useEffect(() => {
@@ -403,9 +405,12 @@ function UsersTab({ isSysAdmin }: { isSysAdmin: boolean }) {
           <Table size="small">
             <TableHead>
               <TableRow>
+                <TableCell>Name</TableCell>
                 <TableCell>Email</TableCell>
                 <TableCell>Role</TableCell>
                 <TableCell>Branch</TableCell>
+                {isSysAdmin && <TableCell>Organization</TableCell>}
+                <TableCell>Status</TableCell>
                 <TableCell>Joined</TableCell>
                 <TableCell align="right">Actions</TableCell>
               </TableRow>
@@ -413,16 +418,30 @@ function UsersTab({ isSysAdmin }: { isSysAdmin: boolean }) {
             <TableBody>
               {users.map((u) => (
                 <TableRow key={u.id} hover>
+                  <TableCell sx={{ fontWeight: 600 }}>{u.name || "—"}</TableCell>
                   <TableCell sx={{ fontWeight: 500 }}>{u.email}</TableCell>
                   <TableCell>
                     <Chip
-                      label={u.role.replace("_", " ")}
+                      label={u.role.replace(/_/g, " ")}
                       size="small"
-                      color="primary"
+                      color={
+                        ["SALES_REP", "INVOICE_MAKER", "STORE_MAN", "DRIVER"].includes(u.role)
+                          ? "secondary"
+                          : "primary"
+                      }
                       variant="outlined"
                     />
                   </TableCell>
                   <TableCell>{u.branch?.name || "—"}</TableCell>
+                  {isSysAdmin && <TableCell>{u.organization?.name || "—"}</TableCell>}
+                  <TableCell>
+                    <Chip
+                      label={u.status || "ACTIVE"}
+                      size="small"
+                      color={u.status === "INACTIVE" ? "default" : "success"}
+                      variant="filled"
+                    />
+                  </TableCell>
                   <TableCell>
                     {new Date(u.createdAt).toLocaleDateString()}
                   </TableCell>
@@ -463,7 +482,11 @@ function UsersTab({ isSysAdmin }: { isSysAdmin: boolean }) {
               <MenuItem value="OWNER">Owner</MenuItem>
               <MenuItem value="MANAGER">Manager</MenuItem>
               <MenuItem value="CASHIER">Cashier</MenuItem>
-              <MenuItem value="STORE_KEEPER">Store keeper</MenuItem>
+              <MenuItem value="STORE_KEEPER">Store Keeper</MenuItem>
+              <MenuItem value="SALES_REP">Sales Representative</MenuItem>
+              <MenuItem value="INVOICE_MAKER">Invoice Maker</MenuItem>
+              <MenuItem value="STORE_MAN">Store Man</MenuItem>
+              <MenuItem value="DRIVER">Driver</MenuItem>
             </Select>
           </FormControl>
         </DialogContent>
@@ -515,7 +538,11 @@ function UsersTab({ isSysAdmin }: { isSysAdmin: boolean }) {
               <MenuItem value="OWNER">Owner</MenuItem>
               <MenuItem value="MANAGER">Manager</MenuItem>
               <MenuItem value="CASHIER">Cashier</MenuItem>
-              <MenuItem value="STORE_KEEPER">Store keeper</MenuItem>
+              <MenuItem value="STORE_KEEPER">Store Keeper</MenuItem>
+              <MenuItem value="SALES_REP">Sales Representative</MenuItem>
+              <MenuItem value="INVOICE_MAKER">Invoice Maker</MenuItem>
+              <MenuItem value="STORE_MAN">Store Man</MenuItem>
+              <MenuItem value="DRIVER">Driver</MenuItem>
             </Select>
           </FormControl>
 
@@ -534,7 +561,7 @@ function UsersTab({ isSysAdmin }: { isSysAdmin: boolean }) {
             </FormControl>
           )}
 
-          {!isSysAdmin && (role === "MANAGER" || role === "CASHIER" || role === "STORE_KEEPER") && (
+          {!isSysAdmin && (role === "MANAGER" || role === "CASHIER" || role === "STORE_KEEPER" || role === "SALES_REP" || role === "INVOICE_MAKER" || role === "STORE_MAN" || role === "DRIVER") && (
             <FormControl fullWidth size="small" sx={{ mb: 1.5 }}>
               <InputLabel>Assign to Branch</InputLabel>
               <Select

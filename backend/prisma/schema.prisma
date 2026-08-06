@@ -37,6 +37,12 @@ model Organization {
   purchases  Purchase[]
   expenses   Expense[]
   settings   OrganizationSettings?
+
+  // Order Fulfillment
+  salesOrders     SalesOrder[]
+  invoices        Invoice[]
+  notifications   Notification[]
+  invoiceSequence InvoiceSequence?
 }
 
 model OrganizationSettings {
@@ -75,6 +81,9 @@ model Branch {
   expenses              Expense[]
   sales                 Sale[]
   purchases             Purchase[]
+
+  // Order Fulfillment
+  salesOrders           SalesOrder[]
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -96,6 +105,14 @@ model User {
   updatedAt      DateTime     @updatedAt
 
   refreshTokens RefreshToken[]
+
+  // Order Fulfillment
+  salesRepOrders        SalesOrder[]      @relation("SalesRepOrders")
+  invoiceMakerInvoices  Invoice[]         @relation("InvoiceMakerInvoices")
+  driverDeliveries      Delivery[]        @relation("DriverDeliveries")
+  deliveryConfirmations Delivery[]        @relation("DeliveryConfirmations")
+  attachments           Attachment[]
+  orderStatusEvents     OrderStatusEvent[]
 }
 
 model RefreshToken {
@@ -113,6 +130,10 @@ enum Role {
   MANAGER
   CASHIER
   STORE_KEEPER
+  SALES_REP
+  INVOICE_MAKER
+  STORE_MAN
+  DRIVER
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -167,6 +188,11 @@ model Product {
   inventoryTransactions InventoryTransaction[]
   priceHistories        PriceHistory[]
   returnDetails         ReturnDetail[]
+
+  // Order Fulfillment
+  salesOrderLines       SalesOrderLine[]
+  invoiceLines          InvoiceLine[]
+  pickingListLines      PickingListLine[]
 }
 
 model Supplier {
@@ -191,6 +217,9 @@ model Customer {
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
   sales          Sale[]
+
+  // Order Fulfillment
+  salesOrders    SalesOrder[]
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -334,4 +363,197 @@ model ReturnDetail {
   product   Product @relation(fields: [productId], references: [id])
   quantity  Int
   price     Float
+}
+
+// ─────────────────────────────────────────────────────────────
+// ORDER FULFILLMENT
+// ─────────────────────────────────────────────────────────────
+
+enum OrderStatus {
+  DRAFT
+  SUBMITTED
+  WAITING_FOR_INVOICE
+  INVOICE_APPROVED
+  WAITING_FOR_WAREHOUSE
+  PICKING
+  PACKED
+  READY_FOR_DELIVERY
+  OUT_FOR_DELIVERY
+  DELIVERED
+  COMPLETED
+  REJECTED
+  CANCELLED
+  RETURNED
+}
+
+model SalesOrder {
+  id               String        @id @default(uuid())
+  organizationId   String
+  organization     Organization  @relation(fields: [organizationId], references: [id])
+  branchId         String
+  branch           Branch        @relation(fields: [branchId], references: [id])
+  salesRepId       String        // User.id with SALES_REP role
+  salesRep         User          @relation("SalesRepOrders", fields: [salesRepId], references: [id])
+  customerId       String?
+  customer         Customer?     @relation(fields: [customerId], references: [id])
+  customerName     String
+  tin              String        // Tax Identification Number
+  deliveryAddress  String
+  customerPhone    String?
+  status           OrderStatus   @default(DRAFT)
+  subtotal         Float         @default(0)
+  taxRate          Float         @default(15)
+  taxAmount        Float         @default(0)
+  grandTotal       Float         @default(0)
+  rejectionReason  String?
+  cancellationReason String?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  lines            SalesOrderLine[]
+  attachments      Attachment[]
+  statusEvents     OrderStatusEvent[]
+  invoice          Invoice?
+  pickingList      PickingList?
+  delivery         Delivery?
+}
+
+model SalesOrderLine {
+  id           String     @id @default(uuid())
+  salesOrderId String
+  salesOrder   SalesOrder @relation(fields: [salesOrderId], references: [id], onDelete: Cascade)
+  productId    String
+  product      Product    @relation(fields: [productId], references: [id])
+  quantity     Int
+  unitPrice    Float
+  discount     Float      @default(0)
+  total        Float      // (unitPrice * quantity) - discount
+}
+
+model Attachment {
+  id           String     @id @default(uuid())
+  salesOrderId String
+  salesOrder   SalesOrder @relation(fields: [salesOrderId], references: [id], onDelete: Cascade)
+  type         AttachmentType
+  fileName     String
+  filePath     String
+  mimeType     String
+  fileSize     Int        // bytes
+  uploadedById String
+  uploadedBy   User       @relation(fields: [uploadedById], references: [id])
+  createdAt    DateTime   @default(now())
+}
+
+enum AttachmentType {
+  TRADE_LICENSE
+  PAYMENT_RECEIPT
+  PURCHASE_ORDER
+  OTHER
+}
+
+model Invoice {
+  id             String     @id @default(uuid())
+  salesOrderId   String     @unique
+  salesOrder     SalesOrder @relation(fields: [salesOrderId], references: [id])
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  invoiceNumber  String     // sequential per org, e.g. "INV-0042"
+  invoiceDate    DateTime   @default(now())
+  invoiceMakerId String
+  invoiceMaker   User       @relation("InvoiceMakerInvoices", fields: [invoiceMakerId], references: [id])
+  subtotal       Float
+  taxRate        Float
+  taxAmount      Float
+  grandTotal     Float
+  createdAt      DateTime   @default(now())
+
+  lines          InvoiceLine[]
+  delivery       Delivery?
+}
+
+model InvoiceLine {
+  id         String  @id @default(uuid())
+  invoiceId  String
+  invoice    Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  productId  String
+  product    Product @relation(fields: [productId], references: [id])
+  quantity   Int
+  unitPrice  Float
+  discount   Float   @default(0)
+  total      Float
+}
+
+model PickingList {
+  id           String     @id @default(uuid())
+  salesOrderId String     @unique
+  salesOrder   SalesOrder @relation(fields: [salesOrderId], references: [id])
+  createdAt    DateTime   @default(now())
+  lines        PickingListLine[]
+}
+
+model PickingListLine {
+  id            String      @id @default(uuid())
+  pickingListId String
+  pickingList   PickingList @relation(fields: [pickingListId], references: [id], onDelete: Cascade)
+  productId     String
+  product       Product     @relation(fields: [productId], references: [id])
+  quantity      Int
+  picked        Boolean     @default(false)
+  binLocation   String?
+}
+
+model Delivery {
+  id             String       @id @default(uuid())
+  salesOrderId   String       @unique
+  salesOrder     SalesOrder   @relation(fields: [salesOrderId], references: [id])
+  invoiceId      String       @unique
+  invoice        Invoice      @relation(fields: [invoiceId], references: [id])
+  driverId       String?
+  driver         User?        @relation("DriverDeliveries", fields: [driverId], references: [id])
+  customerName   String
+  deliveryAddress String
+  customerPhone  String?
+  status         DeliveryStatus @default(PENDING)
+  confirmationPath String?    // uploaded delivery confirmation file path
+  confirmedAt    DateTime?
+  confirmedById  String?
+  confirmedBy    User?        @relation("DeliveryConfirmations", fields: [confirmedById], references: [id])
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+enum DeliveryStatus {
+  PENDING
+  OUT_FOR_DELIVERY
+  DELIVERED
+}
+
+model OrderStatusEvent {
+  id           String      @id @default(uuid())
+  salesOrderId String
+  salesOrder   SalesOrder  @relation(fields: [salesOrderId], references: [id])
+  previousStatus OrderStatus?
+  newStatus    OrderStatus
+  actorId      String
+  actor        User        @relation(fields: [actorId], references: [id])
+  note         String?
+  createdAt    DateTime    @default(now())
+}
+
+model Notification {
+  id             String       @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  targetRole     String
+  type           String
+  payload        Json
+  read           Boolean      @default(false)
+  createdAt      DateTime     @default(now())
+}
+
+model InvoiceSequence {
+  id             String       @id @default(uuid())
+  organizationId String       @unique
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  lastNumber     Int          @default(0)
 }

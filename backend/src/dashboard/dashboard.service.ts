@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { OrderStatus, Role } from '@prisma/client';
 
 const LOW_STOCK_THRESHOLD = 10;
 
@@ -97,3 +98,76 @@ export class DashboardService {
     };
   }
 }
+
+  // Req 7.1–7.5: Role-scoped fulfillment pipeline metrics
+  async getFulfillmentDashboard(orgId: string, role: string) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    const countByStatus = async (status: OrderStatus) =>
+      this.prisma.salesOrder.count({ where: { organizationId: orgId, status } });
+
+    const countDeliveryByStatus = async (status: string) =>
+      this.prisma.delivery.count({
+        where: { salesOrder: { organizationId: orgId }, status: status as any },
+      });
+
+    // Build sections based on role (Req 7.5)
+    const sections: any = {};
+
+    const showSales = [Role.SALES_REP, Role.MANAGER, Role.OWNER, Role.SYSTEM_ADMIN].includes(role as Role);
+    const showInvoice = [Role.INVOICE_MAKER, Role.MANAGER, Role.OWNER, Role.SYSTEM_ADMIN].includes(role as Role);
+    const showWarehouse = [Role.STORE_MAN, Role.MANAGER, Role.OWNER, Role.SYSTEM_ADMIN].includes(role as Role);
+    const showDelivery = [Role.DRIVER, Role.MANAGER, Role.OWNER, Role.SYSTEM_ADMIN].includes(role as Role);
+
+    if (showSales) {
+      const [createdToday, pendingApproval, waitingInvoice] = await Promise.all([
+        this.prisma.salesOrder.count({
+          where: { organizationId: orgId, createdAt: { gte: today, lt: tomorrow } },
+        }),
+        countByStatus(OrderStatus.SUBMITTED),
+        countByStatus(OrderStatus.WAITING_FOR_INVOICE),
+      ]);
+      sections.sales = { createdToday, pendingApproval, waitingInvoice };
+    }
+
+    if (showInvoice) {
+      const [waitingApproval, invoicesToday] = await Promise.all([
+        countByStatus(OrderStatus.SUBMITTED),
+        this.prisma.invoice.count({
+          where: {
+            organizationId: orgId,
+            createdAt: { gte: today, lt: tomorrow },
+          },
+        }),
+      ]);
+      sections.invoice = { waitingApproval, invoicesToday };
+    }
+
+    if (showWarehouse) {
+      const [waitingPicking, readyForDelivery, picking] = await Promise.all([
+        countByStatus(OrderStatus.WAITING_FOR_WAREHOUSE),
+        countByStatus(OrderStatus.READY_FOR_DELIVERY),
+        countByStatus(OrderStatus.PICKING),
+      ]);
+      sections.warehouse = { waitingPicking, picking, readyForDelivery };
+    }
+
+    if (showDelivery) {
+      const [outForDelivery, deliveredToday] = await Promise.all([
+        countDeliveryByStatus('OUT_FOR_DELIVERY'),
+        this.prisma.delivery.count({
+          where: {
+            salesOrder: { organizationId: orgId },
+            status: 'DELIVERED' as any,
+            confirmedAt: { gte: today, lt: tomorrow },
+          },
+        }),
+      ]);
+      sections.delivery = { outForDelivery, deliveredToday };
+    }
+
+    return sections;
+  }

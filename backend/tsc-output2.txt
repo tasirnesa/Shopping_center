@@ -1,0 +1,12 @@
+﻿src/orders/deliveries.controller.ts(108,39): error TS2694: Namespace 'global.Express' has no exported member 'Multer'.
+src/orders/dto/create-order.dto.ts(16,5): error TS2564: Property 'productId' has no initializer and is not definitely assigned in the constructor.
+src/orders/dto/create-order.dto.ts(20,5): error TS2564: Property 'quantity' has no initializer and is not definitely assigned in the constructor.
+src/orders/dto/create-order.dto.ts(24,5): error TS2564: Property 'unitPrice' has no initializer and is not definitely assigned in the constructor.
+src/orders/dto/create-order.dto.ts(35,5): error TS2564: Property 'customerName' has no initializer and is not definitely assigned in the constructor.
+src/orders/dto/create-order.dto.ts(39,5): error TS2564: Property 'tin' has no initializer and is not definitely assigned in the constructor.
+src/orders/dto/create-order.dto.ts(43,5): error TS2564: Property 'deliveryAddress' has no initializer and is not definitely assigned in the constructor.
+src/orders/dto/create-order.dto.ts(51,5): error TS2564: Property 'branchId' has no initializer and is not definitely assigned in the constructor.
+src/orders/dto/create-order.dto.ts(57,5): error TS2564: Property 'lines' has no initializer and is not definitely assigned in the constructor.
+src/orders/dto/reject-order.dto.ts(6,5): error TS2564: Property 'reason' has no initializer and is not definitely assigned in the constructor.
+src/orders/file-upload.service.ts(10,32): error TS2694: Namespace 'global.Express' has no exported member 'Multer'.
+src/orders/file-upload.service.ts(27,23): error TS2694: Namespace 'global.Express' has no exported member 'Multer'.

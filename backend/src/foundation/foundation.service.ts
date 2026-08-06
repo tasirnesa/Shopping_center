@@ -111,9 +111,9 @@ export class FoundationService {
   }
 
   // ───── Users (Org-scoped) ─────
-  async getUsers(orgId: string) {
+  async getUsers(orgId?: string) {
     return this.prisma.user.findMany({
-      where: { organizationId: orgId },
+      where: orgId ? { organizationId: orgId } : undefined,
       select: {
         id: true,
         email: true,
@@ -121,7 +121,8 @@ export class FoundationService {
         role: true,
         status: true,
         branchId: true,
-        branch: true,
+        branch: { select: { id: true, name: true } },
+        organization: { select: { id: true, name: true } },
         createdAt: true,
       },
       orderBy: { createdAt: 'desc' },
