@@ -95,6 +95,14 @@ export declare class FoundationController {
         createdAt: Date;
         updatedAt: Date;
     }>;
+    createUser(orgId: string, req: any, body: {
+        email: string;
+        password: string;
+        name?: string;
+        role: Role;
+        branchId?: string;
+        organizationId?: string;
+    }): Promise<any>;
     getUsers(orgId: string, req: any): Promise<{
         id: string;
         name: string | null;

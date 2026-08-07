@@ -95,6 +95,14 @@ export declare class FoundationService {
         createdAt: Date;
         updatedAt: Date;
     }>;
+    createUser(data: {
+        email: string;
+        password: string;
+        name?: string;
+        role: any;
+        organizationId: string;
+        branchId?: string;
+    }): Promise<any>;
     getUsers(orgId?: string): Promise<{
         id: string;
         name: string | null;

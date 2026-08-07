@@ -81,6 +81,10 @@ let DeliveriesController = class DeliveriesController {
         const confirmationPath = await this.fileUploadService.store(file, subPath, 'DELIVERY_CONFIRMATION');
         return this.deliveryService.confirmDeliveryById(id, req.user.id, req.user.organizationId, confirmationPath);
     }
+    async confirmDeliveryNote(req, id, body) {
+        const confirmationPath = `note:${body.note?.trim() || 'Confirmed by driver'} — ${new Date().toISOString()}`;
+        return this.deliveryService.confirmDeliveryById(id, req.user.id, req.user.organizationId, confirmationPath);
+    }
 };
 exports.DeliveriesController = DeliveriesController;
 __decorate([
@@ -120,6 +124,16 @@ __decorate([
     __metadata("design:paramtypes", [Object, String, Object]),
     __metadata("design:returntype", Promise)
 ], DeliveriesController.prototype, "confirmDelivery", null);
+__decorate([
+    (0, common_1.Post)(':id/confirm-note'),
+    (0, roles_decorator_1.Roles)(client_1.Role.DRIVER, client_1.Role.OWNER),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Param)('id')),
+    __param(2, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String, Object]),
+    __metadata("design:returntype", Promise)
+], DeliveriesController.prototype, "confirmDeliveryNote", null);
 exports.DeliveriesController = DeliveriesController = __decorate([
     (0, common_1.Controller)('deliveries'),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),

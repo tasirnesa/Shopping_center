@@ -3,7 +3,6 @@ import { PrismaService } from '../prisma/prisma.service';
 import { StateMachineService } from './state-machine.service';
 import { AuditService } from './audit.service';
 import { DeliveryStatus, OrderStatus, Prisma, Role, SalesOrder } from '@prisma/client';
-
 @Injectable()
 export class DeliveryService {
     constructor(
@@ -148,6 +147,43 @@ export class DeliveryService {
                 'Order delivered and completed',
             );
 
+            // ── Create a Sale record so the order appears in Sales history & dashboard ──
+            // Stock was already deducted during packing — we only record the financial transaction.
+            const fullOrder = await tx.salesOrder.findUnique({
+                where: { id: orderId },
+                include: { lines: true },
+            });
+
+            if (fullOrder) {
+                const sale = await tx.sale.create({
+                    data: {
+                        organizationId: fullOrder.organizationId,
+                        branchId: fullOrder.branchId,
+                        // Map TIN to customerId if a matching customer exists, otherwise leave null
+                        subTotal: fullOrder.subtotal,
+                        discount: 0,
+                        totalAmount: fullOrder.grandTotal,
+                        details: {
+                            create: fullOrder.lines.map((line) => ({
+                                productId: line.productId,
+                                quantity: line.quantity,
+                                price: line.unitPrice,
+                            })),
+                        },
+                    },
+                });
+
+                // Record payment linked to this sale
+                await tx.payment.create({
+                    data: {
+                        referenceId: sale.id,
+                        referenceType: 'SALE',
+                        amount: fullOrder.grandTotal,
+                        method: 'INVOICE',
+                    },
+                });
+            }
+
             return { order: updatedOrder, delivery: updatedDelivery };
         });
     }
@@ -205,10 +241,22 @@ export class DeliveryService {
      * Req 4.6, 6.4
      */
     async findAll(userId: string, role: Role, orgId: string) {
-        if (role === Role.DRIVER) {            return this.prisma.delivery.findMany({
-                where: { driverId: userId },
+        if (role === Role.DRIVER) {
+            // Drivers see:
+            // 1. All PENDING deliveries in the org (available for pickup - not yet assigned)
+            // 2. Their own OUT_FOR_DELIVERY deliveries (already picked up by them)
+            // 3. Their own DELIVERED deliveries (completed by them, for history)
+            return this.prisma.delivery.findMany({
+                where: {
+                    salesOrder: { organizationId: orgId },
+                    OR: [
+                        { status: DeliveryStatus.PENDING },                         // available to pick up
+                        { driverId: userId, status: DeliveryStatus.OUT_FOR_DELIVERY }, // in progress
+                        { driverId: userId, status: DeliveryStatus.DELIVERED },        // completed
+                    ],
+                },
                 include: {
-                    salesOrder: { select: { organizationId: true, customerName: true, deliveryAddress: true } },
+                    salesOrder: { select: { organizationId: true, customerName: true, deliveryAddress: true, customerPhone: true } },
                     invoice: { select: { invoiceNumber: true } },
                 },
                 orderBy: { createdAt: 'desc' },
@@ -250,8 +298,8 @@ export class DeliveryService {
             throw new ForbiddenException();
         }
 
-        // Req 6.4: DRIVER can only access their own delivery records
-        if (role === Role.DRIVER && delivery.driverId !== userId) {
+        // Req 6.4: DRIVER can only access their own delivery records OR unassigned PENDING ones
+        if (role === Role.DRIVER && delivery.driverId !== userId && delivery.status !== DeliveryStatus.PENDING) {
             throw new ForbiddenException('Drivers can only access their own delivery records');
         }
 

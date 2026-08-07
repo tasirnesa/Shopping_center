@@ -39,6 +39,10 @@ export declare class OrdersService {
         cancellationReason: string | null;
     }>;
     findAll(userId: string, role: Role, orgId: string): Promise<({
+        invoice: {
+            id: string;
+            invoiceNumber: string;
+        } | null;
         lines: ({
             product: {
                 id: string;

@@ -4,46 +4,65 @@ export declare class InvoicesController {
     constructor(prisma: PrismaService);
     findOne(req: any, id: string): Promise<{
         salesOrder: {
-            organizationId: string;
-            branchId: string;
+            salesRep: {
+                name: string | null;
+                email: string;
+            };
+        } & {
             id: string;
-            status: import(".prisma/client").$Enums.OrderStatus;
-            createdAt: Date;
-            updatedAt: Date;
-            tin: string;
-            customerId: string | null;
-            taxRate: number;
-            salesRepId: string;
             customerName: string;
+            tin: string;
             deliveryAddress: string;
             customerPhone: string | null;
+            status: import(".prisma/client").$Enums.OrderStatus;
             subtotal: number;
+            taxRate: number;
             taxAmount: number;
             grandTotal: number;
             rejectionReason: string | null;
             cancellationReason: string | null;
+            createdAt: Date;
+            updatedAt: Date;
+            organizationId: string;
+            branchId: string;
+            salesRepId: string;
+            customerId: string | null;
         };
-        lines: {
+        lines: ({
+            product: {
+                id: string;
+                createdAt: Date;
+                updatedAt: Date;
+                organizationId: string;
+                name: string;
+                barcode: string | null;
+                categoryId: string | null;
+                brandId: string | null;
+                unitId: string | null;
+                price: number;
+                cost: number;
+            };
+        } & {
             id: string;
-            productId: string;
-            discount: number;
             quantity: number;
-            invoiceId: string;
             unitPrice: number;
+            discount: number;
             total: number;
-        }[];
+            productId: string;
+            invoiceId: string;
+        })[];
     } & {
-        organizationId: string;
         id: string;
-        createdAt: Date;
-        taxRate: number;
-        salesOrderId: string;
         subtotal: number;
+        taxRate: number;
         taxAmount: number;
         grandTotal: number;
+        createdAt: Date;
+        organizationId: string;
+        salesOrderId: string;
         invoiceNumber: string;
         invoiceDate: Date;
         invoiceMakerId: string;
     }>;
-    downloadPdf(req: any, id: string, res: any): Promise<void>;
+    printInvoice(req: any, id: string, res: any): Promise<void>;
 }

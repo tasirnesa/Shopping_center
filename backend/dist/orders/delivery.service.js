@@ -100,6 +100,36 @@ let DeliveryService = class DeliveryService {
                 data: { status: nextStatus },
             });
             await this.audit.recordTransition(tx, orderId, current, nextStatus, driverId, 'Order delivered and completed');
+            const fullOrder = await tx.salesOrder.findUnique({
+                where: { id: orderId },
+                include: { lines: true },
+            });
+            if (fullOrder) {
+                const sale = await tx.sale.create({
+                    data: {
+                        organizationId: fullOrder.organizationId,
+                        branchId: fullOrder.branchId,
+                        subTotal: fullOrder.subtotal,
+                        discount: 0,
+                        totalAmount: fullOrder.grandTotal,
+                        details: {
+                            create: fullOrder.lines.map((line) => ({
+                                productId: line.productId,
+                                quantity: line.quantity,
+                                price: line.unitPrice,
+                            })),
+                        },
+                    },
+                });
+                await tx.payment.create({
+                    data: {
+                        referenceId: sale.id,
+                        referenceType: 'SALE',
+                        amount: fullOrder.grandTotal,
+                        method: 'INVOICE',
+                    },
+                });
+            }
             return { order: updatedOrder, delivery: updatedDelivery };
         });
     }
@@ -130,9 +160,16 @@ let DeliveryService = class DeliveryService {
     async findAll(userId, role, orgId) {
         if (role === client_1.Role.DRIVER) {
             return this.prisma.delivery.findMany({
-                where: { driverId: userId },
+                where: {
+                    salesOrder: { organizationId: orgId },
+                    OR: [
+                        { status: client_1.DeliveryStatus.PENDING },
+                        { driverId: userId, status: client_1.DeliveryStatus.OUT_FOR_DELIVERY },
+                        { driverId: userId, status: client_1.DeliveryStatus.DELIVERED },
+                    ],
+                },
                 include: {
-                    salesOrder: { select: { organizationId: true, customerName: true, deliveryAddress: true } },
+                    salesOrder: { select: { organizationId: true, customerName: true, deliveryAddress: true, customerPhone: true } },
                     invoice: { select: { invoiceNumber: true } },
                 },
                 orderBy: { createdAt: 'desc' },
@@ -164,7 +201,7 @@ let DeliveryService = class DeliveryService {
         if (delivery.salesOrder.organizationId !== orgId) {
             throw new common_1.ForbiddenException();
         }
-        if (role === client_1.Role.DRIVER && delivery.driverId !== userId) {
+        if (role === client_1.Role.DRIVER && delivery.driverId !== userId && delivery.status !== client_1.DeliveryStatus.PENDING) {
             throw new common_1.ForbiddenException('Drivers can only access their own delivery records');
         }
         return delivery;

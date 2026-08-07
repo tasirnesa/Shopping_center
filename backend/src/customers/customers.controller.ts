@@ -20,19 +20,19 @@ export class CustomersController {
   constructor(private readonly customersService: CustomersService) {}
 
   @Get()
-  @Roles('OWNER', 'MANAGER', 'CASHIER')
+  @Roles('OWNER', 'MANAGER', 'CASHIER', 'SALES_REP', 'INVOICE_MAKER')
   findAll(@CurrentOrg() orgId: string) {
     return this.customersService.findAll(orgId);
   }
 
   @Get(':id')
-  @Roles('OWNER', 'MANAGER', 'CASHIER')
+  @Roles('OWNER', 'MANAGER', 'CASHIER', 'SALES_REP', 'INVOICE_MAKER')
   findOne(@CurrentOrg() orgId: string, @Param('id') id: string) {
     return this.customersService.findOne(orgId, id);
   }
 
   @Post()
-  @Roles('OWNER', 'MANAGER', 'CASHIER')
+  @Roles('OWNER', 'MANAGER', 'CASHIER', 'SALES_REP')
   create(
     @CurrentOrg() orgId: string,
     @Body() dto: { name: string; phone?: string; email?: string },

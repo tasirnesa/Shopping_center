@@ -353,13 +353,13 @@ function UsersTab({ isSysAdmin }: { isSysAdmin: boolean }) {
 
   const handleAddUser = async () => {
     try {
-      await api.post("/auth/register", {
+      await api.post("/foundation/users", {
         email,
         password,
         name,
         role,
         branchId: branchId || undefined,
-        organizationId: orgId || undefined,
+        organizationId: orgId || undefined,  // only used by SYSTEM_ADMIN
       });
       setAddOpen(false);
       setEmail("");

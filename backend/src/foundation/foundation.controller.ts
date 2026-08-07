@@ -112,6 +112,20 @@ export class FoundationController {
   }
 
   // Users Management
+  @Post('users')
+  @Roles(Role.OWNER, Role.MANAGER, Role.SYSTEM_ADMIN)
+  createUser(
+    @CurrentOrg() orgId: string,
+    @Req() req: any,
+    @Body() body: { email: string; password: string; name?: string; role: Role; branchId?: string; organizationId?: string },
+  ) {
+    // SYSTEM_ADMIN can specify a target org; everyone else uses their own org
+    const targetOrgId = req.user.role === Role.SYSTEM_ADMIN && body.organizationId
+      ? body.organizationId
+      : orgId;
+    return this.foundationService.createUser({ ...body, organizationId: targetOrgId });
+  }
+
   @Get('users')
   @Roles(Role.OWNER, Role.MANAGER, Role.SYSTEM_ADMIN)
   getUsers(@CurrentOrg() orgId: string, @Req() req: any) {

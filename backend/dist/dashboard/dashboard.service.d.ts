@@ -67,4 +67,5 @@ export declare class DashboardService {
             qty: number;
         }[];
     }>;
+    getFulfillmentDashboard(orgId: string, role: string): Promise<any>;
 }

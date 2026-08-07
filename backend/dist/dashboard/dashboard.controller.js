@@ -35,7 +35,7 @@ let DashboardController = class DashboardController {
 exports.DashboardController = DashboardController;
 __decorate([
     (0, common_1.Get)('summary'),
-    (0, roles_decorator_1.Roles)('OWNER', 'MANAGER', 'CASHIER', 'STORE_KEEPER'),
+    (0, roles_decorator_1.Roles)('OWNER', 'MANAGER', 'CASHIER', 'STORE_KEEPER', 'SALES_REP', 'INVOICE_MAKER', 'STORE_MAN', 'DRIVER'),
     __param(0, (0, org_decorator_1.CurrentOrg)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),

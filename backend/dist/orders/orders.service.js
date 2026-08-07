@@ -118,20 +118,20 @@ let OrdersService = class OrdersService {
         if (role === client_1.Role.SALES_REP) {
             return this.prisma.salesOrder.findMany({
                 where: { salesRepId: userId },
-                include: { lines: { include: { product: true } }, attachments: true },
+                include: { lines: { include: { product: true } }, attachments: true, invoice: { select: { id: true, invoiceNumber: true } }, statusEvents: { orderBy: { createdAt: 'asc' } } },
                 orderBy: { createdAt: 'desc' },
             });
         }
         if (role === client_1.Role.INVOICE_MAKER) {
             return this.prisma.salesOrder.findMany({
                 where: { organizationId: orgId, status: client_1.OrderStatus.SUBMITTED },
-                include: { lines: { include: { product: true } }, attachments: true },
+                include: { lines: { include: { product: true } }, attachments: true, invoice: { select: { id: true, invoiceNumber: true } } },
                 orderBy: { createdAt: 'asc' },
             });
         }
         return this.prisma.salesOrder.findMany({
             where: { organizationId: orgId },
-            include: { lines: { include: { product: true } }, attachments: true },
+            include: { lines: { include: { product: true } }, attachments: true, invoice: { select: { id: true, invoiceNumber: true } }, statusEvents: { orderBy: { createdAt: 'asc' } } },
             orderBy: { createdAt: 'desc' },
         });
     }

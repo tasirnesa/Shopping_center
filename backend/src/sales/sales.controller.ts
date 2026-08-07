@@ -40,13 +40,13 @@ export class SalesController {
   }
 
   @Get()
-  @Roles('OWNER', 'MANAGER', 'CASHIER')
+  @Roles('OWNER', 'MANAGER', 'CASHIER', 'SALES_REP', 'INVOICE_MAKER', 'STORE_MAN')
   findAll(@CurrentOrg() orgId: string) {
     return this.salesService.findAll(orgId);
   }
 
   @Get(':id')
-  @Roles('OWNER', 'MANAGER', 'CASHIER')
+  @Roles('OWNER', 'MANAGER', 'CASHIER', 'SALES_REP', 'INVOICE_MAKER')
   findOne(@CurrentOrg() orgId: string, @Param('id') id: string) {
     return this.salesService.findOne(orgId, id);
   }

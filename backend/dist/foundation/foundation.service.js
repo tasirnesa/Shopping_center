@@ -92,6 +92,29 @@ let FoundationService = class FoundationService {
             throw new common_1.NotFoundException('Branch not found');
         return this.prisma.branch.delete({ where: { id } });
     }
+    async createUser(data) {
+        const bcrypt = await import('bcrypt');
+        const hashed = await bcrypt.hash(data.password, 10);
+        try {
+            const user = await this.prisma.user.create({
+                data: {
+                    email: data.email,
+                    password: hashed,
+                    name: data.name,
+                    role: data.role,
+                    organizationId: data.organizationId,
+                    branchId: data.branchId ?? null,
+                },
+            });
+            const { password, ...result } = user;
+            return result;
+        }
+        catch (e) {
+            if (e.code === 'P2002')
+                throw new common_1.BadRequestException('Email already registered');
+            throw e;
+        }
+    }
     async getUsers(orgId) {
         return this.prisma.user.findMany({
             where: orgId ? { organizationId: orgId } : undefined,

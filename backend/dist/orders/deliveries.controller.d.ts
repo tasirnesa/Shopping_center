@@ -8,6 +8,7 @@ export declare class DeliveriesController {
         salesOrder: {
             customerName: string;
             deliveryAddress: string;
+            customerPhone: string | null;
             organizationId: string;
         };
         invoice: {
@@ -15,18 +16,45 @@ export declare class DeliveriesController {
         };
     } & {
         id: string;
+        salesOrderId: string;
+        invoiceId: string;
+        driverId: string | null;
         customerName: string;
         deliveryAddress: string;
         customerPhone: string | null;
         status: import(".prisma/client").$Enums.DeliveryStatus;
         confirmationPath: string | null;
         confirmedAt: Date | null;
+        confirmedById: string | null;
         createdAt: Date;
         updatedAt: Date;
+    })[] | ({
+        salesOrder: {
+            customerName: string;
+            deliveryAddress: string;
+            organizationId: string;
+        };
+        invoice: {
+            invoiceNumber: string;
+        };
+        driver: {
+            id: string;
+            name: string | null;
+        } | null;
+    } & {
+        id: string;
         salesOrderId: string;
         invoiceId: string;
         driverId: string | null;
+        customerName: string;
+        deliveryAddress: string;
+        customerPhone: string | null;
+        status: import(".prisma/client").$Enums.DeliveryStatus;
+        confirmationPath: string | null;
+        confirmedAt: Date | null;
         confirmedById: string | null;
+        createdAt: Date;
+        updatedAt: Date;
     })[]>;
     findOne(req: any, id: string): Promise<{
         salesOrder: {
@@ -55,8 +83,8 @@ export declare class DeliveriesController {
                     id: string;
                     createdAt: Date;
                     updatedAt: Date;
-                    name: string;
                     organizationId: string;
+                    name: string;
                     barcode: string | null;
                     categoryId: string | null;
                     brandId: string | null;
@@ -75,8 +103,8 @@ export declare class DeliveriesController {
             })[];
         } & {
             id: string;
-            createdAt: Date;
             salesOrderId: string;
+            createdAt: Date;
             organizationId: string;
             subtotal: number;
             taxRate: number;
@@ -92,18 +120,18 @@ export declare class DeliveriesController {
         } | null;
     } & {
         id: string;
+        salesOrderId: string;
+        invoiceId: string;
+        driverId: string | null;
         customerName: string;
         deliveryAddress: string;
         customerPhone: string | null;
         status: import(".prisma/client").$Enums.DeliveryStatus;
         confirmationPath: string | null;
         confirmedAt: Date | null;
+        confirmedById: string | null;
         createdAt: Date;
         updatedAt: Date;
-        salesOrderId: string;
-        invoiceId: string;
-        driverId: string | null;
-        confirmedById: string | null;
     }>;
     pickup(req: any, id: string): Promise<{
         order: {
@@ -128,18 +156,18 @@ export declare class DeliveriesController {
         };
         delivery: {
             id: string;
+            salesOrderId: string;
+            invoiceId: string;
+            driverId: string | null;
             customerName: string;
             deliveryAddress: string;
             customerPhone: string | null;
             status: import(".prisma/client").$Enums.DeliveryStatus;
             confirmationPath: string | null;
             confirmedAt: Date | null;
+            confirmedById: string | null;
             createdAt: Date;
             updatedAt: Date;
-            salesOrderId: string;
-            invoiceId: string;
-            driverId: string | null;
-            confirmedById: string | null;
         };
     }>;
     confirmDelivery(req: any, id: string, file: Express.Multer.File): Promise<{
@@ -165,18 +193,57 @@ export declare class DeliveriesController {
         };
         delivery: {
             id: string;
+            salesOrderId: string;
+            invoiceId: string;
+            driverId: string | null;
             customerName: string;
             deliveryAddress: string;
             customerPhone: string | null;
             status: import(".prisma/client").$Enums.DeliveryStatus;
             confirmationPath: string | null;
             confirmedAt: Date | null;
+            confirmedById: string | null;
             createdAt: Date;
             updatedAt: Date;
+        };
+    }>;
+    confirmDeliveryNote(req: any, id: string, body: {
+        note?: string;
+    }): Promise<{
+        order: {
+            id: string;
+            customerName: string;
+            deliveryAddress: string;
+            customerPhone: string | null;
+            status: import(".prisma/client").$Enums.OrderStatus;
+            createdAt: Date;
+            updatedAt: Date;
+            organizationId: string;
+            branchId: string;
+            salesRepId: string;
+            customerId: string | null;
+            tin: string;
+            subtotal: number;
+            taxRate: number;
+            taxAmount: number;
+            grandTotal: number;
+            rejectionReason: string | null;
+            cancellationReason: string | null;
+        };
+        delivery: {
+            id: string;
             salesOrderId: string;
             invoiceId: string;
             driverId: string | null;
+            customerName: string;
+            deliveryAddress: string;
+            customerPhone: string | null;
+            status: import(".prisma/client").$Enums.DeliveryStatus;
+            confirmationPath: string | null;
+            confirmedAt: Date | null;
             confirmedById: string | null;
+            createdAt: Date;
+            updatedAt: Date;
         };
     }>;
 }

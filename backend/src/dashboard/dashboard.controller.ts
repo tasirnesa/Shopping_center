@@ -12,7 +12,7 @@ export class DashboardController {
   constructor(private readonly dashboardService: DashboardService) {}
 
   @Get('summary')
-  @Roles('OWNER', 'MANAGER', 'CASHIER', 'STORE_KEEPER')
+  @Roles('OWNER', 'MANAGER', 'CASHIER', 'STORE_KEEPER', 'SALES_REP', 'INVOICE_MAKER', 'STORE_MAN', 'DRIVER')
   getSummary(@CurrentOrg() orgId: string) {
     return this.dashboardService.getSummary(orgId);
   }

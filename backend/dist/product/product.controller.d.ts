@@ -12,163 +12,163 @@ export declare class ProductController {
         cost: number;
     }): Promise<{
         category: {
+            id: string;
             name: string;
             organizationId: string;
-            id: string;
             description: string | null;
         } | null;
         brand: {
+            id: string;
             name: string;
             organizationId: string;
-            id: string;
         } | null;
         unit: {
+            id: string;
             name: string;
             organizationId: string;
-            id: string;
         } | null;
     } & {
-        name: string;
-        organizationId: string;
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
+        name: string;
         barcode: string | null;
         price: number;
         cost: number;
+        createdAt: Date;
+        updatedAt: Date;
+        organizationId: string;
         categoryId: string | null;
         brandId: string | null;
         unitId: string | null;
     }>;
     findAll(orgId: string): Promise<({
         category: {
+            id: string;
             name: string;
             organizationId: string;
-            id: string;
             description: string | null;
         } | null;
         brand: {
+            id: string;
             name: string;
             organizationId: string;
-            id: string;
         } | null;
         unit: {
+            id: string;
             name: string;
             organizationId: string;
-            id: string;
         } | null;
     } & {
-        name: string;
-        organizationId: string;
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
+        name: string;
         barcode: string | null;
         price: number;
         cost: number;
+        createdAt: Date;
+        updatedAt: Date;
+        organizationId: string;
         categoryId: string | null;
         brandId: string | null;
         unitId: string | null;
     })[]>;
     findByBarcode(orgId: string, barcode: string): Promise<({
         category: {
+            id: string;
             name: string;
             organizationId: string;
-            id: string;
             description: string | null;
         } | null;
         brand: {
+            id: string;
             name: string;
             organizationId: string;
-            id: string;
         } | null;
         unit: {
+            id: string;
             name: string;
             organizationId: string;
-            id: string;
         } | null;
     } & {
-        name: string;
-        organizationId: string;
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
+        name: string;
         barcode: string | null;
         price: number;
         cost: number;
+        createdAt: Date;
+        updatedAt: Date;
+        organizationId: string;
         categoryId: string | null;
         brandId: string | null;
         unitId: string | null;
     }) | null>;
     findOne(orgId: string, id: string): Promise<({
         category: {
+            id: string;
             name: string;
             organizationId: string;
-            id: string;
             description: string | null;
         } | null;
         brand: {
+            id: string;
             name: string;
             organizationId: string;
-            id: string;
         } | null;
         unit: {
+            id: string;
             name: string;
             organizationId: string;
-            id: string;
         } | null;
     } & {
-        name: string;
-        organizationId: string;
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
+        name: string;
         barcode: string | null;
         price: number;
         cost: number;
+        createdAt: Date;
+        updatedAt: Date;
+        organizationId: string;
         categoryId: string | null;
         brandId: string | null;
         unitId: string | null;
     }) | null>;
     update(orgId: string, id: string, dto: any): Promise<({
         category: {
+            id: string;
             name: string;
             organizationId: string;
-            id: string;
             description: string | null;
         } | null;
         brand: {
+            id: string;
             name: string;
             organizationId: string;
-            id: string;
         } | null;
         unit: {
+            id: string;
             name: string;
             organizationId: string;
-            id: string;
         } | null;
     } & {
-        name: string;
-        organizationId: string;
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
+        name: string;
         barcode: string | null;
         price: number;
         cost: number;
+        createdAt: Date;
+        updatedAt: Date;
+        organizationId: string;
         categoryId: string | null;
         brandId: string | null;
         unitId: string | null;
     }) | null>;
     remove(orgId: string, id: string): Promise<{
-        name: string;
-        organizationId: string;
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
+        name: string;
         barcode: string | null;
         price: number;
         cost: number;
+        createdAt: Date;
+        updatedAt: Date;
+        organizationId: string;
         categoryId: string | null;
         brandId: string | null;
         unitId: string | null;

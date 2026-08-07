@@ -97,71 +97,67 @@ let DashboardService = class DashboardService {
             topProducts,
         };
     }
+    async getFulfillmentDashboard(orgId, role) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const countByStatus = async (status) => this.prisma.salesOrder.count({ where: { organizationId: orgId, status } });
+        const countDeliveryByStatus = async (status) => this.prisma.delivery.count({
+            where: { salesOrder: { organizationId: orgId }, status: status },
+        });
+        const sections = {};
+        const r = role;
+        const showSales = ['SALES_REP', 'MANAGER', 'OWNER', 'SYSTEM_ADMIN'].includes(r);
+        const showInvoice = ['INVOICE_MAKER', 'MANAGER', 'OWNER', 'SYSTEM_ADMIN'].includes(r);
+        const showWarehouse = ['STORE_MAN', 'MANAGER', 'OWNER', 'SYSTEM_ADMIN'].includes(r);
+        const showDelivery = ['DRIVER', 'MANAGER', 'OWNER', 'SYSTEM_ADMIN'].includes(r);
+        if (showSales) {
+            const [createdToday, pendingApproval, waitingInvoice] = await Promise.all([
+                this.prisma.salesOrder.count({
+                    where: { organizationId: orgId, createdAt: { gte: today, lt: tomorrow } },
+                }),
+                countByStatus(client_1.OrderStatus.SUBMITTED),
+                countByStatus(client_1.OrderStatus.WAITING_FOR_INVOICE),
+            ]);
+            sections.sales = { createdToday, pendingApproval, waitingInvoice };
+        }
+        if (showInvoice) {
+            const [waitingApproval, invoicesToday] = await Promise.all([
+                countByStatus(client_1.OrderStatus.SUBMITTED),
+                this.prisma.invoice.count({
+                    where: { organizationId: orgId, createdAt: { gte: today, lt: tomorrow } },
+                }),
+            ]);
+            sections.invoice = { waitingApproval, invoicesToday };
+        }
+        if (showWarehouse) {
+            const [waitingPicking, picking, readyForDelivery] = await Promise.all([
+                countByStatus(client_1.OrderStatus.WAITING_FOR_WAREHOUSE),
+                countByStatus(client_1.OrderStatus.PICKING),
+                countByStatus(client_1.OrderStatus.READY_FOR_DELIVERY),
+            ]);
+            sections.warehouse = { waitingPicking, picking, readyForDelivery };
+        }
+        if (showDelivery) {
+            const [outForDelivery, deliveredToday] = await Promise.all([
+                countDeliveryByStatus('OUT_FOR_DELIVERY'),
+                this.prisma.delivery.count({
+                    where: {
+                        salesOrder: { organizationId: orgId },
+                        status: 'DELIVERED',
+                        confirmedAt: { gte: today, lt: tomorrow },
+                    },
+                }),
+            ]);
+            sections.delivery = { outForDelivery, deliveredToday };
+        }
+        return sections;
+    }
 };
 exports.DashboardService = DashboardService;
 exports.DashboardService = DashboardService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService])
 ], DashboardService);
-async;
-getFulfillmentDashboard(orgId, string, role, string);
-{
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const countByStatus = async (status) => this.prisma.salesOrder.count({ where: { organizationId: orgId, status } });
-    const countDeliveryByStatus = async (status) => this.prisma.delivery.count({
-        where: { salesOrder: { organizationId: orgId }, status: status },
-    });
-    const sections = {};
-    const showSales = [client_1.Role.SALES_REP, client_1.Role.MANAGER, client_1.Role.OWNER, client_1.Role.SYSTEM_ADMIN].includes(role);
-    const showInvoice = [client_1.Role.INVOICE_MAKER, client_1.Role.MANAGER, client_1.Role.OWNER, client_1.Role.SYSTEM_ADMIN].includes(role);
-    const showWarehouse = [client_1.Role.STORE_MAN, client_1.Role.MANAGER, client_1.Role.OWNER, client_1.Role.SYSTEM_ADMIN].includes(role);
-    const showDelivery = [client_1.Role.DRIVER, client_1.Role.MANAGER, client_1.Role.OWNER, client_1.Role.SYSTEM_ADMIN].includes(role);
-    if (showSales) {
-        const [createdToday, pendingApproval, waitingInvoice] = await Promise.all([
-            this.prisma.salesOrder.count({
-                where: { organizationId: orgId, createdAt: { gte: today, lt: tomorrow } },
-            }),
-            countByStatus(client_1.OrderStatus.SUBMITTED),
-            countByStatus(client_1.OrderStatus.WAITING_FOR_INVOICE),
-        ]);
-        sections.sales = { createdToday, pendingApproval, waitingInvoice };
-    }
-    if (showInvoice) {
-        const [waitingApproval, invoicesToday] = await Promise.all([
-            countByStatus(client_1.OrderStatus.SUBMITTED),
-            this.prisma.invoice.count({
-                where: {
-                    organizationId: orgId,
-                    createdAt: { gte: today, lt: tomorrow },
-                },
-            }),
-        ]);
-        sections.invoice = { waitingApproval, invoicesToday };
-    }
-    if (showWarehouse) {
-        const [waitingPicking, readyForDelivery, picking] = await Promise.all([
-            countByStatus(client_1.OrderStatus.WAITING_FOR_WAREHOUSE),
-            countByStatus(client_1.OrderStatus.READY_FOR_DELIVERY),
-            countByStatus(client_1.OrderStatus.PICKING),
-        ]);
-        sections.warehouse = { waitingPicking, picking, readyForDelivery };
-    }
-    if (showDelivery) {
-        const [outForDelivery, deliveredToday] = await Promise.all([
-            countDeliveryByStatus('OUT_FOR_DELIVERY'),
-            this.prisma.delivery.count({
-                where: {
-                    salesOrder: { organizationId: orgId },
-                    status: 'DELIVERED',
-                    confirmedAt: { gte: today, lt: tomorrow },
-                },
-            }),
-        ]);
-        sections.delivery = { outForDelivery, deliveredToday };
-    }
-    return sections;
-}
 //# sourceMappingURL=dashboard.service.js.map

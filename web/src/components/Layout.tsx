@@ -30,6 +30,7 @@ import {
   AdminPanelSettings,
   Storefront,
   BarChart,
+  LocalShipping,
 } from "@mui/icons-material";
 import { sidebarGradient } from "../theme";
 import api from "../api";
@@ -50,13 +51,19 @@ const allMenuItems = [
   { text: "Dashboard", icon: <Dashboard />, path: "/", roles: null },
   { text: "Products", icon: <Inventory />, path: "/products", roles: null },
   { text: "Sales", icon: <ShoppingCart />, path: "/sales", roles: null },
+  {
+    text: "Orders",
+    icon: <LocalShipping />,
+    path: "/orders",
+    roles: ["SALES_REP", "INVOICE_MAKER", "STORE_MAN", "DRIVER", "MANAGER", "OWNER", "SYSTEM_ADMIN"],
+  },
   { text: "Inventory", icon: <Inventory2 />, path: "/inventory", roles: null },
   { text: "Reports", icon: <BarChart />, path: "/reports", roles: null },
   {
     text: "Admin",
     icon: <AdminPanelSettings />,
     path: "/admin",
-    roles: ["SYSTEM_ADMIN", "OWNER", "MANAGER"], // Fixed: added SYSTEM_ADMIN
+    roles: ["SYSTEM_ADMIN", "OWNER", "MANAGER"],
   },
 ];
 

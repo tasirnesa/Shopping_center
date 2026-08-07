@@ -174,11 +174,39 @@ export declare class DeliveryService {
         salesOrder: {
             customerName: string;
             deliveryAddress: string;
+            customerPhone: string | null;
             organizationId: string;
         };
         invoice: {
             invoiceNumber: string;
         };
+    } & {
+        id: string;
+        customerName: string;
+        deliveryAddress: string;
+        customerPhone: string | null;
+        status: import(".prisma/client").$Enums.DeliveryStatus;
+        confirmationPath: string | null;
+        confirmedAt: Date | null;
+        createdAt: Date;
+        updatedAt: Date;
+        salesOrderId: string;
+        invoiceId: string;
+        driverId: string | null;
+        confirmedById: string | null;
+    })[] | ({
+        salesOrder: {
+            customerName: string;
+            deliveryAddress: string;
+            organizationId: string;
+        };
+        invoice: {
+            invoiceNumber: string;
+        };
+        driver: {
+            id: string;
+            name: string | null;
+        } | null;
     } & {
         id: string;
         customerName: string;

@@ -38,13 +38,13 @@ export class ProductController {
   }
 
   @Get()
-  @Roles('OWNER', 'MANAGER', 'CASHIER', 'STORE_KEEPER')
+  @Roles('OWNER', 'MANAGER', 'CASHIER', 'STORE_KEEPER', 'SALES_REP', 'INVOICE_MAKER', 'STORE_MAN', 'DRIVER')
   findAll(@CurrentOrg() orgId: string) {
     return this.productService.findAll(orgId);
   }
 
   @Get('barcode/:barcode')
-  @Roles('OWNER', 'MANAGER', 'CASHIER', 'STORE_KEEPER')
+  @Roles('OWNER', 'MANAGER', 'CASHIER', 'STORE_KEEPER', 'SALES_REP', 'INVOICE_MAKER', 'STORE_MAN')
   findByBarcode(
     @CurrentOrg() orgId: string,
     @Param('barcode') barcode: string,
@@ -53,7 +53,7 @@ export class ProductController {
   }
 
   @Get(':id')
-  @Roles('OWNER', 'MANAGER', 'CASHIER', 'STORE_KEEPER')
+  @Roles('OWNER', 'MANAGER', 'CASHIER', 'STORE_KEEPER', 'SALES_REP', 'INVOICE_MAKER', 'STORE_MAN')
   findOne(@CurrentOrg() orgId: string, @Param('id') id: string) {
     return this.productService.findOne(orgId, id);
   }

@@ -43,7 +43,7 @@ let CustomersController = class CustomersController {
 exports.CustomersController = CustomersController;
 __decorate([
     (0, common_1.Get)(),
-    (0, roles_decorator_1.Roles)('OWNER', 'MANAGER', 'CASHIER'),
+    (0, roles_decorator_1.Roles)('OWNER', 'MANAGER', 'CASHIER', 'SALES_REP', 'INVOICE_MAKER'),
     __param(0, (0, org_decorator_1.CurrentOrg)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -51,7 +51,7 @@ __decorate([
 ], CustomersController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Get)(':id'),
-    (0, roles_decorator_1.Roles)('OWNER', 'MANAGER', 'CASHIER'),
+    (0, roles_decorator_1.Roles)('OWNER', 'MANAGER', 'CASHIER', 'SALES_REP', 'INVOICE_MAKER'),
     __param(0, (0, org_decorator_1.CurrentOrg)()),
     __param(1, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
@@ -60,7 +60,7 @@ __decorate([
 ], CustomersController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Post)(),
-    (0, roles_decorator_1.Roles)('OWNER', 'MANAGER', 'CASHIER'),
+    (0, roles_decorator_1.Roles)('OWNER', 'MANAGER', 'CASHIER', 'SALES_REP'),
     __param(0, (0, org_decorator_1.CurrentOrg)()),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),

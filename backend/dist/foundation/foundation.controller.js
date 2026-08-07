@@ -64,6 +64,12 @@ let FoundationController = class FoundationController {
     deleteBranch(orgId, id) {
         return this.foundationService.deleteBranch(orgId, id);
     }
+    createUser(orgId, req, body) {
+        const targetOrgId = req.user.role === client_1.Role.SYSTEM_ADMIN && body.organizationId
+            ? body.organizationId
+            : orgId;
+        return this.foundationService.createUser({ ...body, organizationId: targetOrgId });
+    }
     getUsers(orgId, req) {
         const effectiveOrgId = req.user.role === client_1.Role.SYSTEM_ADMIN ? undefined : orgId;
         return this.foundationService.getUsers(effectiveOrgId);
@@ -186,6 +192,16 @@ __decorate([
     __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", void 0)
 ], FoundationController.prototype, "deleteBranch", null);
+__decorate([
+    (0, common_1.Post)('users'),
+    (0, roles_decorator_1.Roles)(client_1.Role.OWNER, client_1.Role.MANAGER, client_1.Role.SYSTEM_ADMIN),
+    __param(0, (0, org_decorator_1.CurrentOrg)()),
+    __param(1, (0, common_1.Req)()),
+    __param(2, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object, Object]),
+    __metadata("design:returntype", void 0)
+], FoundationController.prototype, "createUser", null);
 __decorate([
     (0, common_1.Get)('users'),
     (0, roles_decorator_1.Roles)(client_1.Role.OWNER, client_1.Role.MANAGER, client_1.Role.SYSTEM_ADMIN),

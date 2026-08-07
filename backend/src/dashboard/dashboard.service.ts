@@ -97,7 +97,6 @@ export class DashboardService {
       topProducts,
     };
   }
-}
 
   // Req 7.1–7.5: Role-scoped fulfillment pipeline metrics
   async getFulfillmentDashboard(orgId: string, role: string) {
@@ -114,13 +113,13 @@ export class DashboardService {
         where: { salesOrder: { organizationId: orgId }, status: status as any },
       });
 
-    // Build sections based on role (Req 7.5)
     const sections: any = {};
 
-    const showSales = [Role.SALES_REP, Role.MANAGER, Role.OWNER, Role.SYSTEM_ADMIN].includes(role as Role);
-    const showInvoice = [Role.INVOICE_MAKER, Role.MANAGER, Role.OWNER, Role.SYSTEM_ADMIN].includes(role as Role);
-    const showWarehouse = [Role.STORE_MAN, Role.MANAGER, Role.OWNER, Role.SYSTEM_ADMIN].includes(role as Role);
-    const showDelivery = [Role.DRIVER, Role.MANAGER, Role.OWNER, Role.SYSTEM_ADMIN].includes(role as Role);
+    const r = role as string;
+    const showSales = ['SALES_REP', 'MANAGER', 'OWNER', 'SYSTEM_ADMIN'].includes(r);
+    const showInvoice = ['INVOICE_MAKER', 'MANAGER', 'OWNER', 'SYSTEM_ADMIN'].includes(r);
+    const showWarehouse = ['STORE_MAN', 'MANAGER', 'OWNER', 'SYSTEM_ADMIN'].includes(r);
+    const showDelivery = ['DRIVER', 'MANAGER', 'OWNER', 'SYSTEM_ADMIN'].includes(r);
 
     if (showSales) {
       const [createdToday, pendingApproval, waitingInvoice] = await Promise.all([
@@ -137,20 +136,17 @@ export class DashboardService {
       const [waitingApproval, invoicesToday] = await Promise.all([
         countByStatus(OrderStatus.SUBMITTED),
         this.prisma.invoice.count({
-          where: {
-            organizationId: orgId,
-            createdAt: { gte: today, lt: tomorrow },
-          },
+          where: { organizationId: orgId, createdAt: { gte: today, lt: tomorrow } },
         }),
       ]);
       sections.invoice = { waitingApproval, invoicesToday };
     }
 
     if (showWarehouse) {
-      const [waitingPicking, readyForDelivery, picking] = await Promise.all([
+      const [waitingPicking, picking, readyForDelivery] = await Promise.all([
         countByStatus(OrderStatus.WAITING_FOR_WAREHOUSE),
-        countByStatus(OrderStatus.READY_FOR_DELIVERY),
         countByStatus(OrderStatus.PICKING),
+        countByStatus(OrderStatus.READY_FOR_DELIVERY),
       ]);
       sections.warehouse = { waitingPicking, picking, readyForDelivery };
     }
@@ -171,3 +167,4 @@ export class DashboardService {
 
     return sections;
   }
+}

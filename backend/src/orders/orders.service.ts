@@ -77,7 +77,7 @@ export class OrdersService {
         if (role === Role.SALES_REP) {
             return this.prisma.salesOrder.findMany({
                 where: { salesRepId: userId },
-                include: { lines: { include: { product: true } }, attachments: true },
+                include: { lines: { include: { product: true } }, attachments: true, invoice: { select: { id: true, invoiceNumber: true } }, statusEvents: { orderBy: { createdAt: 'asc' } } },
                 orderBy: { createdAt: 'desc' },
             });
         }
@@ -85,14 +85,14 @@ export class OrdersService {
         if (role === Role.INVOICE_MAKER) {
             return this.prisma.salesOrder.findMany({
                 where: { organizationId: orgId, status: OrderStatus.SUBMITTED },
-                include: { lines: { include: { product: true } }, attachments: true },
+                include: { lines: { include: { product: true } }, attachments: true, invoice: { select: { id: true, invoiceNumber: true } } },
                 orderBy: { createdAt: 'asc' },
             });
         }
         // All other permitted roles see full org scope
         return this.prisma.salesOrder.findMany({
             where: { organizationId: orgId },
-            include: { lines: { include: { product: true } }, attachments: true },
+            include: { lines: { include: { product: true } }, attachments: true, invoice: { select: { id: true, invoiceNumber: true } }, statusEvents: { orderBy: { createdAt: 'asc' } } },
             orderBy: { createdAt: 'desc' },
         });
     }

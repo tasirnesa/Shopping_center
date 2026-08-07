@@ -111,6 +111,28 @@ export class FoundationService {
   }
 
   // ───── Users (Org-scoped) ─────
+  async createUser(data: { email: string; password: string; name?: string; role: any; organizationId: string; branchId?: string }) {
+    const bcrypt = await import('bcrypt');
+    const hashed = await bcrypt.hash(data.password, 10);
+    try {
+      const user = await this.prisma.user.create({
+        data: {
+          email: data.email,
+          password: hashed,
+          name: data.name,
+          role: data.role,
+          organizationId: data.organizationId,
+          branchId: data.branchId ?? null,
+        },
+      });
+      const { password, ...result } = user as any;
+      return result;
+    } catch (e: any) {
+      if (e.code === 'P2002') throw new BadRequestException('Email already registered');
+      throw e;
+    }
+  }
+
   async getUsers(orgId?: string) {
     return this.prisma.user.findMany({
       where: orgId ? { organizationId: orgId } : undefined,

@@ -34,6 +34,10 @@ export declare class OrdersController {
         cancellationReason: string | null;
     }>;
     findAll(req: any): Promise<({
+        invoice: {
+            id: string;
+            invoiceNumber: string;
+        } | null;
         lines: ({
             product: {
                 id: string;

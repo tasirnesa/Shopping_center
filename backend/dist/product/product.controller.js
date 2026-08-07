@@ -55,7 +55,7 @@ __decorate([
 ], ProductController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)(),
-    (0, roles_decorator_1.Roles)('OWNER', 'MANAGER', 'CASHIER', 'STORE_KEEPER'),
+    (0, roles_decorator_1.Roles)('OWNER', 'MANAGER', 'CASHIER', 'STORE_KEEPER', 'SALES_REP', 'INVOICE_MAKER', 'STORE_MAN', 'DRIVER'),
     __param(0, (0, org_decorator_1.CurrentOrg)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -63,7 +63,7 @@ __decorate([
 ], ProductController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Get)('barcode/:barcode'),
-    (0, roles_decorator_1.Roles)('OWNER', 'MANAGER', 'CASHIER', 'STORE_KEEPER'),
+    (0, roles_decorator_1.Roles)('OWNER', 'MANAGER', 'CASHIER', 'STORE_KEEPER', 'SALES_REP', 'INVOICE_MAKER', 'STORE_MAN'),
     __param(0, (0, org_decorator_1.CurrentOrg)()),
     __param(1, (0, common_1.Param)('barcode')),
     __metadata("design:type", Function),
@@ -72,7 +72,7 @@ __decorate([
 ], ProductController.prototype, "findByBarcode", null);
 __decorate([
     (0, common_1.Get)(':id'),
-    (0, roles_decorator_1.Roles)('OWNER', 'MANAGER', 'CASHIER', 'STORE_KEEPER'),
+    (0, roles_decorator_1.Roles)('OWNER', 'MANAGER', 'CASHIER', 'STORE_KEEPER', 'SALES_REP', 'INVOICE_MAKER', 'STORE_MAN'),
     __param(0, (0, org_decorator_1.CurrentOrg)()),
     __param(1, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
