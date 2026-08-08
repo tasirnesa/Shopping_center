@@ -9,7 +9,7 @@ import { Role } from '@prisma/client';
 @Controller('dashboard')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class DashboardController {
-  constructor(private readonly dashboardService: DashboardService) {}
+  constructor(private readonly dashboardService: DashboardService) { }
 
   @Get('summary')
   @Roles('OWNER', 'MANAGER', 'CASHIER', 'STORE_KEEPER', 'SALES_REP', 'INVOICE_MAKER', 'STORE_MAN', 'DRIVER')
@@ -20,6 +20,10 @@ export class DashboardController {
   @Get('fulfillment')
   @Roles(Role.SALES_REP, Role.INVOICE_MAKER, Role.STORE_MAN, Role.DRIVER, Role.MANAGER, Role.OWNER, Role.SYSTEM_ADMIN)
   getFulfillment(@CurrentOrg() orgId: string, @Req() req: any) {
-    return this.dashboardService.getFulfillmentDashboard(orgId, req.user.role);
+    // If user has no orgId (created before fix), still return empty structure gracefully
+    if (!orgId) {
+      return {};
+    }
+    return this.dashboardService.getFulfillmentDashboard(orgId, req.user.role, req.user.id);
   }
 }

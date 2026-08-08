@@ -29,7 +29,10 @@ let DashboardController = class DashboardController {
         return this.dashboardService.getSummary(orgId);
     }
     getFulfillment(orgId, req) {
-        return this.dashboardService.getFulfillmentDashboard(orgId, req.user.role);
+        if (!orgId) {
+            return {};
+        }
+        return this.dashboardService.getFulfillmentDashboard(orgId, req.user.role, req.user.id);
     }
 };
 exports.DashboardController = DashboardController;

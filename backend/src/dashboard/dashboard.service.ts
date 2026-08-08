@@ -6,7 +6,7 @@ const LOW_STOCK_THRESHOLD = 10;
 
 @Injectable()
 export class DashboardService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   async getSummary(orgId: string) {
     const [products, sales, stockBalances, recentSales] = await Promise.all([
@@ -99,7 +99,7 @@ export class DashboardService {
   }
 
   // Req 7.1–7.5: Role-scoped fulfillment pipeline metrics
-  async getFulfillmentDashboard(orgId: string, role: string) {
+  async getFulfillmentDashboard(orgId: string, role: string, userId?: string) {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const tomorrow = new Date(today);
@@ -152,17 +152,29 @@ export class DashboardService {
     }
 
     if (showDelivery) {
-      const [outForDelivery, deliveredToday] = await Promise.all([
-        countDeliveryByStatus('OUT_FOR_DELIVERY'),
+      const isDriver = role === 'DRIVER';
+      const [outForDelivery, deliveredToday, pendingDelivery] = await Promise.all([
+        // Active deliveries: driver sees only their own, managers see all org
+        this.prisma.delivery.count({
+          where: {
+            salesOrder: { organizationId: orgId },
+            status: 'OUT_FOR_DELIVERY' as any,
+            ...(isDriver && userId ? { driverId: userId } : {}),
+          },
+        }),
+        // Delivered today: driver sees only their own, managers see all org
         this.prisma.delivery.count({
           where: {
             salesOrder: { organizationId: orgId },
             status: 'DELIVERED' as any,
             confirmedAt: { gte: today, lt: tomorrow },
+            ...(isDriver && userId ? { driverId: userId } : {}),
           },
         }),
+        // Pending (unassigned) deliveries: always org-wide — any driver can pick these up
+        countDeliveryByStatus('PENDING'),
       ]);
-      sections.delivery = { outForDelivery, deliveredToday };
+      sections.delivery = { outForDelivery, deliveredToday, pendingDelivery };
     }
 
     return sections;

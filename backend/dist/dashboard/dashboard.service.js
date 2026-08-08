@@ -97,7 +97,7 @@ let DashboardService = class DashboardService {
             topProducts,
         };
     }
-    async getFulfillmentDashboard(orgId, role) {
+    async getFulfillmentDashboard(orgId, role, userId) {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         const tomorrow = new Date(today);
@@ -140,17 +140,26 @@ let DashboardService = class DashboardService {
             sections.warehouse = { waitingPicking, picking, readyForDelivery };
         }
         if (showDelivery) {
-            const [outForDelivery, deliveredToday] = await Promise.all([
-                countDeliveryByStatus('OUT_FOR_DELIVERY'),
+            const isDriver = role === 'DRIVER';
+            const [outForDelivery, deliveredToday, pendingDelivery] = await Promise.all([
+                this.prisma.delivery.count({
+                    where: {
+                        salesOrder: { organizationId: orgId },
+                        status: 'OUT_FOR_DELIVERY',
+                        ...(isDriver && userId ? { driverId: userId } : {}),
+                    },
+                }),
                 this.prisma.delivery.count({
                     where: {
                         salesOrder: { organizationId: orgId },
                         status: 'DELIVERED',
                         confirmedAt: { gte: today, lt: tomorrow },
+                        ...(isDriver && userId ? { driverId: userId } : {}),
                     },
                 }),
+                countDeliveryByStatus('PENDING'),
             ]);
-            sections.delivery = { outForDelivery, deliveredToday };
+            sections.delivery = { outForDelivery, deliveredToday, pendingDelivery };
         }
         return sections;
     }

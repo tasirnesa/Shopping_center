@@ -15,46 +15,46 @@ export declare class DashboardController {
         }[];
         recentSales: ({
             branch: {
+                organizationId: string;
                 id: string;
-                name: string;
                 createdAt: Date;
                 updatedAt: Date;
-                organizationId: string;
+                name: string;
+                code: string | null;
                 phone: string | null;
                 address: string | null;
-                code: string | null;
             };
             details: ({
                 product: {
+                    organizationId: string;
                     id: string;
-                    name: string;
-                    barcode: string | null;
-                    price: number;
-                    cost: number;
                     createdAt: Date;
                     updatedAt: Date;
-                    organizationId: string;
+                    name: string;
+                    barcode: string | null;
                     categoryId: string | null;
                     brandId: string | null;
                     unitId: string | null;
+                    price: number;
+                    cost: number;
                 };
             } & {
                 id: string;
-                price: number;
-                quantity: number;
                 productId: string;
+                quantity: number;
+                price: number;
                 saleId: string;
             })[];
         } & {
-            id: string;
-            createdAt: Date;
-            updatedAt: Date;
             organizationId: string;
+            id: string;
+            branchId: string;
+            customerId: string | null;
             subTotal: number;
             discount: number;
             totalAmount: number;
-            branchId: string;
-            customerId: string | null;
+            createdAt: Date;
+            updatedAt: Date;
         })[];
         lowStockItems: {
             productId: string;
@@ -67,5 +67,5 @@ export declare class DashboardController {
             qty: number;
         }[];
     }>;
-    getFulfillment(orgId: string, req: any): Promise<any>;
+    getFulfillment(orgId: string, req: any): {};
 }
