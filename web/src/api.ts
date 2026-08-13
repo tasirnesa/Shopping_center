@@ -1,7 +1,9 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:3000",
+  // In containers the web server proxies /api to the backend.  Set
+  // VITE_API_BASE_URL when the API is hosted somewhere else.
+  baseURL: import.meta.env.VITE_API_BASE_URL || "/api",
 });
 
 api.interceptors.request.use((config) => {

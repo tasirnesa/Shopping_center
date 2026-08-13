@@ -5,5 +5,10 @@ export declare class UpdateOrderDto {
     deliveryAddress?: string;
     customerPhone?: string;
     branchId?: string;
+    customerId?: string;
+    paymentMethod?: string;
+    paymentTerm?: string;
+    chequeNumber?: string;
+    creditDueDate?: Date;
     lines?: CreateOrderLineDto[];
 }

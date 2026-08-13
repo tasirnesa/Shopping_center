@@ -39,6 +39,7 @@ const validOrderArb = fc.record({
   deliveryAddress: nonEmptyString,
   branchId: nonEmptyString,
   customerPhone: fc.option(nonEmptyString, { nil: undefined }),
+  paymentMethod: fc.constantFrom('CASH', 'CHEQUE', 'CREDIT', 'CARD', 'TRANSFER'),
   lines: fc.array(
     fc.record({
       productId: nonEmptyString,

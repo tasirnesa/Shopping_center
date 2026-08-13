@@ -1,0 +1,12 @@
+.git
+.vscode
+.kiro
+node_modules
+**/node_modules
+**/dist
+**/coverage
+**/*.tsbuildinfo
+backend/uploads
+*.log
+.env
+**/.env

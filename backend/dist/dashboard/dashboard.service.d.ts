@@ -15,46 +15,46 @@ export declare class DashboardService {
         }[];
         recentSales: ({
             branch: {
+                name: string;
                 organizationId: string;
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
-                name: string;
-                code: string | null;
                 phone: string | null;
                 address: string | null;
+                code: string | null;
             };
             details: ({
                 product: {
+                    name: string;
                     organizationId: string;
                     id: string;
                     createdAt: Date;
                     updatedAt: Date;
-                    name: string;
                     barcode: string | null;
+                    price: number;
+                    cost: number;
                     categoryId: string | null;
                     brandId: string | null;
                     unitId: string | null;
-                    price: number;
-                    cost: number;
                 };
             } & {
                 id: string;
+                price: number;
                 productId: string;
                 quantity: number;
-                price: number;
                 saleId: string;
             })[];
         } & {
             organizationId: string;
-            id: string;
             branchId: string;
-            customerId: string | null;
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
             subTotal: number;
             discount: number;
             totalAmount: number;
-            createdAt: Date;
-            updatedAt: Date;
+            customerId: string | null;
         })[];
         lowStockItems: {
             productId: string;

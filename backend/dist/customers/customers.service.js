@@ -49,6 +49,42 @@ let CustomersService = class CustomersService {
             return null;
         return this.prisma.customer.delete({ where: { id } });
     }
+    async saveEfdaLicense(orgId, id, filePath, fileName) {
+        const customer = await this.prisma.customer.findFirst({ where: { id, organizationId: orgId } });
+        if (!customer)
+            throw new common_1.NotFoundException('Customer not found');
+        return this.prisma.customer.update({
+            where: { id },
+            data: { efdaLicensePath: filePath, efdaLicenseFileName: fileName },
+        });
+    }
+    async getCredit(orgId, id) {
+        const customer = await this.prisma.customer.findFirst({
+            where: { id, organizationId: orgId },
+            select: { id: true, name: true, creditLimit: true, creditBalance: true },
+        });
+        if (!customer)
+            throw new common_1.NotFoundException('Customer not found');
+        return customer;
+    }
+    async addCredit(orgId, customerId, amount) {
+        const customer = await this.prisma.customer.findFirst({ where: { id: customerId, organizationId: orgId } });
+        if (!customer)
+            throw new common_1.NotFoundException('Customer not found');
+        return this.prisma.customer.update({
+            where: { id: customerId },
+            data: { creditBalance: { increment: amount } },
+        });
+    }
+    async settleCredit(orgId, customerId, amount) {
+        const customer = await this.prisma.customer.findFirst({ where: { id: customerId, organizationId: orgId } });
+        if (!customer)
+            throw new common_1.NotFoundException('Customer not found');
+        return this.prisma.customer.update({
+            where: { id: customerId },
+            data: { creditBalance: { decrement: amount } },
+        });
+    }
 };
 exports.CustomersService = CustomersService;
 exports.CustomersService = CustomersService = __decorate([

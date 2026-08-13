@@ -59,7 +59,12 @@ export declare class SalesService {
             id: string;
             createdAt: Date;
             updatedAt: Date;
+            tin: string | null;
             phone: string | null;
+            efdaLicensePath: string | null;
+            efdaLicenseFileName: string | null;
+            creditLimit: number;
+            creditBalance: number;
         } | null;
         details: ({
             product: {
@@ -139,7 +144,12 @@ export declare class SalesService {
             id: string;
             createdAt: Date;
             updatedAt: Date;
+            tin: string | null;
             phone: string | null;
+            efdaLicensePath: string | null;
+            efdaLicenseFileName: string | null;
+            creditLimit: number;
+            creditBalance: number;
         } | null;
         details: ({
             product: {
@@ -219,7 +229,12 @@ export declare class SalesService {
             id: string;
             createdAt: Date;
             updatedAt: Date;
+            tin: string | null;
             phone: string | null;
+            efdaLicensePath: string | null;
+            efdaLicenseFileName: string | null;
+            creditLimit: number;
+            creditBalance: number;
         } | null;
         details: ({
             product: {

@@ -19,6 +19,11 @@ class UpdateOrderDto {
     deliveryAddress;
     customerPhone;
     branchId;
+    customerId;
+    paymentMethod;
+    paymentTerm;
+    chequeNumber;
+    creditDueDate;
     lines;
 }
 exports.UpdateOrderDto = UpdateOrderDto;
@@ -47,6 +52,32 @@ __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], UpdateOrderDto.prototype, "branchId", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], UpdateOrderDto.prototype, "customerId", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], UpdateOrderDto.prototype, "paymentMethod", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], UpdateOrderDto.prototype, "paymentTerm", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], UpdateOrderDto.prototype, "chequeNumber", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Type)(() => Date),
+    (0, class_validator_1.IsDate)(),
+    __metadata("design:type", Date)
+], UpdateOrderDto.prototype, "creditDueDate", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsArray)(),

@@ -1,0 +1,221 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: shopping-center
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: shopping-center-secrets
+  namespace: shopping-center
+type: Opaque
+stringData:
+  # Replace these before applying to a shared or production cluster.
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: change-me
+  POSTGRES_DB: shopping_center
+  JWT_SECRET: replace-with-a-long-random-value
+  JWT_REFRESH_SECRET: replace-with-a-different-long-random-value
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: shopping-center-config
+  namespace: shopping-center
+data:
+  NODE_ENV: production
+  PORT: "3000"
+  UPLOAD_PATH: /app/uploads
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-data
+  namespace: shopping-center
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: uploads-data
+  namespace: shopping-center
+spec:
+  # Use ReadWriteMany storage if backend replicas are increased above one.
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  namespace: shopping-center
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:15-alpine
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_USER
+              valueFrom: { secretKeyRef: { name: shopping-center-secrets, key: POSTGRES_USER } }
+            - name: POSTGRES_PASSWORD
+              valueFrom: { secretKeyRef: { name: shopping-center-secrets, key: POSTGRES_PASSWORD } }
+            - name: POSTGRES_DB
+              valueFrom: { secretKeyRef: { name: shopping-center-secrets, key: POSTGRES_DB } }
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+          readinessProbe:
+            exec:
+              command: ["sh", "-c", "pg_isready -U $POSTGRES_USER -d $POSTGRES_DB"]
+            initialDelaySeconds: 5
+            periodSeconds: 5
+      volumes:
+        - name: data
+          persistentVolumeClaim: { claimName: postgres-data }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: shopping-center
+spec:
+  selector: { app: postgres }
+  ports:
+    - port: 5432
+      targetPort: 5432
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: shopping-center
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      initContainers:
+        - name: database-schema
+          image: ghcr.io/your-org/shopping-center-backend:latest
+          imagePullPolicy: IfNotPresent
+          command: ["sh", "-c", "until ./node_modules/.bin/prisma db push --schema=backend/prisma/schema.prisma; do sleep 3; done"]
+          env:
+            - name: DATABASE_URL
+              value: "postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@postgres:5432/$(POSTGRES_DB)?schema=public"
+            - name: POSTGRES_USER
+              valueFrom: { secretKeyRef: { name: shopping-center-secrets, key: POSTGRES_USER } }
+            - name: POSTGRES_PASSWORD
+              valueFrom: { secretKeyRef: { name: shopping-center-secrets, key: POSTGRES_PASSWORD } }
+            - name: POSTGRES_DB
+              valueFrom: { secretKeyRef: { name: shopping-center-secrets, key: POSTGRES_DB } }
+      containers:
+        - name: backend
+          image: ghcr.io/your-org/shopping-center-backend:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - configMapRef: { name: shopping-center-config }
+          env:
+            - name: DATABASE_URL
+              value: "postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@postgres:5432/$(POSTGRES_DB)?schema=public"
+            - name: POSTGRES_USER
+              valueFrom: { secretKeyRef: { name: shopping-center-secrets, key: POSTGRES_USER } }
+            - name: POSTGRES_PASSWORD
+              valueFrom: { secretKeyRef: { name: shopping-center-secrets, key: POSTGRES_PASSWORD } }
+            - name: POSTGRES_DB
+              valueFrom: { secretKeyRef: { name: shopping-center-secrets, key: POSTGRES_DB } }
+            - name: JWT_SECRET
+              valueFrom: { secretKeyRef: { name: shopping-center-secrets, key: JWT_SECRET } }
+            - name: JWT_REFRESH_SECRET
+              valueFrom: { secretKeyRef: { name: shopping-center-secrets, key: JWT_REFRESH_SECRET } }
+          volumeMounts:
+            - name: uploads
+              mountPath: /app/uploads
+          readinessProbe:
+            httpGet: { path: /health, port: 3000 }
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet: { path: /health, port: 3000 }
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          resources:
+            requests: { cpu: 100m, memory: 256Mi }
+            limits: { cpu: "1", memory: 512Mi }
+      volumes:
+        - name: uploads
+          persistentVolumeClaim: { claimName: uploads-data }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  namespace: shopping-center
+spec:
+  selector: { app: backend }
+  ports:
+    - port: 3000
+      targetPort: 3000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+  namespace: shopping-center
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+        - name: web
+          image: ghcr.io/your-org/shopping-center-web:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+          readinessProbe:
+            httpGet: { path: /, port: 80 }
+          livenessProbe:
+            httpGet: { path: /, port: 80 }
+          resources:
+            requests: { cpu: 50m, memory: 64Mi }
+            limits: { cpu: 250m, memory: 128Mi }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web
+  namespace: shopping-center
+spec:
+  type: ClusterIP
+  selector: { app: web }
+  ports:
+    - port: 80
+      targetPort: 80

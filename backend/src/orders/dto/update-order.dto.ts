@@ -6,6 +6,7 @@ import {
     IsNumber,
     Min,
     ArrayMinSize,
+    IsDate,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { CreateOrderLineDto } from './create-order.dto';
@@ -34,6 +35,27 @@ export class UpdateOrderDto {
     @IsOptional()
     @IsString()
     branchId?: string;
+
+    @IsOptional()
+    @IsString()
+    customerId?: string;
+
+    @IsOptional()
+    @IsString()
+    paymentMethod?: string;
+
+    @IsOptional()
+    @IsString()
+    paymentTerm?: string;
+
+    @IsOptional()
+    @IsString()
+    chequeNumber?: string;
+
+    @IsOptional()
+    @Type(() => Date)
+    @IsDate()
+    creditDueDate?: Date;
 
     @IsOptional()
     @IsArray()

@@ -46,6 +46,11 @@ class CreateOrderDto {
     deliveryAddress;
     customerPhone;
     branchId;
+    customerId;
+    paymentMethod;
+    paymentTerm;
+    chequeNumber;
+    creditDueDate;
     lines;
 }
 exports.CreateOrderDto = CreateOrderDto;
@@ -74,6 +79,32 @@ __decorate([
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], CreateOrderDto.prototype, "branchId", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateOrderDto.prototype, "customerId", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateOrderDto.prototype, "paymentMethod", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateOrderDto.prototype, "paymentTerm", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateOrderDto.prototype, "chequeNumber", void 0);
+__decorate([
+    (0, class_transformer_1.Type)(() => Date),
+    (0, class_validator_1.IsDate)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Date)
+], CreateOrderDto.prototype, "creditDueDate", void 0);
 __decorate([
     (0, class_validator_1.IsArray)(),
     (0, class_validator_1.ValidateNested)({ each: true }),

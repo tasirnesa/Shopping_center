@@ -7,6 +7,7 @@ import {
     Min,
     IsNotEmpty,
     ArrayMinSize,
+    IsDate,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
@@ -49,6 +50,27 @@ export class CreateOrderDto {
     @IsString()
     @IsNotEmpty()
     branchId!: string;
+
+    @IsString()
+    @IsOptional()
+    customerId?: string;
+
+    @IsString()
+    @IsNotEmpty()
+    paymentMethod!: string; // CASH, CHEQUE, CREDIT, CARD, TRANSFER
+
+    @IsString()
+    @IsOptional()
+    paymentTerm?: string;
+
+    @IsString()
+    @IsOptional()
+    chequeNumber?: string;
+
+    @Type(() => Date)
+    @IsDate()
+    @IsOptional()
+    creditDueDate?: Date;
 
     @IsArray()
     @ValidateNested({ each: true })

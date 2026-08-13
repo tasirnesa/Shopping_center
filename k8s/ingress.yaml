@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: shopping-center
+  namespace: shopping-center
+  annotations:
+    # Requires an installed ingress controller (for example ingress-nginx).
+    nginx.ingress.kubernetes.io/proxy-body-size: 20m
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: shopping-center.example.com # Replace with your domain.
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: web
+                port:
+                  number: 80

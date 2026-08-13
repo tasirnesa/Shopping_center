@@ -14,9 +14,10 @@
     "sourceMap": true,
     "outDir": "./dist",
     "rootDir": "./src",
-    "baseUrl": "./",
-    "types": ["node", "multer"],
-    "ignoreDeprecations": "5.0",
+    "types": [
+      "node",
+      "multer"
+    ],
     "incremental": true,
     "skipLibCheck": true,
     "strictNullChecks": true,
@@ -25,6 +26,15 @@
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "test", "**/*spec.ts", "seed-owner.ts", "prisma"]
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "test",
+    "**/*spec.ts",
+    "seed-owner.ts",
+    "prisma"
+  ]
 }

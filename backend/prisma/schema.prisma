@@ -214,6 +214,11 @@ model Customer {
   name           String
   phone          String?
   email          String?
+  tin            String?      // Tax ID for order auto-fill
+  efdaLicensePath String?     // Stored EFDA license file path (auto-attached to new orders)
+  efdaLicenseFileName String? // Original file name
+  creditLimit    Float        @default(0)    // Maximum credit allowed
+  creditBalance  Float        @default(0)    // Current outstanding credit
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
   sales          Sale[]
@@ -405,6 +410,10 @@ model SalesOrder {
   taxRate          Float         @default(15)
   taxAmount        Float         @default(0)
   grandTotal       Float         @default(0)
+  paymentMethod    String        @default("CASH")   // CASH, CHEQUE, CREDIT, CARD, TRANSFER
+  paymentTerm      String?       // e.g. "NET30", "NET60", "IMMEDIATE"
+  chequeNumber     String?       // Cheque number if paymentMethod = CHEQUE
+  creditDueDate    DateTime?     // Credit payment due date
   rejectionReason  String?
   cancellationReason String?
   createdAt        DateTime      @default(now())
@@ -446,6 +455,7 @@ model Attachment {
 
 enum AttachmentType {
   TRADE_LICENSE
+  EFDA_LICENSE
   PAYMENT_RECEIPT
   PURCHASE_ORDER
   OTHER

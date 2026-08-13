@@ -96,10 +96,15 @@ let OrdersService = class OrdersService {
                     organizationId: orgId,
                     branchId: dto.branchId,
                     salesRepId: userId,
+                    customerId: dto.customerId,
                     customerName: dto.customerName,
                     tin: dto.tin,
                     deliveryAddress: dto.deliveryAddress,
                     customerPhone: dto.customerPhone,
+                    paymentMethod: dto.paymentMethod,
+                    chequeNumber: dto.chequeNumber,
+                    creditDueDate: dto.creditDueDate,
+                    paymentTerm: dto.paymentTerm,
                     status: client_1.OrderStatus.DRAFT,
                     subtotal,
                     taxRate,
@@ -110,6 +115,22 @@ let OrdersService = class OrdersService {
                     },
                 },
             });
+            if (dto.customerId) {
+                const customer = await tx.customer.findUnique({ where: { id: dto.customerId } });
+                if (customer?.efdaLicensePath) {
+                    await tx.attachment.create({
+                        data: {
+                            salesOrderId: order.id,
+                            type: 'EFDA_LICENSE',
+                            fileName: customer.efdaLicenseFileName || 'efda_license.pdf',
+                            filePath: customer.efdaLicensePath,
+                            mimeType: 'application/pdf',
+                            fileSize: 0,
+                            uploadedById: userId,
+                        }
+                    });
+                }
+            }
             await this.audit.recordTransition(tx, order.id, null, client_1.OrderStatus.DRAFT, userId, 'Order created');
             return order;
         });
@@ -176,6 +197,16 @@ let OrdersService = class OrdersService {
             updateData.customerPhone = dto.customerPhone;
         if (dto.branchId !== undefined)
             updateData.branchId = dto.branchId;
+        if (dto.customerId !== undefined)
+            updateData.customerId = dto.customerId;
+        if (dto.paymentMethod !== undefined)
+            updateData.paymentMethod = dto.paymentMethod;
+        if (dto.chequeNumber !== undefined)
+            updateData.chequeNumber = dto.chequeNumber;
+        if (dto.creditDueDate !== undefined)
+            updateData.creditDueDate = dto.creditDueDate;
+        if (dto.paymentTerm !== undefined)
+            updateData.paymentTerm = dto.paymentTerm;
         if (dto.lines && dto.lines.length > 0) {
             let subtotal = 0;
             const mappedLines = dto.lines.map((line) => {
@@ -224,8 +255,19 @@ let OrdersService = class OrdersService {
         }
         const hasTradeLicense = order.attachments.some(a => a.type === 'TRADE_LICENSE');
         const hasPaymentReceipt = order.attachments.some(a => a.type === 'PAYMENT_RECEIPT');
-        if (!hasTradeLicense || !hasPaymentReceipt) {
-            throw new common_1.BadRequestException('Order must have Trade License and Payment Receipt attachments before submitting');
+        if (!hasTradeLicense) {
+            throw new common_1.BadRequestException('Order must have EFDA License attachment before submitting');
+        }
+        if (order.paymentMethod === 'CASH' || order.paymentMethod === 'CHEQUE') {
+            if (!hasPaymentReceipt) {
+                throw new common_1.BadRequestException('Order must have Payment Receipt attachment for Cash/Cheque payments');
+            }
+        }
+        if (order.paymentMethod === 'CHEQUE' && !order.chequeNumber) {
+            throw new common_1.BadRequestException('Cheque number is required for CHEQUE payment method');
+        }
+        if (order.paymentMethod === 'CREDIT' && !order.creditDueDate) {
+            throw new common_1.BadRequestException('Credit due date is required for CREDIT payment method');
         }
         const nextStatus = this.stateMachine.transition(order.status, 'submit', client_1.Role.SALES_REP);
         return this.prisma.$transaction(async (tx) => {
@@ -254,7 +296,7 @@ let OrdersService = class OrdersService {
         this.fileUpload.validateFile(file);
         const subPath = path.join(orgId, id);
         const storedPath = await this.fileUpload.store(file, subPath, type);
-        return this.prisma.attachment.create({
+        const created = await this.prisma.attachment.create({
             data: {
                 salesOrderId: id,
                 type,
@@ -265,6 +307,16 @@ let OrdersService = class OrdersService {
                 uploadedById: userId,
             }
         });
+        if (type === 'TRADE_LICENSE' && order.customerId) {
+            await this.prisma.customer.update({
+                where: { id: order.customerId },
+                data: {
+                    efdaLicensePath: storedPath,
+                    efdaLicenseFileName: file.originalname,
+                },
+            });
+        }
+        return created;
     }
     async getAttachment(orderId, attachmentId, orgId) {
         const attachment = await this.prisma.attachment.findUnique({

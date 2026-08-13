@@ -116,6 +116,42 @@ NODE_ENV=development
 # File uploads (product images, receipts, etc.)
 
 UPLOAD_PATH=./uploads
+
+Containerized setup
+
+Docker Compose runs the web application, API, and PostgreSQL together. The web
+application is available at http://localhost:8080 and the API is available at
+http://localhost:3000.
+
+```bash
+docker compose up --build
+```
+
+The Compose configuration applies the Prisma schema at startup and persists both
+PostgreSQL data and uploaded files in named Docker volumes. Do not use the
+default JWT values outside local development; set `JWT_SECRET` and
+`JWT_REFRESH_SECRET` in `docker-compose.yml` or via your deployment tooling.
+
+Kubernetes
+
+The manifests in `k8s/` deploy PostgreSQL, the API, and two web replicas. Build
+and publish the images, then replace the placeholder image names in
+`k8s/base.yaml` (`ghcr.io/your-org/...`) with your registry paths and tags.
+Update the values in the `shopping-center-secrets` Secret and the hostname in
+`k8s/ingress.yaml` before deploying.
+
+```bash
+docker build -f backend/Dockerfile -t your-registry/shopping-center-backend:1.0.0 .
+docker build -f web/Dockerfile -t your-registry/shopping-center-web:1.0.0 .
+kubectl apply -f k8s/base.yaml
+kubectl apply -f k8s/ingress.yaml
+```
+
+The Kubernetes storage claims expect a default StorageClass. For multiple API
+replicas, change the uploads claim to storage that supports `ReadWriteMany`, or
+move uploads to object storage. The bundled PostgreSQL deployment is suitable
+for development or small installations; use a managed PostgreSQL service for
+production.
 API Documentation
 Swagger documentation is generated automatically once the backend is running:
 (http://localhost:5173/)

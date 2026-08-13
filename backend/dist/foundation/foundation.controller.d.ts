@@ -4,56 +4,56 @@ export declare class FoundationController {
     private readonly foundationService;
     constructor(foundationService: FoundationService);
     getCategories(orgId: string): Promise<{
-        id: string;
-        organizationId: string;
         name: string;
+        organizationId: string;
+        id: string;
         description: string | null;
     }[]>;
     createCategory(orgId: string, body: {
         name: string;
         description?: string;
     }): Promise<{
-        id: string;
-        organizationId: string;
         name: string;
+        organizationId: string;
+        id: string;
         description: string | null;
     }>;
     deleteCategory(orgId: string, id: string): Promise<import(".prisma/client").Prisma.BatchPayload>;
     getBrands(orgId: string): Promise<{
-        id: string;
-        organizationId: string;
         name: string;
+        organizationId: string;
+        id: string;
     }[]>;
     createBrand(orgId: string, body: {
         name: string;
     }): Promise<{
-        id: string;
-        organizationId: string;
         name: string;
+        organizationId: string;
+        id: string;
     }>;
     deleteBrand(orgId: string, id: string): Promise<import(".prisma/client").Prisma.BatchPayload>;
     getUnits(orgId: string): Promise<{
-        id: string;
-        organizationId: string;
         name: string;
+        organizationId: string;
+        id: string;
     }[]>;
     createUnit(orgId: string, body: {
         name: string;
     }): Promise<{
-        id: string;
-        organizationId: string;
         name: string;
+        organizationId: string;
+        id: string;
     }>;
     deleteUnit(orgId: string, id: string): Promise<import(".prisma/client").Prisma.BatchPayload>;
     getBranches(orgId: string): Promise<{
-        id: string;
-        organizationId: string;
         name: string;
-        code: string | null;
-        phone: string | null;
-        address: string | null;
+        organizationId: string;
+        id: string;
         createdAt: Date;
         updatedAt: Date;
+        phone: string | null;
+        address: string | null;
+        code: string | null;
     }[]>;
     createBranch(orgId: string, body: {
         name: string;
@@ -61,14 +61,14 @@ export declare class FoundationController {
         phone?: string;
         address?: string;
     }): Promise<{
-        id: string;
-        organizationId: string;
         name: string;
-        code: string | null;
-        phone: string | null;
-        address: string | null;
+        organizationId: string;
+        id: string;
         createdAt: Date;
         updatedAt: Date;
+        phone: string | null;
+        address: string | null;
+        code: string | null;
     }>;
     updateBranch(orgId: string, id: string, body: {
         name?: string;
@@ -76,24 +76,24 @@ export declare class FoundationController {
         phone?: string;
         address?: string;
     }): Promise<{
-        id: string;
-        organizationId: string;
         name: string;
-        code: string | null;
-        phone: string | null;
-        address: string | null;
+        organizationId: string;
+        id: string;
         createdAt: Date;
         updatedAt: Date;
+        phone: string | null;
+        address: string | null;
+        code: string | null;
     }>;
     deleteBranch(orgId: string, id: string): Promise<{
-        id: string;
-        organizationId: string;
         name: string;
-        code: string | null;
-        phone: string | null;
-        address: string | null;
+        organizationId: string;
+        id: string;
         createdAt: Date;
         updatedAt: Date;
+        phone: string | null;
+        address: string | null;
+        code: string | null;
     }>;
     createUser(orgId: string, req: any, body: {
         email: string;
@@ -104,21 +104,21 @@ export declare class FoundationController {
         organizationId?: string;
     }): Promise<any>;
     getUsers(orgId: string, req: any): Promise<{
-        id: string;
-        name: string | null;
         organization: {
-            id: string;
             name: string;
+            id: string;
         } | null;
         branch: {
-            id: string;
             name: string;
+            id: string;
         } | null;
-        createdAt: Date;
-        branchId: string | null;
         email: string;
+        name: string | null;
         role: import(".prisma/client").$Enums.Role;
+        branchId: string | null;
+        id: string;
         status: string;
+        createdAt: Date;
     }[]>;
     updateUserRole(orgId: string, id: string, body: {
         role: Role;
