@@ -37,9 +37,9 @@ export declare class WarehouseService {
         salesOrderId: string;
     }>;
     confirmPicking(prismaClient: Prisma.TransactionClient, salesOrderId: string, actorId: string): Promise<{
+        id: string;
         organizationId: string;
         branchId: string;
-        id: string;
         status: import(".prisma/client").$Enums.OrderStatus;
         createdAt: Date;
         updatedAt: Date;
@@ -63,9 +63,9 @@ export declare class WarehouseService {
     reverseStockDeduction(prismaClient: Prisma.TransactionClient, order: SalesOrderWithLines): Promise<void>;
     startPicking(orderId: string, storeManId: string, organizationId: string): Promise<{
         order: {
+            id: string;
             organizationId: string;
             branchId: string;
-            id: string;
             status: import(".prisma/client").$Enums.OrderStatus;
             createdAt: Date;
             updatedAt: Date;
@@ -102,9 +102,9 @@ export declare class WarehouseService {
         };
     }>;
     confirmPickingForOrder(orderId: string, storeManId: string, organizationId: string): Promise<{
+        id: string;
         organizationId: string;
         branchId: string;
-        id: string;
         status: import(".prisma/client").$Enums.OrderStatus;
         createdAt: Date;
         updatedAt: Date;

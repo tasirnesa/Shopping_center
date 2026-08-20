@@ -14,6 +14,29 @@ export declare class SalesService {
         }[];
         branchId: string;
     }): Promise<{
+        organization: {
+            id: string;
+            email: string | null;
+            name: string;
+            status: string;
+            createdAt: Date;
+            updatedAt: Date;
+            businessType: string | null;
+            tin: string | null;
+            phone: string | null;
+            address: string | null;
+            logo: string | null;
+        };
+        branch: {
+            id: string;
+            organizationId: string;
+            name: string;
+            createdAt: Date;
+            updatedAt: Date;
+            phone: string | null;
+            address: string | null;
+            code: string | null;
+        };
         returns: ({
             details: {
                 id: string;
@@ -29,34 +52,11 @@ export declare class SalesService {
             totalRefund: number;
             saleId: string;
         })[];
-        organization: {
-            email: string | null;
-            name: string;
-            id: string;
-            status: string;
-            createdAt: Date;
-            updatedAt: Date;
-            businessType: string | null;
-            tin: string | null;
-            phone: string | null;
-            address: string | null;
-            logo: string | null;
-        };
-        branch: {
-            name: string;
-            organizationId: string;
-            id: string;
-            createdAt: Date;
-            updatedAt: Date;
-            phone: string | null;
-            address: string | null;
-            code: string | null;
-        };
         customer: {
+            id: string;
+            organizationId: string;
             email: string | null;
             name: string;
-            organizationId: string;
-            id: string;
             createdAt: Date;
             updatedAt: Date;
             tin: string | null;
@@ -68,9 +68,9 @@ export declare class SalesService {
         } | null;
         details: ({
             product: {
-                name: string;
-                organizationId: string;
                 id: string;
+                organizationId: string;
+                name: string;
                 createdAt: Date;
                 updatedAt: Date;
                 barcode: string | null;
@@ -88,9 +88,9 @@ export declare class SalesService {
             saleId: string;
         })[];
     } & {
+        id: string;
         organizationId: string;
         branchId: string;
-        id: string;
         createdAt: Date;
         updatedAt: Date;
         subTotal: number;
@@ -99,6 +99,29 @@ export declare class SalesService {
         customerId: string | null;
     }>;
     findAll(orgId: string): Promise<({
+        organization: {
+            id: string;
+            email: string | null;
+            name: string;
+            status: string;
+            createdAt: Date;
+            updatedAt: Date;
+            businessType: string | null;
+            tin: string | null;
+            phone: string | null;
+            address: string | null;
+            logo: string | null;
+        };
+        branch: {
+            id: string;
+            organizationId: string;
+            name: string;
+            createdAt: Date;
+            updatedAt: Date;
+            phone: string | null;
+            address: string | null;
+            code: string | null;
+        };
         returns: ({
             details: {
                 id: string;
@@ -114,34 +137,11 @@ export declare class SalesService {
             totalRefund: number;
             saleId: string;
         })[];
-        organization: {
-            email: string | null;
-            name: string;
-            id: string;
-            status: string;
-            createdAt: Date;
-            updatedAt: Date;
-            businessType: string | null;
-            tin: string | null;
-            phone: string | null;
-            address: string | null;
-            logo: string | null;
-        };
-        branch: {
-            name: string;
-            organizationId: string;
-            id: string;
-            createdAt: Date;
-            updatedAt: Date;
-            phone: string | null;
-            address: string | null;
-            code: string | null;
-        };
         customer: {
+            id: string;
+            organizationId: string;
             email: string | null;
             name: string;
-            organizationId: string;
-            id: string;
             createdAt: Date;
             updatedAt: Date;
             tin: string | null;
@@ -153,9 +153,9 @@ export declare class SalesService {
         } | null;
         details: ({
             product: {
-                name: string;
-                organizationId: string;
                 id: string;
+                organizationId: string;
+                name: string;
                 createdAt: Date;
                 updatedAt: Date;
                 barcode: string | null;
@@ -173,9 +173,9 @@ export declare class SalesService {
             saleId: string;
         })[];
     } & {
+        id: string;
         organizationId: string;
         branchId: string;
-        id: string;
         createdAt: Date;
         updatedAt: Date;
         subTotal: number;
@@ -184,6 +184,29 @@ export declare class SalesService {
         customerId: string | null;
     })[]>;
     findOne(orgId: string, id: string): Promise<({
+        organization: {
+            id: string;
+            email: string | null;
+            name: string;
+            status: string;
+            createdAt: Date;
+            updatedAt: Date;
+            businessType: string | null;
+            tin: string | null;
+            phone: string | null;
+            address: string | null;
+            logo: string | null;
+        };
+        branch: {
+            id: string;
+            organizationId: string;
+            name: string;
+            createdAt: Date;
+            updatedAt: Date;
+            phone: string | null;
+            address: string | null;
+            code: string | null;
+        };
         returns: ({
             details: {
                 id: string;
@@ -199,34 +222,11 @@ export declare class SalesService {
             totalRefund: number;
             saleId: string;
         })[];
-        organization: {
-            email: string | null;
-            name: string;
-            id: string;
-            status: string;
-            createdAt: Date;
-            updatedAt: Date;
-            businessType: string | null;
-            tin: string | null;
-            phone: string | null;
-            address: string | null;
-            logo: string | null;
-        };
-        branch: {
-            name: string;
-            organizationId: string;
-            id: string;
-            createdAt: Date;
-            updatedAt: Date;
-            phone: string | null;
-            address: string | null;
-            code: string | null;
-        };
         customer: {
+            id: string;
+            organizationId: string;
             email: string | null;
             name: string;
-            organizationId: string;
-            id: string;
             createdAt: Date;
             updatedAt: Date;
             tin: string | null;
@@ -238,9 +238,9 @@ export declare class SalesService {
         } | null;
         details: ({
             product: {
-                name: string;
-                organizationId: string;
                 id: string;
+                organizationId: string;
+                name: string;
                 createdAt: Date;
                 updatedAt: Date;
                 barcode: string | null;
@@ -258,9 +258,9 @@ export declare class SalesService {
             saleId: string;
         })[];
     } & {
+        id: string;
         organizationId: string;
         branchId: string;
-        id: string;
         createdAt: Date;
         updatedAt: Date;
         subTotal: number;

@@ -16,45 +16,45 @@ export declare class DashboardService {
         recentSales: ({
             branch: {
                 id: string;
-                createdAt: Date;
-                updatedAt: Date;
                 organizationId: string;
                 name: string;
+                createdAt: Date;
+                updatedAt: Date;
                 phone: string | null;
-                code: string | null;
                 address: string | null;
+                code: string | null;
             };
             details: ({
                 product: {
                     id: string;
-                    createdAt: Date;
-                    updatedAt: Date;
                     organizationId: string;
                     name: string;
+                    createdAt: Date;
+                    updatedAt: Date;
                     barcode: string | null;
+                    price: number;
+                    cost: number;
                     categoryId: string | null;
                     brandId: string | null;
                     unitId: string | null;
-                    price: number;
-                    cost: number;
                 };
             } & {
                 id: string;
-                quantity: number;
-                productId: string;
                 price: number;
+                productId: string;
+                quantity: number;
                 saleId: string;
             })[];
         } & {
-            customerId: string | null;
             id: string;
-            createdAt: Date;
-            updatedAt: Date;
             organizationId: string;
             branchId: string;
-            discount: number;
+            createdAt: Date;
+            updatedAt: Date;
             subTotal: number;
+            discount: number;
             totalAmount: number;
+            customerId: string | null;
         })[];
         lowStockItems: {
             productId: string;
@@ -77,11 +77,11 @@ export declare class DashboardService {
         }>;
         orders: {
             id: string;
-            customerName: string;
             status: import(".prisma/client").$Enums.OrderStatus;
+            createdAt: Date;
+            customerName: string;
             grandTotal: number;
             paymentMethod: string;
-            createdAt: Date;
         }[];
     }>;
     getFulfillmentDashboard(orgId: string, role: string, userId?: string): Promise<any>;

@@ -4,9 +4,9 @@ export declare class ExpensesService {
     constructor(prisma: PrismaService);
     findAll(orgId: string, branchId?: string): Promise<({
         branch: {
-            name: string;
-            organizationId: string;
             id: string;
+            organizationId: string;
+            name: string;
             createdAt: Date;
             updatedAt: Date;
             phone: string | null;
@@ -14,9 +14,9 @@ export declare class ExpensesService {
             code: string | null;
         };
     } & {
+        id: string;
         organizationId: string;
         branchId: string;
-        id: string;
         createdAt: Date;
         description: string;
         amount: number;
@@ -29,9 +29,9 @@ export declare class ExpensesService {
         date?: string;
     }): Promise<{
         branch: {
-            name: string;
-            organizationId: string;
             id: string;
+            organizationId: string;
+            name: string;
             createdAt: Date;
             updatedAt: Date;
             phone: string | null;
@@ -39,18 +39,18 @@ export declare class ExpensesService {
             code: string | null;
         };
     } & {
+        id: string;
         organizationId: string;
         branchId: string;
-        id: string;
         createdAt: Date;
         description: string;
         amount: number;
         date: Date;
     }>;
     remove(orgId: string, id: string): Promise<{
+        id: string;
         organizationId: string;
         branchId: string;
-        id: string;
         createdAt: Date;
         description: string;
         amount: number;

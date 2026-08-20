@@ -9,9 +9,9 @@ export declare class InvoicesController {
                 name: string | null;
             };
         } & {
+            id: string;
             organizationId: string;
             branchId: string;
-            id: string;
             status: import(".prisma/client").$Enums.OrderStatus;
             createdAt: Date;
             updatedAt: Date;
@@ -34,9 +34,9 @@ export declare class InvoicesController {
         };
         lines: ({
             product: {
-                name: string;
-                organizationId: string;
                 id: string;
+                organizationId: string;
+                name: string;
                 createdAt: Date;
                 updatedAt: Date;
                 barcode: string | null;
@@ -56,8 +56,8 @@ export declare class InvoicesController {
             total: number;
         })[];
     } & {
-        organizationId: string;
         id: string;
+        organizationId: string;
         createdAt: Date;
         taxRate: number;
         salesOrderId: string;

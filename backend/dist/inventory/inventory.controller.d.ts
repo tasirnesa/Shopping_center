@@ -7,28 +7,28 @@ export declare class InventoryController {
     private readonly inventoryService;
     constructor(inventoryService: InventoryService);
     getSuppliers(orgId: string): Promise<{
+        id: string;
+        organizationId: string;
         email: string | null;
         name: string;
-        organizationId: string;
-        id: string;
         createdAt: Date;
         updatedAt: Date;
         contact: string | null;
     }[]>;
     createSupplier(orgId: string, dto: CreateSupplierDto): Promise<{
+        id: string;
+        organizationId: string;
         email: string | null;
         name: string;
-        organizationId: string;
-        id: string;
         createdAt: Date;
         updatedAt: Date;
         contact: string | null;
     }>;
     getPurchases(orgId: string): Promise<({
         branch: {
-            name: string;
-            organizationId: string;
             id: string;
+            organizationId: string;
+            name: string;
             createdAt: Date;
             updatedAt: Date;
             phone: string | null;
@@ -36,19 +36,19 @@ export declare class InventoryController {
             code: string | null;
         };
         supplier: {
+            id: string;
+            organizationId: string;
             email: string | null;
             name: string;
-            organizationId: string;
-            id: string;
             createdAt: Date;
             updatedAt: Date;
             contact: string | null;
         };
         details: ({
             product: {
-                name: string;
-                organizationId: string;
                 id: string;
+                organizationId: string;
+                name: string;
                 createdAt: Date;
                 updatedAt: Date;
                 barcode: string | null;
@@ -66,9 +66,9 @@ export declare class InventoryController {
             purchaseId: string;
         })[];
     } & {
+        id: string;
         organizationId: string;
         branchId: string;
-        id: string;
         createdAt: Date;
         updatedAt: Date;
         totalAmount: number;
@@ -83,9 +83,9 @@ export declare class InventoryController {
             purchaseId: string;
         }[];
     } & {
+        id: string;
         organizationId: string;
         branchId: string;
-        id: string;
         createdAt: Date;
         updatedAt: Date;
         totalAmount: number;
@@ -93,9 +93,9 @@ export declare class InventoryController {
     }>;
     getStockBalance(orgId: string, branchId?: string): Promise<({
         branch: {
-            name: string;
-            organizationId: string;
             id: string;
+            organizationId: string;
+            name: string;
             createdAt: Date;
             updatedAt: Date;
             phone: string | null;
@@ -104,20 +104,20 @@ export declare class InventoryController {
         };
         product: {
             category: {
-                name: string;
-                organizationId: string;
                 id: string;
+                organizationId: string;
+                name: string;
                 description: string | null;
             } | null;
             unit: {
-                name: string;
-                organizationId: string;
                 id: string;
+                organizationId: string;
+                name: string;
             } | null;
         } & {
-            name: string;
-            organizationId: string;
             id: string;
+            organizationId: string;
+            name: string;
             createdAt: Date;
             updatedAt: Date;
             barcode: string | null;
@@ -128,17 +128,17 @@ export declare class InventoryController {
             unitId: string | null;
         };
     } & {
-        branchId: string;
         id: string;
+        branchId: string;
         updatedAt: Date;
         productId: string;
         quantity: number;
     })[]>;
     getTransactions(orgId: string, branchId?: string): Promise<({
         branch: {
-            name: string;
-            organizationId: string;
             id: string;
+            organizationId: string;
+            name: string;
             createdAt: Date;
             updatedAt: Date;
             phone: string | null;
@@ -146,9 +146,9 @@ export declare class InventoryController {
             code: string | null;
         };
         product: {
-            name: string;
-            organizationId: string;
             id: string;
+            organizationId: string;
+            name: string;
             createdAt: Date;
             updatedAt: Date;
             barcode: string | null;
@@ -159,8 +159,8 @@ export declare class InventoryController {
             unitId: string | null;
         };
     } & {
-        branchId: string;
         id: string;
+        branchId: string;
         createdAt: Date;
         productId: string;
         quantity: number;
@@ -168,8 +168,8 @@ export declare class InventoryController {
         reference: string | null;
     })[]>;
     adjustStock(orgId: string, dto: AdjustStockDto): Promise<{
-        branchId: string;
         id: string;
+        branchId: string;
         createdAt: Date;
         productId: string;
         quantity: number;

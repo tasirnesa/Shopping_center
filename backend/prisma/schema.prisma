@@ -43,6 +43,7 @@ model Organization {
   invoices        Invoice[]
   notifications   Notification[]
   invoiceSequence InvoiceSequence?
+  internalMessages InternalMessage[]
 }
 
 model OrganizationSettings {
@@ -113,6 +114,8 @@ model User {
   deliveryConfirmations Delivery[]        @relation("DeliveryConfirmations")
   attachments           Attachment[]
   orderStatusEvents     OrderStatusEvent[]
+  sentMessages          InternalMessage[] @relation("SentMessages")
+  receivedMessages      InternalMessage[] @relation("ReceivedMessages")
 }
 
 model RefreshToken {
@@ -226,7 +229,7 @@ model Customer {
   // Order Fulfillment
   salesOrders    SalesOrder[]
 
-  @@unique([organizationId, tin], name: "unique_tin_per_org")
+  // @@unique([organizationId, tin], map: "Customer_organizationId_tin_key")
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -569,3 +572,21 @@ model InvoiceSequence {
   organization   Organization @relation(fields: [organizationId], references: [id])
   lastNumber     Int          @default(0)
 }
+
+// ─────────────────────────────────────────────────────────────
+// INTERNAL CHAT
+// ─────────────────────────────────────────────────────────────
+
+model InternalMessage {
+  id             String       @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  senderId       String
+  sender         User         @relation("SentMessages", fields: [senderId], references: [id])
+  receiverId     String
+  receiver       User         @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  content        String
+  read           Boolean      @default(false)
+  createdAt      DateTime     @default(now())
+}
+

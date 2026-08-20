@@ -38,8 +38,8 @@ export declare class DeliveriesController {
             invoiceNumber: string;
         };
         driver: {
-            name: string | null;
             id: string;
+            name: string | null;
         } | null;
     } & {
         id: string;
@@ -58,9 +58,9 @@ export declare class DeliveriesController {
     })[]>;
     findOne(req: any, id: string): Promise<{
         salesOrder: {
+            id: string;
             organizationId: string;
             branchId: string;
-            id: string;
             status: import(".prisma/client").$Enums.OrderStatus;
             createdAt: Date;
             updatedAt: Date;
@@ -84,9 +84,9 @@ export declare class DeliveriesController {
         invoice: {
             lines: ({
                 product: {
-                    name: string;
-                    organizationId: string;
                     id: string;
+                    organizationId: string;
+                    name: string;
                     createdAt: Date;
                     updatedAt: Date;
                     barcode: string | null;
@@ -106,8 +106,8 @@ export declare class DeliveriesController {
                 total: number;
             })[];
         } & {
-            organizationId: string;
             id: string;
+            organizationId: string;
             createdAt: Date;
             taxRate: number;
             salesOrderId: string;
@@ -119,8 +119,8 @@ export declare class DeliveriesController {
             invoiceMakerId: string;
         };
         driver: {
-            name: string | null;
             id: string;
+            name: string | null;
         } | null;
     } & {
         id: string;
@@ -139,9 +139,9 @@ export declare class DeliveriesController {
     }>;
     pickup(req: any, id: string): Promise<{
         order: {
+            id: string;
             organizationId: string;
             branchId: string;
-            id: string;
             status: import(".prisma/client").$Enums.OrderStatus;
             createdAt: Date;
             updatedAt: Date;
@@ -180,9 +180,9 @@ export declare class DeliveriesController {
     }>;
     confirmDelivery(req: any, id: string, file: Express.Multer.File): Promise<{
         order: {
+            id: string;
             organizationId: string;
             branchId: string;
-            id: string;
             status: import(".prisma/client").$Enums.OrderStatus;
             createdAt: Date;
             updatedAt: Date;
@@ -223,9 +223,9 @@ export declare class DeliveriesController {
         note?: string;
     }): Promise<{
         order: {
+            id: string;
             organizationId: string;
             branchId: string;
-            id: string;
             status: import(".prisma/client").$Enums.OrderStatus;
             createdAt: Date;
             updatedAt: Date;

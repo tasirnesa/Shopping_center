@@ -14,9 +14,9 @@ export declare class JwtStrategy extends JwtStrategy_base {
         organizationId: string | null;
         branchId: string | null;
         organization: {
+            id: string;
             email: string | null;
             name: string;
-            id: string;
             status: string;
             createdAt: Date;
             updatedAt: Date;
@@ -27,9 +27,9 @@ export declare class JwtStrategy extends JwtStrategy_base {
             logo: string | null;
         } | null;
         branch: {
-            name: string;
-            organizationId: string;
             id: string;
+            organizationId: string;
+            name: string;
             createdAt: Date;
             updatedAt: Date;
             phone: string | null;

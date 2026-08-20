@@ -3,21 +3,21 @@ export declare class NotificationsController {
     private readonly notificationsService;
     constructor(notificationsService: NotificationsService);
     getMyNotifications(req: any): Promise<{
-        organizationId: string;
         id: string;
+        organizationId: string;
         createdAt: Date;
+        read: boolean;
         type: string;
         targetRole: string;
         payload: import("@prisma/client/runtime/library").JsonValue;
-        read: boolean;
     }[]>;
     markRead(id: string, req: any): Promise<{
-        organizationId: string;
         id: string;
+        organizationId: string;
         createdAt: Date;
+        read: boolean;
         type: string;
         targetRole: string;
         payload: import("@prisma/client/runtime/library").JsonValue;
-        read: boolean;
     }>;
 }

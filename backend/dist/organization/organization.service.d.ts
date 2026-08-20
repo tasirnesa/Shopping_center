@@ -3,10 +3,14 @@ export declare class OrganizationService {
     private prisma;
     constructor(prisma: PrismaService);
     findAll(): Promise<({
+        _count: {
+            users: number;
+            products: number;
+        };
         branches: {
-            name: string;
-            organizationId: string;
             id: string;
+            organizationId: string;
+            name: string;
             createdAt: Date;
             updatedAt: Date;
             phone: string | null;
@@ -14,8 +18,8 @@ export declare class OrganizationService {
             code: string | null;
         }[];
         settings: {
-            organizationId: string;
             id: string;
+            organizationId: string;
             createdAt: Date;
             updatedAt: Date;
             currency: string;
@@ -25,14 +29,10 @@ export declare class OrganizationService {
             fiscalYear: string | null;
             timezone: string;
         } | null;
-        _count: {
-            users: number;
-            products: number;
-        };
     } & {
+        id: string;
         email: string | null;
         name: string;
-        id: string;
         status: string;
         createdAt: Date;
         updatedAt: Date;
@@ -43,10 +43,15 @@ export declare class OrganizationService {
         logo: string | null;
     })[]>;
     findOne(id: string): Promise<{
+        _count: {
+            users: number;
+            products: number;
+            sales: number;
+        };
         branches: {
-            name: string;
-            organizationId: string;
             id: string;
+            organizationId: string;
+            name: string;
             createdAt: Date;
             updatedAt: Date;
             phone: string | null;
@@ -54,8 +59,8 @@ export declare class OrganizationService {
             code: string | null;
         }[];
         settings: {
-            organizationId: string;
             id: string;
+            organizationId: string;
             createdAt: Date;
             updatedAt: Date;
             currency: string;
@@ -65,15 +70,10 @@ export declare class OrganizationService {
             fiscalYear: string | null;
             timezone: string;
         } | null;
-        _count: {
-            users: number;
-            products: number;
-            sales: number;
-        };
     } & {
+        id: string;
         email: string | null;
         name: string;
-        id: string;
         status: string;
         createdAt: Date;
         updatedAt: Date;
@@ -92,8 +92,8 @@ export declare class OrganizationService {
         address?: string;
     }): Promise<{
         settings: {
-            organizationId: string;
             id: string;
+            organizationId: string;
             createdAt: Date;
             updatedAt: Date;
             currency: string;
@@ -104,9 +104,9 @@ export declare class OrganizationService {
             timezone: string;
         } | null;
     } & {
+        id: string;
         email: string | null;
         name: string;
-        id: string;
         status: string;
         createdAt: Date;
         updatedAt: Date;
@@ -118,8 +118,8 @@ export declare class OrganizationService {
     }>;
     update(id: string, data: any): Promise<{
         settings: {
-            organizationId: string;
             id: string;
+            organizationId: string;
             createdAt: Date;
             updatedAt: Date;
             currency: string;
@@ -130,9 +130,9 @@ export declare class OrganizationService {
             timezone: string;
         } | null;
     } & {
+        id: string;
         email: string | null;
         name: string;
-        id: string;
         status: string;
         createdAt: Date;
         updatedAt: Date;
@@ -150,8 +150,8 @@ export declare class OrganizationService {
         fiscalYear?: string;
         timezone?: string;
     }): Promise<{
-        organizationId: string;
         id: string;
+        organizationId: string;
         createdAt: Date;
         updatedAt: Date;
         currency: string;
@@ -162,8 +162,8 @@ export declare class OrganizationService {
         timezone: string;
     }>;
     getSettings(orgId: string): Promise<{
-        organizationId: string;
         id: string;
+        organizationId: string;
         createdAt: Date;
         updatedAt: Date;
         currency: string;
@@ -174,9 +174,9 @@ export declare class OrganizationService {
         timezone: string;
     } | null>;
     remove(id: string): Promise<{
+        id: string;
         email: string | null;
         name: string;
-        id: string;
         status: string;
         createdAt: Date;
         updatedAt: Date;

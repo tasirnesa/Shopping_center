@@ -5,30 +5,30 @@ export declare class CustomersService {
     findAll(orgId: string): Promise<{
         id: string;
         organizationId: string;
-        name: string;
-        phone: string | null;
         email: string | null;
+        name: string;
+        createdAt: Date;
+        updatedAt: Date;
         tin: string | null;
+        phone: string | null;
         efdaLicensePath: string | null;
         efdaLicenseFileName: string | null;
         creditLimit: number;
         creditBalance: number;
-        createdAt: Date;
-        updatedAt: Date;
     }[]>;
     findOne(orgId: string, id: string): Promise<{
         id: string;
         organizationId: string;
-        name: string;
-        phone: string | null;
         email: string | null;
+        name: string;
+        createdAt: Date;
+        updatedAt: Date;
         tin: string | null;
+        phone: string | null;
         efdaLicensePath: string | null;
         efdaLicenseFileName: string | null;
         creditLimit: number;
         creditBalance: number;
-        createdAt: Date;
-        updatedAt: Date;
     } | null>;
     create(orgId: string, data: {
         name: string;
@@ -39,16 +39,16 @@ export declare class CustomersService {
     }): Promise<{
         id: string;
         organizationId: string;
-        name: string;
-        phone: string | null;
         email: string | null;
+        name: string;
+        createdAt: Date;
+        updatedAt: Date;
         tin: string | null;
+        phone: string | null;
         efdaLicensePath: string | null;
         efdaLicenseFileName: string | null;
         creditLimit: number;
         creditBalance: number;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     update(orgId: string, id: string, data: {
         name?: string;
@@ -59,44 +59,44 @@ export declare class CustomersService {
     }): Promise<{
         id: string;
         organizationId: string;
-        name: string;
-        phone: string | null;
         email: string | null;
+        name: string;
+        createdAt: Date;
+        updatedAt: Date;
         tin: string | null;
+        phone: string | null;
         efdaLicensePath: string | null;
         efdaLicenseFileName: string | null;
         creditLimit: number;
         creditBalance: number;
-        createdAt: Date;
-        updatedAt: Date;
     } | null>;
     remove(orgId: string, id: string): Promise<{
         id: string;
         organizationId: string;
-        name: string;
-        phone: string | null;
         email: string | null;
+        name: string;
+        createdAt: Date;
+        updatedAt: Date;
         tin: string | null;
+        phone: string | null;
         efdaLicensePath: string | null;
         efdaLicenseFileName: string | null;
         creditLimit: number;
         creditBalance: number;
-        createdAt: Date;
-        updatedAt: Date;
     } | null>;
     saveEfdaLicense(orgId: string, id: string, filePath: string, fileName: string): Promise<{
         id: string;
         organizationId: string;
-        name: string;
-        phone: string | null;
         email: string | null;
+        name: string;
+        createdAt: Date;
+        updatedAt: Date;
         tin: string | null;
+        phone: string | null;
         efdaLicensePath: string | null;
         efdaLicenseFileName: string | null;
         creditLimit: number;
         creditBalance: number;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     getCredit(orgId: string, id: string): Promise<{
         id: string;
@@ -107,29 +107,29 @@ export declare class CustomersService {
     addCredit(orgId: string, customerId: string, amount: number): Promise<{
         id: string;
         organizationId: string;
-        name: string;
-        phone: string | null;
         email: string | null;
+        name: string;
+        createdAt: Date;
+        updatedAt: Date;
         tin: string | null;
+        phone: string | null;
         efdaLicensePath: string | null;
         efdaLicenseFileName: string | null;
         creditLimit: number;
         creditBalance: number;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     settleCredit(orgId: string, customerId: string, amount: number): Promise<{
         id: string;
         organizationId: string;
-        name: string;
-        phone: string | null;
         email: string | null;
+        name: string;
+        createdAt: Date;
+        updatedAt: Date;
         tin: string | null;
+        phone: string | null;
         efdaLicensePath: string | null;
         efdaLicenseFileName: string | null;
         creditLimit: number;
         creditBalance: number;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
 }

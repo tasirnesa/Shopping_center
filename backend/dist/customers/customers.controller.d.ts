@@ -7,30 +7,30 @@ export declare class CustomersController {
     findAll(orgId: string): Promise<{
         id: string;
         organizationId: string;
-        name: string;
-        phone: string | null;
         email: string | null;
+        name: string;
+        createdAt: Date;
+        updatedAt: Date;
         tin: string | null;
+        phone: string | null;
         efdaLicensePath: string | null;
         efdaLicenseFileName: string | null;
         creditLimit: number;
         creditBalance: number;
-        createdAt: Date;
-        updatedAt: Date;
     }[]>;
     findOne(orgId: string, id: string): Promise<{
         id: string;
         organizationId: string;
-        name: string;
-        phone: string | null;
         email: string | null;
+        name: string;
+        createdAt: Date;
+        updatedAt: Date;
         tin: string | null;
+        phone: string | null;
         efdaLicensePath: string | null;
         efdaLicenseFileName: string | null;
         creditLimit: number;
         creditBalance: number;
-        createdAt: Date;
-        updatedAt: Date;
     } | null>;
     create(orgId: string, dto: {
         name: string;
@@ -41,16 +41,16 @@ export declare class CustomersController {
     }): Promise<{
         id: string;
         organizationId: string;
-        name: string;
-        phone: string | null;
         email: string | null;
+        name: string;
+        createdAt: Date;
+        updatedAt: Date;
         tin: string | null;
+        phone: string | null;
         efdaLicensePath: string | null;
         efdaLicenseFileName: string | null;
         creditLimit: number;
         creditBalance: number;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     update(orgId: string, id: string, dto: {
         name?: string;
@@ -61,43 +61,43 @@ export declare class CustomersController {
     }): Promise<{
         id: string;
         organizationId: string;
-        name: string;
-        phone: string | null;
         email: string | null;
+        name: string;
+        createdAt: Date;
+        updatedAt: Date;
         tin: string | null;
+        phone: string | null;
         efdaLicensePath: string | null;
         efdaLicenseFileName: string | null;
         creditLimit: number;
         creditBalance: number;
-        createdAt: Date;
-        updatedAt: Date;
     } | null>;
     remove(orgId: string, id: string): Promise<{
         id: string;
         organizationId: string;
-        name: string;
-        phone: string | null;
         email: string | null;
+        name: string;
+        createdAt: Date;
+        updatedAt: Date;
         tin: string | null;
+        phone: string | null;
         efdaLicensePath: string | null;
         efdaLicenseFileName: string | null;
         creditLimit: number;
         creditBalance: number;
-        createdAt: Date;
-        updatedAt: Date;
     } | null>;
     uploadEfda(orgId: string, id: string, file: any): Promise<{
         id: string;
         organizationId: string;
-        name: string;
-        phone: string | null;
         email: string | null;
+        name: string;
+        createdAt: Date;
+        updatedAt: Date;
         tin: string | null;
+        phone: string | null;
         efdaLicensePath: string | null;
         efdaLicenseFileName: string | null;
         creditLimit: number;
         creditBalance: number;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
 }

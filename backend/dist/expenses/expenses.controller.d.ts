@@ -5,9 +5,9 @@ export declare class ExpensesController {
     constructor(expensesService: ExpensesService);
     findAll(orgId: string, branchId?: string): Promise<({
         branch: {
-            name: string;
-            organizationId: string;
             id: string;
+            organizationId: string;
+            name: string;
             createdAt: Date;
             updatedAt: Date;
             phone: string | null;
@@ -15,9 +15,9 @@ export declare class ExpensesController {
             code: string | null;
         };
     } & {
+        id: string;
         organizationId: string;
         branchId: string;
-        id: string;
         createdAt: Date;
         description: string;
         amount: number;
@@ -30,9 +30,9 @@ export declare class ExpensesController {
     }>;
     create(orgId: string, dto: CreateExpenseDto): Promise<{
         branch: {
-            name: string;
-            organizationId: string;
             id: string;
+            organizationId: string;
+            name: string;
             createdAt: Date;
             updatedAt: Date;
             phone: string | null;
@@ -40,18 +40,18 @@ export declare class ExpensesController {
             code: string | null;
         };
     } & {
+        id: string;
         organizationId: string;
         branchId: string;
-        id: string;
         createdAt: Date;
         description: string;
         amount: number;
         date: Date;
     }>;
     remove(orgId: string, id: string): Promise<{
+        id: string;
         organizationId: string;
         branchId: string;
-        id: string;
         createdAt: Date;
         description: string;
         amount: number;

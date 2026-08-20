@@ -24,9 +24,9 @@ export declare class DeliveryService {
     }>;
     pickup(orderId: string, driverId: string, organizationId: string): Promise<{
         order: {
+            id: string;
             organizationId: string;
             branchId: string;
-            id: string;
             status: import(".prisma/client").$Enums.OrderStatus;
             createdAt: Date;
             updatedAt: Date;
@@ -65,9 +65,9 @@ export declare class DeliveryService {
     }>;
     confirmDelivery(orderId: string, driverId: string, organizationId: string, confirmationPath?: string): Promise<{
         order: {
+            id: string;
             organizationId: string;
             branchId: string;
-            id: string;
             status: import(".prisma/client").$Enums.OrderStatus;
             createdAt: Date;
             updatedAt: Date;
@@ -106,9 +106,9 @@ export declare class DeliveryService {
     }>;
     pickupByDeliveryId(deliveryId: string, driverId: string, organizationId: string): Promise<{
         order: {
+            id: string;
             organizationId: string;
             branchId: string;
-            id: string;
             status: import(".prisma/client").$Enums.OrderStatus;
             createdAt: Date;
             updatedAt: Date;
@@ -147,9 +147,9 @@ export declare class DeliveryService {
     }>;
     confirmDeliveryById(deliveryId: string, driverId: string, organizationId: string, confirmationPath: string): Promise<{
         order: {
+            id: string;
             organizationId: string;
             branchId: string;
-            id: string;
             status: import(".prisma/client").$Enums.OrderStatus;
             createdAt: Date;
             updatedAt: Date;
@@ -220,8 +220,8 @@ export declare class DeliveryService {
             invoiceNumber: string;
         };
         driver: {
-            name: string | null;
             id: string;
+            name: string | null;
         } | null;
     } & {
         id: string;
@@ -240,9 +240,9 @@ export declare class DeliveryService {
     })[]>;
     findOne(id: string, userId: string, role: Role, orgId: string): Promise<{
         salesOrder: {
+            id: string;
             organizationId: string;
             branchId: string;
-            id: string;
             status: import(".prisma/client").$Enums.OrderStatus;
             createdAt: Date;
             updatedAt: Date;
@@ -266,9 +266,9 @@ export declare class DeliveryService {
         invoice: {
             lines: ({
                 product: {
-                    name: string;
-                    organizationId: string;
                     id: string;
+                    organizationId: string;
+                    name: string;
                     createdAt: Date;
                     updatedAt: Date;
                     barcode: string | null;
@@ -288,8 +288,8 @@ export declare class DeliveryService {
                 total: number;
             })[];
         } & {
-            organizationId: string;
             id: string;
+            organizationId: string;
             createdAt: Date;
             taxRate: number;
             salesOrderId: string;
@@ -301,8 +301,8 @@ export declare class DeliveryService {
             invoiceMakerId: string;
         };
         driver: {
-            name: string | null;
             id: string;
+            name: string | null;
         } | null;
     } & {
         id: string;

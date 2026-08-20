@@ -12,25 +12,25 @@ export declare class ProductController {
         cost: number;
     }): Promise<{
         category: {
-            name: string;
-            organizationId: string;
             id: string;
+            organizationId: string;
+            name: string;
             description: string | null;
         } | null;
         brand: {
-            name: string;
-            organizationId: string;
             id: string;
+            organizationId: string;
+            name: string;
         } | null;
         unit: {
-            name: string;
-            organizationId: string;
             id: string;
+            organizationId: string;
+            name: string;
         } | null;
     } & {
-        name: string;
-        organizationId: string;
         id: string;
+        organizationId: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
         barcode: string | null;
@@ -42,25 +42,25 @@ export declare class ProductController {
     }>;
     findAll(orgId: string): Promise<({
         category: {
-            name: string;
-            organizationId: string;
             id: string;
+            organizationId: string;
+            name: string;
             description: string | null;
         } | null;
         brand: {
-            name: string;
-            organizationId: string;
             id: string;
+            organizationId: string;
+            name: string;
         } | null;
         unit: {
-            name: string;
-            organizationId: string;
             id: string;
+            organizationId: string;
+            name: string;
         } | null;
     } & {
-        name: string;
-        organizationId: string;
         id: string;
+        organizationId: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
         barcode: string | null;
@@ -72,25 +72,25 @@ export declare class ProductController {
     })[]>;
     findByBarcode(orgId: string, barcode: string): Promise<({
         category: {
-            name: string;
-            organizationId: string;
             id: string;
+            organizationId: string;
+            name: string;
             description: string | null;
         } | null;
         brand: {
-            name: string;
-            organizationId: string;
             id: string;
+            organizationId: string;
+            name: string;
         } | null;
         unit: {
-            name: string;
-            organizationId: string;
             id: string;
+            organizationId: string;
+            name: string;
         } | null;
     } & {
-        name: string;
-        organizationId: string;
         id: string;
+        organizationId: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
         barcode: string | null;
@@ -102,25 +102,25 @@ export declare class ProductController {
     }) | null>;
     findOne(orgId: string, id: string): Promise<({
         category: {
-            name: string;
-            organizationId: string;
             id: string;
+            organizationId: string;
+            name: string;
             description: string | null;
         } | null;
         brand: {
-            name: string;
-            organizationId: string;
             id: string;
+            organizationId: string;
+            name: string;
         } | null;
         unit: {
-            name: string;
-            organizationId: string;
             id: string;
+            organizationId: string;
+            name: string;
         } | null;
     } & {
-        name: string;
-        organizationId: string;
         id: string;
+        organizationId: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
         barcode: string | null;
@@ -132,25 +132,25 @@ export declare class ProductController {
     }) | null>;
     update(orgId: string, id: string, dto: any): Promise<({
         category: {
-            name: string;
-            organizationId: string;
             id: string;
+            organizationId: string;
+            name: string;
             description: string | null;
         } | null;
         brand: {
-            name: string;
-            organizationId: string;
             id: string;
+            organizationId: string;
+            name: string;
         } | null;
         unit: {
-            name: string;
-            organizationId: string;
             id: string;
+            organizationId: string;
+            name: string;
         } | null;
     } & {
-        name: string;
-        organizationId: string;
         id: string;
+        organizationId: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
         barcode: string | null;
@@ -161,9 +161,9 @@ export declare class ProductController {
         unitId: string | null;
     }) | null>;
     remove(orgId: string, id: string): Promise<{
-        name: string;
-        organizationId: string;
         id: string;
+        organizationId: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
         barcode: string | null;
