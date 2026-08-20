@@ -98,7 +98,59 @@ export class DashboardService {
     };
   }
 
-  // Req 7.1–7.5: Role-scoped fulfillment pipeline metrics
+  // Today's sales orders breakdown by payment method (for Sales Rep dashboard)
+  async getTodayOrderStats(orgId: string, userId: string, role: string) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    // SALES_REP sees only their own orders; managers/owners see all org
+    const isSalesRep = role === 'SALES_REP';
+    const where: any = {
+      organizationId: orgId,
+      createdAt: { gte: today, lt: tomorrow },
+      // Only count orders that are not cancelled/rejected
+      status: {
+        notIn: [OrderStatus.CANCELLED, OrderStatus.REJECTED],
+      },
+      ...(isSalesRep ? { salesRepId: userId } : {}),
+    };
+
+    const orders = await this.prisma.salesOrder.findMany({
+      where,
+      select: {
+        id: true,
+        grandTotal: true,
+        paymentMethod: true,
+        status: true,
+        customerName: true,
+        createdAt: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    // Group totals by payment method
+    const paymentBreakdown: Record<string, { count: number; total: number }> = {};
+    for (const order of orders) {
+      const method = order.paymentMethod || 'OTHER';
+      if (!paymentBreakdown[method]) {
+        paymentBreakdown[method] = { count: 0, total: 0 };
+      }
+      paymentBreakdown[method].count += 1;
+      paymentBreakdown[method].total += order.grandTotal ?? 0;
+    }
+
+    const grandTotal = orders.reduce((sum, o) => sum + (o.grandTotal ?? 0), 0);
+
+    return {
+      date: today.toISOString(),
+      totalOrders: orders.length,
+      grandTotal,
+      paymentBreakdown,
+      orders,
+    };
+  }
   async getFulfillmentDashboard(orgId: string, role: string, userId?: string) {
     const today = new Date();
     today.setHours(0, 0, 0, 0);

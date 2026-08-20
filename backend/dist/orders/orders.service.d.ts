@@ -19,20 +19,18 @@ export declare class OrdersService {
     constructor(prisma: PrismaService, stateMachine: StateMachineService, audit: AuditService, fileUpload: FileUploadService, invoiceService: InvoiceService, warehouseService: WarehouseService, notifications: NotificationsService);
     computeLineTotal(unitPrice: number, quantity: number, discount?: number): number;
     create(userId: string, orgId: string, dto: CreateOrderDto): Promise<{
-        organizationId: string;
-        branchId: string;
+        customerId: string;
         id: string;
-        status: import(".prisma/client").$Enums.OrderStatus;
+        organizationId: string;
+        tin: string;
         createdAt: Date;
         updatedAt: Date;
-        tin: string;
-        customerId: string | null;
-        taxRate: number;
-        salesRepId: string;
         customerName: string;
         deliveryAddress: string;
         customerPhone: string | null;
+        status: import(".prisma/client").$Enums.OrderStatus;
         subtotal: number;
+        taxRate: number;
         taxAmount: number;
         grandTotal: number;
         paymentMethod: string;
@@ -41,61 +39,61 @@ export declare class OrdersService {
         creditDueDate: Date | null;
         rejectionReason: string | null;
         cancellationReason: string | null;
+        branchId: string;
+        salesRepId: string;
     }>;
     findAll(userId: string, role: Role, orgId: string): Promise<({
         invoice: {
             id: string;
             invoiceNumber: string;
         } | null;
+        lines: ({
+            product: {
+                id: string;
+                organizationId: string;
+                name: string;
+                createdAt: Date;
+                updatedAt: Date;
+                barcode: string | null;
+                categoryId: string | null;
+                brandId: string | null;
+                unitId: string | null;
+                price: number;
+                cost: number;
+            };
+        } & {
+            id: string;
+            quantity: number;
+            unitPrice: number;
+            discount: number;
+            total: number;
+            productId: string;
+            salesOrderId: string;
+        })[];
         attachments: {
             id: string;
             createdAt: Date;
-            type: import(".prisma/client").$Enums.AttachmentType;
             salesOrderId: string;
+            type: import(".prisma/client").$Enums.AttachmentType;
             fileName: string;
             filePath: string;
             mimeType: string;
             fileSize: number;
             uploadedById: string;
         }[];
-        lines: ({
-            product: {
-                name: string;
-                organizationId: string;
-                id: string;
-                createdAt: Date;
-                updatedAt: Date;
-                barcode: string | null;
-                price: number;
-                cost: number;
-                categoryId: string | null;
-                brandId: string | null;
-                unitId: string | null;
-            };
-        } & {
-            id: string;
-            productId: string;
-            discount: number;
-            quantity: number;
-            salesOrderId: string;
-            unitPrice: number;
-            total: number;
-        })[];
     } & {
-        organizationId: string;
-        branchId: string;
         id: string;
-        status: import(".prisma/client").$Enums.OrderStatus;
+        organizationId: string;
+        tin: string;
         createdAt: Date;
         updatedAt: Date;
-        tin: string;
         customerId: string | null;
-        taxRate: number;
-        salesRepId: string;
         customerName: string;
         deliveryAddress: string;
         customerPhone: string | null;
+        status: import(".prisma/client").$Enums.OrderStatus;
         subtotal: number;
+        taxRate: number;
         taxAmount: number;
         grandTotal: number;
         paymentMethod: string;
@@ -104,54 +102,56 @@ export declare class OrdersService {
         creditDueDate: Date | null;
         rejectionReason: string | null;
         cancellationReason: string | null;
+        branchId: string;
+        salesRepId: string;
     })[]>;
     findOne(id: string, userId: string, role: Role, orgId: string): Promise<{
+        lines: ({
+            product: {
+                id: string;
+                organizationId: string;
+                name: string;
+                createdAt: Date;
+                updatedAt: Date;
+                barcode: string | null;
+                categoryId: string | null;
+                brandId: string | null;
+                unitId: string | null;
+                price: number;
+                cost: number;
+            };
+        } & {
+            id: string;
+            quantity: number;
+            unitPrice: number;
+            discount: number;
+            total: number;
+            productId: string;
+            salesOrderId: string;
+        })[];
         attachments: {
             id: string;
             createdAt: Date;
-            type: import(".prisma/client").$Enums.AttachmentType;
             salesOrderId: string;
+            type: import(".prisma/client").$Enums.AttachmentType;
             fileName: string;
             filePath: string;
             mimeType: string;
             fileSize: number;
             uploadedById: string;
         }[];
-        lines: ({
-            product: {
-                name: string;
-                organizationId: string;
-                id: string;
-                createdAt: Date;
-                updatedAt: Date;
-                barcode: string | null;
-                price: number;
-                cost: number;
-                categoryId: string | null;
-                brandId: string | null;
-                unitId: string | null;
-            };
-        } & {
-            id: string;
-            productId: string;
-            discount: number;
-            quantity: number;
-            salesOrderId: string;
-            unitPrice: number;
-            total: number;
-        })[];
         statusEvents: ({
             actor: {
-                email: string;
-                password: string;
-                name: string | null;
-                role: import(".prisma/client").$Enums.Role;
-                organizationId: string | null;
-                branchId: string | null;
                 id: string;
-                status: string;
+                organizationId: string | null;
+                name: string | null;
+                email: string;
                 createdAt: Date;
                 updatedAt: Date;
+                status: string;
+                branchId: string | null;
+                password: string;
+                role: import(".prisma/client").$Enums.Role;
             };
         } & {
             id: string;
@@ -163,20 +163,18 @@ export declare class OrdersService {
             note: string | null;
         })[];
     } & {
-        organizationId: string;
-        branchId: string;
         id: string;
-        status: import(".prisma/client").$Enums.OrderStatus;
+        organizationId: string;
+        tin: string;
         createdAt: Date;
         updatedAt: Date;
-        tin: string;
         customerId: string | null;
-        taxRate: number;
-        salesRepId: string;
         customerName: string;
         deliveryAddress: string;
         customerPhone: string | null;
+        status: import(".prisma/client").$Enums.OrderStatus;
         subtotal: number;
+        taxRate: number;
         taxAmount: number;
         grandTotal: number;
         paymentMethod: string;
@@ -185,22 +183,22 @@ export declare class OrdersService {
         creditDueDate: Date | null;
         rejectionReason: string | null;
         cancellationReason: string | null;
+        branchId: string;
+        salesRepId: string;
     }>;
     update(id: string, userId: string, dto: UpdateOrderDto): Promise<{
-        organizationId: string;
-        branchId: string;
         id: string;
-        status: import(".prisma/client").$Enums.OrderStatus;
+        organizationId: string;
+        tin: string;
         createdAt: Date;
         updatedAt: Date;
-        tin: string;
         customerId: string | null;
-        taxRate: number;
-        salesRepId: string;
         customerName: string;
         deliveryAddress: string;
         customerPhone: string | null;
+        status: import(".prisma/client").$Enums.OrderStatus;
         subtotal: number;
+        taxRate: number;
         taxAmount: number;
         grandTotal: number;
         paymentMethod: string;
@@ -209,22 +207,22 @@ export declare class OrdersService {
         creditDueDate: Date | null;
         rejectionReason: string | null;
         cancellationReason: string | null;
+        branchId: string;
+        salesRepId: string;
     }>;
     submit(id: string, userId: string, orgId: string): Promise<{
-        organizationId: string;
-        branchId: string;
         id: string;
-        status: import(".prisma/client").$Enums.OrderStatus;
+        organizationId: string;
+        tin: string;
         createdAt: Date;
         updatedAt: Date;
-        tin: string;
         customerId: string | null;
-        taxRate: number;
-        salesRepId: string;
         customerName: string;
         deliveryAddress: string;
         customerPhone: string | null;
+        status: import(".prisma/client").$Enums.OrderStatus;
         subtotal: number;
+        taxRate: number;
         taxAmount: number;
         grandTotal: number;
         paymentMethod: string;
@@ -233,12 +231,14 @@ export declare class OrdersService {
         creditDueDate: Date | null;
         rejectionReason: string | null;
         cancellationReason: string | null;
+        branchId: string;
+        salesRepId: string;
     }>;
     uploadAttachment(id: string, userId: string, orgId: string, type: any, file: any): Promise<{
         id: string;
         createdAt: Date;
-        type: import(".prisma/client").$Enums.AttachmentType;
         salesOrderId: string;
+        type: import(".prisma/client").$Enums.AttachmentType;
         fileName: string;
         filePath: string;
         mimeType: string;
@@ -247,20 +247,18 @@ export declare class OrdersService {
     }>;
     getAttachment(orderId: string, attachmentId: string, orgId: string): Promise<{
         salesOrder: {
-            organizationId: string;
-            branchId: string;
             id: string;
-            status: import(".prisma/client").$Enums.OrderStatus;
+            organizationId: string;
+            tin: string;
             createdAt: Date;
             updatedAt: Date;
-            tin: string;
             customerId: string | null;
-            taxRate: number;
-            salesRepId: string;
             customerName: string;
             deliveryAddress: string;
             customerPhone: string | null;
+            status: import(".prisma/client").$Enums.OrderStatus;
             subtotal: number;
+            taxRate: number;
             taxAmount: number;
             grandTotal: number;
             paymentMethod: string;
@@ -269,12 +267,14 @@ export declare class OrdersService {
             creditDueDate: Date | null;
             rejectionReason: string | null;
             cancellationReason: string | null;
+            branchId: string;
+            salesRepId: string;
         };
     } & {
         id: string;
         createdAt: Date;
-        type: import(".prisma/client").$Enums.AttachmentType;
         salesOrderId: string;
+        type: import(".prisma/client").$Enums.AttachmentType;
         fileName: string;
         filePath: string;
         mimeType: string;
@@ -282,20 +282,18 @@ export declare class OrdersService {
         uploadedById: string;
     }>;
     approve(id: string, userId: string, orgId: string): Promise<{
-        organizationId: string;
-        branchId: string;
         id: string;
-        status: import(".prisma/client").$Enums.OrderStatus;
+        organizationId: string;
+        tin: string;
         createdAt: Date;
         updatedAt: Date;
-        tin: string;
         customerId: string | null;
-        taxRate: number;
-        salesRepId: string;
         customerName: string;
         deliveryAddress: string;
         customerPhone: string | null;
+        status: import(".prisma/client").$Enums.OrderStatus;
         subtotal: number;
+        taxRate: number;
         taxAmount: number;
         grandTotal: number;
         paymentMethod: string;
@@ -304,22 +302,22 @@ export declare class OrdersService {
         creditDueDate: Date | null;
         rejectionReason: string | null;
         cancellationReason: string | null;
+        branchId: string;
+        salesRepId: string;
     }>;
     reject(id: string, userId: string, orgId: string, reason: string): Promise<{
-        organizationId: string;
-        branchId: string;
         id: string;
-        status: import(".prisma/client").$Enums.OrderStatus;
+        organizationId: string;
+        tin: string;
         createdAt: Date;
         updatedAt: Date;
-        tin: string;
         customerId: string | null;
-        taxRate: number;
-        salesRepId: string;
         customerName: string;
         deliveryAddress: string;
         customerPhone: string | null;
+        status: import(".prisma/client").$Enums.OrderStatus;
         subtotal: number;
+        taxRate: number;
         taxAmount: number;
         grandTotal: number;
         paymentMethod: string;
@@ -328,22 +326,22 @@ export declare class OrdersService {
         creditDueDate: Date | null;
         rejectionReason: string | null;
         cancellationReason: string | null;
+        branchId: string;
+        salesRepId: string;
     }>;
     cancel(id: string, userId: string, orgId: string, reason: string, role: Role): Promise<{
-        organizationId: string;
-        branchId: string;
         id: string;
-        status: import(".prisma/client").$Enums.OrderStatus;
+        organizationId: string;
+        tin: string;
         createdAt: Date;
         updatedAt: Date;
-        tin: string;
         customerId: string | null;
-        taxRate: number;
-        salesRepId: string;
         customerName: string;
         deliveryAddress: string;
         customerPhone: string | null;
+        status: import(".prisma/client").$Enums.OrderStatus;
         subtotal: number;
+        taxRate: number;
         taxAmount: number;
         grandTotal: number;
         paymentMethod: string;
@@ -352,22 +350,22 @@ export declare class OrdersService {
         creditDueDate: Date | null;
         rejectionReason: string | null;
         cancellationReason: string | null;
+        branchId: string;
+        salesRepId: string;
     }>;
     returnOrder(id: string, userId: string, orgId: string, reason: string): Promise<{
-        organizationId: string;
-        branchId: string;
         id: string;
-        status: import(".prisma/client").$Enums.OrderStatus;
+        organizationId: string;
+        tin: string;
         createdAt: Date;
         updatedAt: Date;
-        tin: string;
         customerId: string | null;
-        taxRate: number;
-        salesRepId: string;
         customerName: string;
         deliveryAddress: string;
         customerPhone: string | null;
+        status: import(".prisma/client").$Enums.OrderStatus;
         subtotal: number;
+        taxRate: number;
         taxAmount: number;
         grandTotal: number;
         paymentMethod: string;
@@ -376,5 +374,7 @@ export declare class OrdersService {
         creditDueDate: Date | null;
         rejectionReason: string | null;
         cancellationReason: string | null;
+        branchId: string;
+        salesRepId: string;
     }>;
 }

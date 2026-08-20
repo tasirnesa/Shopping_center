@@ -142,7 +142,15 @@ export class OrdersController {
         @Res() res: any,
     ) {
         const attachment = await this.ordersService.getAttachment(id, attachmentId, req.user.organizationId);
-        res.setHeader('Content-Type', attachment.mimeType);
-        res.sendFile(attachment.filePath, { root: '.' });
+
+        const absPath = path.resolve(attachment.filePath);
+
+        res.setHeader('Content-Type', attachment.mimeType || 'application/octet-stream');
+        // Use inline so PDFs and images open in the browser/viewer instead of downloading
+        res.setHeader(
+            'Content-Disposition',
+            `inline; filename="${encodeURIComponent(attachment.fileName)}"`,
+        );
+        res.sendFile(absPath);
     }
 }

@@ -119,9 +119,10 @@ UPLOAD_PATH=./uploads
 
 Containerized setup
 
-Docker Compose runs the web application, API, and PostgreSQL together. The web
-application is available at http://localhost:8080 and the API is available at
-http://localhost:3000.
+Docker Compose mirrors the Kubernetes workloads with `frontend`, `backend`, and
+`postgres` services. Copy `.env.example` to `.env` and replace its JWT values.
+The web application is available at http://localhost:8080 and the API is
+available at http://localhost:3000.
 
 ```bash
 docker compose up --build
@@ -136,15 +137,15 @@ Kubernetes
 
 The manifests in `k8s/` deploy PostgreSQL, the API, and two web replicas. Build
 and publish the images, then replace the placeholder image names in
-`k8s/base.yaml` (`ghcr.io/your-org/...`) with your registry paths and tags.
+`k8s/backend.yaml` and `k8s/frontend.yaml` (`ghcr.io/your-org/...`) with your
+registry paths and tags.
 Update the values in the `shopping-center-secrets` Secret and the hostname in
 `k8s/ingress.yaml` before deploying.
 
 ```bash
 docker build -f backend/Dockerfile -t your-registry/shopping-center-backend:1.0.0 .
 docker build -f web/Dockerfile -t your-registry/shopping-center-web:1.0.0 .
-kubectl apply -f k8s/base.yaml
-kubectl apply -f k8s/ingress.yaml
+kubectl apply -f k8s/
 ```
 
 The Kubernetes storage claims expect a default StorageClass. For multiple API

@@ -1,16 +1,19 @@
+name: shopping-center
+
 services:
   postgres:
     image: postgres:15-alpine
+    restart: unless-stopped
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 123456
-      POSTGRES_DB: shopping_center
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-123456}
+      POSTGRES_DB: ${POSTGRES_DB:-shopping_center}
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d shopping_center"]
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -19,12 +22,13 @@ services:
     build:
       context: .
       dockerfile: backend/Dockerfile
+    restart: unless-stopped
     environment:
       NODE_ENV: production
       PORT: 3000
-      DATABASE_URL: postgresql://postgres:123456@postgres:5432/shopping_center?schema=public
-      JWT_SECRET: change-this-before-production
-      JWT_REFRESH_SECRET: change-this-before-production
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-123456}@postgres:5432/${POSTGRES_DB:-shopping_center}?schema=public
+      JWT_SECRET: ${JWT_SECRET:-change-this-before-production}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-change-this-before-production}
       UPLOAD_PATH: /app/uploads
     depends_on:
       postgres:
@@ -40,15 +44,21 @@ services:
       timeout: 5s
       retries: 10
 
-  web:
+  frontend:
     build:
       context: .
       dockerfile: web/Dockerfile
+    restart: unless-stopped
     depends_on:
       backend:
         condition: service_healthy
     ports:
       - "8080:80"
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --spider http://127.0.0.1/ || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   postgres_data:

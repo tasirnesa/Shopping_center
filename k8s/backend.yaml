@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: shopping-center
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      initContainers:
+        - name: database-schema
+          image: ghcr.io/your-org/shopping-center-backend:latest
+          imagePullPolicy: IfNotPresent
+          command: ["sh", "-c", "until ./node_modules/.bin/prisma db push --schema=backend/prisma/schema.prisma; do sleep 3; done"]
+          env:
+            - name: DATABASE_URL
+              value: "postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@postgres:5432/$(POSTGRES_DB)?schema=public"
+            - name: POSTGRES_USER
+              valueFrom: { secretKeyRef: { name: shopping-center-secrets, key: POSTGRES_USER } }
+            - name: POSTGRES_PASSWORD
+              valueFrom: { secretKeyRef: { name: shopping-center-secrets, key: POSTGRES_PASSWORD } }
+            - name: POSTGRES_DB
+              valueFrom: { secretKeyRef: { name: shopping-center-secrets, key: POSTGRES_DB } }
+      containers:
+        - name: backend
+          image: ghcr.io/your-org/shopping-center-backend:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - configMapRef: { name: shopping-center-config }
+          env:
+            - name: DATABASE_URL
+              value: "postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@postgres:5432/$(POSTGRES_DB)?schema=public"
+            - name: POSTGRES_USER
+              valueFrom: { secretKeyRef: { name: shopping-center-secrets, key: POSTGRES_USER } }
+            - name: POSTGRES_PASSWORD
+              valueFrom: { secretKeyRef: { name: shopping-center-secrets, key: POSTGRES_PASSWORD } }
+            - name: POSTGRES_DB
+              valueFrom: { secretKeyRef: { name: shopping-center-secrets, key: POSTGRES_DB } }
+            - name: JWT_SECRET
+              valueFrom: { secretKeyRef: { name: shopping-center-secrets, key: JWT_SECRET } }
+            - name: JWT_REFRESH_SECRET
+              valueFrom: { secretKeyRef: { name: shopping-center-secrets, key: JWT_REFRESH_SECRET } }
+          volumeMounts:
+            - name: uploads
+              mountPath: /app/uploads
+          readinessProbe:
+            httpGet: { path: /health, port: 3000 }
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet: { path: /health, port: 3000 }
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          resources:
+            requests: { cpu: 100m, memory: 256Mi }
+            limits: { cpu: "1", memory: 512Mi }
+      volumes:
+        - name: uploads
+          persistentVolumeClaim: { claimName: uploads-data }

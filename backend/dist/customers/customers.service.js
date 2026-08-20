@@ -29,6 +29,14 @@ let CustomersService = class CustomersService {
         });
     }
     async create(orgId, data) {
+        if (data.tin) {
+            const existing = await this.prisma.customer.findFirst({
+                where: { organizationId: orgId, tin: data.tin.trim() },
+            });
+            if (existing) {
+                throw new common_1.ConflictException(`A customer with TIN "${data.tin}" already exists in your organization`);
+            }
+        }
         return this.prisma.customer.create({
             data: { ...data, organizationId: orgId },
         });
@@ -39,6 +47,14 @@ let CustomersService = class CustomersService {
         });
         if (!customer)
             return null;
+        if (data.tin && data.tin.trim() !== customer.tin) {
+            const existing = await this.prisma.customer.findFirst({
+                where: { organizationId: orgId, tin: data.tin.trim(), NOT: { id } },
+            });
+            if (existing) {
+                throw new common_1.ConflictException(`A customer with TIN "${data.tin}" already exists in your organization`);
+            }
+        }
         return this.prisma.customer.update({ where: { id }, data });
     }
     async remove(orgId, id) {

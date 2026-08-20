@@ -28,6 +28,9 @@ let DashboardController = class DashboardController {
     getSummary(orgId) {
         return this.dashboardService.getSummary(orgId);
     }
+    getTodayOrders(orgId, req) {
+        return this.dashboardService.getTodayOrderStats(orgId, req.user.id, req.user.role);
+    }
     getFulfillment(orgId, req) {
         if (!orgId) {
             return {};
@@ -44,6 +47,15 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], DashboardController.prototype, "getSummary", null);
+__decorate([
+    (0, common_1.Get)('today-orders'),
+    (0, roles_decorator_1.Roles)(client_1.Role.SALES_REP, client_1.Role.MANAGER, client_1.Role.OWNER, client_1.Role.SYSTEM_ADMIN),
+    __param(0, (0, org_decorator_1.CurrentOrg)()),
+    __param(1, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", void 0)
+], DashboardController.prototype, "getTodayOrders", null);
 __decorate([
     (0, common_1.Get)('fulfillment'),
     (0, roles_decorator_1.Roles)(client_1.Role.SALES_REP, client_1.Role.INVOICE_MAKER, client_1.Role.STORE_MAN, client_1.Role.DRIVER, client_1.Role.MANAGER, client_1.Role.OWNER, client_1.Role.SYSTEM_ADMIN),

@@ -47,12 +47,40 @@ export class OrdersService {
         const grandTotal = subtotal + taxAmount;
 
         return this.prisma.$transaction(async (tx) => {
+            // ── Auto-create customer if not linked to an existing one ──────────
+            let resolvedCustomerId = dto.customerId || null;
+            if (!resolvedCustomerId) {
+                // Check by TIN first (most reliable), then fall back to name match
+                const existing = await tx.customer.findFirst({
+                    where: {
+                        organizationId: orgId,
+                        OR: [
+                            ...(dto.tin ? [{ tin: dto.tin.trim() }] : []),
+                            { name: { equals: dto.customerName.trim(), mode: 'insensitive' as const } },
+                        ],
+                    },
+                });
+                if (existing) {
+                    resolvedCustomerId = existing.id;
+                } else {
+                    const newCustomer = await tx.customer.create({
+                        data: {
+                            organizationId: orgId,
+                            name: dto.customerName.trim(),
+                            tin: dto.tin.trim(),
+                            phone: dto.customerPhone?.trim() || null,
+                        },
+                    });
+                    resolvedCustomerId = newCustomer.id;
+                }
+            }
+
             const order = await tx.salesOrder.create({
                 data: {
                     organizationId: orgId,
                     branchId: dto.branchId,
                     salesRepId: userId,
-                    customerId: dto.customerId,
+                    customerId: resolvedCustomerId,
                     customerName: dto.customerName,
                     tin: dto.tin,
                     deliveryAddress: dto.deliveryAddress,
@@ -72,8 +100,9 @@ export class OrdersService {
                 },
             });
 
-            if (dto.customerId) {
-                const customer = await tx.customer.findUnique({ where: { id: dto.customerId } });
+            // Auto-attach EFDA license if the customer already has one on file
+            if (resolvedCustomerId) {
+                const customer = await tx.customer.findUnique({ where: { id: resolvedCustomerId } });
                 if (customer?.efdaLicensePath) {
                     await tx.attachment.create({
                         data: {
@@ -91,7 +120,7 @@ export class OrdersService {
 
             await this.audit.recordTransition(tx, order.id, null, OrderStatus.DRAFT, userId, 'Order created');
 
-            return order;
+            return { ...order, customerId: resolvedCustomerId };
         });
     }
 
@@ -221,15 +250,17 @@ export class OrdersService {
             throw new BadRequestException('Order is missing mandatory fields');
         }
 
-        const hasTradeLicense = order.attachments.some(a => a.type === 'TRADE_LICENSE');
+        const hasTradeLicense = order.attachments.some(
+            a => a.type === 'TRADE_LICENSE' || a.type === 'EFDA_LICENSE'
+        );
         const hasPaymentReceipt = order.attachments.some(a => a.type === 'PAYMENT_RECEIPT');
         if (!hasTradeLicense) {
             throw new BadRequestException('Order must have EFDA License attachment before submitting');
         }
 
-        if (order.paymentMethod === 'CASH' || order.paymentMethod === 'CHEQUE') {
+        if (order.paymentMethod === 'TRANSFER') {
             if (!hasPaymentReceipt) {
-                throw new BadRequestException('Order must have Payment Receipt attachment for Cash/Cheque payments');
+                throw new BadRequestException('Order must have Payment Receipt attachment for Bank Transfer payments');
             }
         }
 
@@ -285,7 +316,7 @@ export class OrdersService {
             }
         });
 
-        if (type === 'TRADE_LICENSE' && order.customerId) {
+        if ((type === 'TRADE_LICENSE' || type === 'EFDA_LICENSE') && order.customerId) {
             await this.prisma.customer.update({
                 where: { id: order.customerId },
                 data: {

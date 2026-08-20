@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -22,6 +22,15 @@ export class CustomersService {
     orgId: string,
     data: { name: string; phone?: string; email?: string; tin?: string; creditLimit?: number },
   ) {
+    // Enforce TIN uniqueness within the org
+    if (data.tin) {
+      const existing = await this.prisma.customer.findFirst({
+        where: { organizationId: orgId, tin: data.tin.trim() },
+      });
+      if (existing) {
+        throw new ConflictException(`A customer with TIN "${data.tin}" already exists in your organization`);
+      }
+    }
     return this.prisma.customer.create({
       data: { ...data, organizationId: orgId },
     });
@@ -36,6 +45,17 @@ export class CustomersService {
       where: { id, organizationId: orgId },
     });
     if (!customer) return null;
+
+    // Enforce TIN uniqueness on update — exclude the current customer
+    if (data.tin && data.tin.trim() !== customer.tin) {
+      const existing = await this.prisma.customer.findFirst({
+        where: { organizationId: orgId, tin: data.tin.trim(), NOT: { id } },
+      });
+      if (existing) {
+        throw new ConflictException(`A customer with TIN "${data.tin}" already exists in your organization`);
+      }
+    }
+
     return this.prisma.customer.update({ where: { id }, data });
   }
 

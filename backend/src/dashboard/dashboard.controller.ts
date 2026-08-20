@@ -17,6 +17,12 @@ export class DashboardController {
     return this.dashboardService.getSummary(orgId);
   }
 
+  @Get('today-orders')
+  @Roles(Role.SALES_REP, Role.MANAGER, Role.OWNER, Role.SYSTEM_ADMIN)
+  getTodayOrders(@CurrentOrg() orgId: string, @Req() req: any) {
+    return this.dashboardService.getTodayOrderStats(orgId, req.user.id, req.user.role);
+  }
+
   @Get('fulfillment')
   @Roles(Role.SALES_REP, Role.INVOICE_MAKER, Role.STORE_MAN, Role.DRIVER, Role.MANAGER, Role.OWNER, Role.SYSTEM_ADMIN)
   getFulfillment(@CurrentOrg() orgId: string, @Req() req: any) {

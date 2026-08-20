@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: uploads-data
+  namespace: shopping-center
+spec:
+  # Use ReadWriteMany storage if backend replicas are increased above one.
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 10Gi

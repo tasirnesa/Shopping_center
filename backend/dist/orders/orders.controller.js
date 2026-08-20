@@ -128,8 +128,10 @@ let OrdersController = class OrdersController {
     }
     async downloadAttachment(req, id, attachmentId, res) {
         const attachment = await this.ordersService.getAttachment(id, attachmentId, req.user.organizationId);
-        res.setHeader('Content-Type', attachment.mimeType);
-        res.sendFile(attachment.filePath, { root: '.' });
+        const absPath = path.resolve(attachment.filePath);
+        res.setHeader('Content-Type', attachment.mimeType || 'application/octet-stream');
+        res.setHeader('Content-Disposition', `inline; filename="${encodeURIComponent(attachment.fileName)}"`);
+        res.sendFile(absPath);
     }
 };
 exports.OrdersController = OrdersController;

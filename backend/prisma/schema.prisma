@@ -214,7 +214,7 @@ model Customer {
   name           String
   phone          String?
   email          String?
-  tin            String?      // Tax ID for order auto-fill
+  tin            String?      // Tax ID for order auto-fill — unique per organization
   efdaLicensePath String?     // Stored EFDA license file path (auto-attached to new orders)
   efdaLicenseFileName String? // Original file name
   creditLimit    Float        @default(0)    // Maximum credit allowed
@@ -225,6 +225,8 @@ model Customer {
 
   // Order Fulfillment
   salesOrders    SalesOrder[]
+
+  @@unique([organizationId, tin], name: "unique_tin_per_org")
 }
 
 // ─────────────────────────────────────────────────────────────

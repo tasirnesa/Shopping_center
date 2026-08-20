@@ -97,6 +97,50 @@ let DashboardService = class DashboardService {
             topProducts,
         };
     }
+    async getTodayOrderStats(orgId, userId, role) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const isSalesRep = role === 'SALES_REP';
+        const where = {
+            organizationId: orgId,
+            createdAt: { gte: today, lt: tomorrow },
+            status: {
+                notIn: [client_1.OrderStatus.CANCELLED, client_1.OrderStatus.REJECTED],
+            },
+            ...(isSalesRep ? { salesRepId: userId } : {}),
+        };
+        const orders = await this.prisma.salesOrder.findMany({
+            where,
+            select: {
+                id: true,
+                grandTotal: true,
+                paymentMethod: true,
+                status: true,
+                customerName: true,
+                createdAt: true,
+            },
+            orderBy: { createdAt: 'desc' },
+        });
+        const paymentBreakdown = {};
+        for (const order of orders) {
+            const method = order.paymentMethod || 'OTHER';
+            if (!paymentBreakdown[method]) {
+                paymentBreakdown[method] = { count: 0, total: 0 };
+            }
+            paymentBreakdown[method].count += 1;
+            paymentBreakdown[method].total += order.grandTotal ?? 0;
+        }
+        const grandTotal = orders.reduce((sum, o) => sum + (o.grandTotal ?? 0), 0);
+        return {
+            date: today.toISOString(),
+            totalOrders: orders.length,
+            grandTotal,
+            paymentBreakdown,
+            orders,
+        };
+    }
     async getFulfillmentDashboard(orgId, role, userId) {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
