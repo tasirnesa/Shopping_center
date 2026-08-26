@@ -150,6 +150,17 @@ let AuthService = class AuthService {
             throw new common_1.InternalServerErrorException('Server Error: ' + error.message);
         }
     }
+    async changePassword(userId, dto) {
+        const user = await this.prisma.user.findUnique({ where: { id: userId } });
+        if (!user)
+            throw new common_1.UnauthorizedException('User not found');
+        const passwordMatch = await bcrypt.compare(dto.currentPassword, user.password);
+        if (!passwordMatch)
+            throw new common_1.UnauthorizedException('Current password is incorrect');
+        const hashed = await bcrypt.hash(dto.newPassword, 10);
+        await this.prisma.user.update({ where: { id: userId }, data: { password: hashed } });
+        return { message: 'Password changed successfully' };
+    }
 };
 exports.AuthService = AuthService;
 exports.AuthService = AuthService = __decorate([

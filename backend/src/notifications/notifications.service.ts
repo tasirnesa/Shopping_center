@@ -1,13 +1,17 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Role } from '@prisma/client';
+import { NotificationsGateway } from './notifications.gateway';
 
 @Injectable()
 export class NotificationsService {
-    constructor(private readonly prisma: PrismaService) { }
+    constructor(
+        private readonly prisma: PrismaService,
+        private readonly notificationsGateway: NotificationsGateway
+    ) { }
 
     async create(organizationId: string, targetRole: Role, type: string, payload: any) {
-        return this.prisma.notification.create({
+        const notif = await this.prisma.notification.create({
             data: {
                 organizationId,
                 targetRole,
@@ -15,13 +19,15 @@ export class NotificationsService {
                 payload,
             },
         });
+        this.notificationsGateway.notifyRole(organizationId, targetRole);
+        return notif;
     }
 
     async findUnread(organizationId: string, role: string) {
         return this.prisma.notification.findMany({
             where: {
                 organizationId,
-                targetRole: role,
+                targetRole: role as Role,
                 read: false,
             },
             orderBy: { createdAt: 'desc' },

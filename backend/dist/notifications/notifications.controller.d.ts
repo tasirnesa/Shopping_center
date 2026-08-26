@@ -6,8 +6,8 @@ export declare class NotificationsController {
         id: string;
         createdAt: Date;
         organizationId: string;
-        type: string;
         targetRole: string;
+        type: string;
         payload: import("@prisma/client/runtime/library").JsonValue;
         read: boolean;
     }[]>;
@@ -15,8 +15,8 @@ export declare class NotificationsController {
         id: string;
         createdAt: Date;
         organizationId: string;
-        type: string;
         targetRole: string;
+        type: string;
         payload: import("@prisma/client/runtime/library").JsonValue;
         read: boolean;
     }>;

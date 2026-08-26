@@ -1,14 +1,16 @@
 import { PrismaService } from '../prisma/prisma.service';
 import { Role } from '@prisma/client';
+import { NotificationsGateway } from './notifications.gateway';
 export declare class NotificationsService {
     private readonly prisma;
-    constructor(prisma: PrismaService);
+    private readonly notificationsGateway;
+    constructor(prisma: PrismaService, notificationsGateway: NotificationsGateway);
     create(organizationId: string, targetRole: Role, type: string, payload: any): Promise<{
         id: string;
         createdAt: Date;
         organizationId: string;
-        type: string;
         targetRole: string;
+        type: string;
         payload: import("@prisma/client/runtime/library").JsonValue;
         read: boolean;
     }>;
@@ -16,8 +18,8 @@ export declare class NotificationsService {
         id: string;
         createdAt: Date;
         organizationId: string;
-        type: string;
         targetRole: string;
+        type: string;
         payload: import("@prisma/client/runtime/library").JsonValue;
         read: boolean;
     }[]>;
@@ -25,8 +27,8 @@ export declare class NotificationsService {
         id: string;
         createdAt: Date;
         organizationId: string;
-        type: string;
         targetRole: string;
+        type: string;
         payload: import("@prisma/client/runtime/library").JsonValue;
         read: boolean;
     }>;
