@@ -100,36 +100,6 @@ let DeliveryService = class DeliveryService {
                 data: { status: nextStatus },
             });
             await this.audit.recordTransition(tx, orderId, current, nextStatus, driverId, 'Order delivered and completed');
-            const fullOrder = await tx.salesOrder.findUnique({
-                where: { id: orderId },
-                include: { lines: true },
-            });
-            if (fullOrder) {
-                const sale = await tx.sale.create({
-                    data: {
-                        organizationId: fullOrder.organizationId,
-                        branchId: fullOrder.branchId,
-                        subTotal: fullOrder.subtotal,
-                        discount: 0,
-                        totalAmount: fullOrder.grandTotal,
-                        details: {
-                            create: fullOrder.lines.map((line) => ({
-                                productId: line.productId,
-                                quantity: line.quantity,
-                                price: line.unitPrice,
-                            })),
-                        },
-                    },
-                });
-                await tx.payment.create({
-                    data: {
-                        referenceId: sale.id,
-                        referenceType: 'SALE',
-                        amount: fullOrder.grandTotal,
-                        method: 'INVOICE',
-                    },
-                });
-            }
             return { order: updatedOrder, delivery: updatedDelivery };
         });
     }

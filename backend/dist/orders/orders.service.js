@@ -87,7 +87,12 @@ let OrdersService = class OrdersService {
                 total,
             };
         });
-        const taxRate = 15;
+        const org = await this.prisma.organization.findUnique({
+            where: { id: orgId },
+            select: { businessType: true, settings: true }
+        });
+        const isDrugOrg = org?.businessType?.toUpperCase().includes('PHARMACY') || org?.businessType?.toUpperCase().includes('DRUG');
+        const taxRate = isDrugOrg ? 0 : (org?.settings?.taxRate ?? 15);
         const taxAmount = subtotal * (taxRate / 100);
         const grandTotal = subtotal + taxAmount;
         return this.prisma.$transaction(async (tx) => {
@@ -131,6 +136,7 @@ let OrdersService = class OrdersService {
                     chequeNumber: dto.chequeNumber,
                     creditDueDate: dto.creditDueDate,
                     paymentTerm: dto.paymentTerm,
+                    note: dto.note?.trim() || null,
                     status: client_1.OrderStatus.DRAFT,
                     subtotal,
                     taxRate,
@@ -157,7 +163,7 @@ let OrdersService = class OrdersService {
                     });
                 }
             }
-            await this.audit.recordTransition(tx, order.id, null, client_1.OrderStatus.DRAFT, userId, 'Order created');
+            await this.audit.recordTransition(tx, order.id, null, client_1.OrderStatus.DRAFT, userId, dto.note?.trim() ? `Order created: ${dto.note.trim()}` : 'Order created');
             return { ...order, customerId: resolvedCustomerId };
         });
     }
@@ -165,20 +171,13 @@ let OrdersService = class OrdersService {
         if (role === client_1.Role.SALES_REP) {
             return this.prisma.salesOrder.findMany({
                 where: { salesRepId: userId },
-                include: { lines: { include: { product: true } }, attachments: true, invoice: { select: { id: true, invoiceNumber: true } }, statusEvents: { orderBy: { createdAt: 'asc' } } },
+                include: { lines: { include: { product: true } }, attachments: true, invoice: { select: { id: true, invoiceNumber: true } }, statusEvents: { orderBy: { createdAt: 'asc' } }, salesRep: { select: { name: true } } },
                 orderBy: { createdAt: 'desc' },
-            });
-        }
-        if (role === client_1.Role.INVOICE_MAKER) {
-            return this.prisma.salesOrder.findMany({
-                where: { organizationId: orgId, status: client_1.OrderStatus.SUBMITTED },
-                include: { lines: { include: { product: true } }, attachments: true, invoice: { select: { id: true, invoiceNumber: true } } },
-                orderBy: { createdAt: 'asc' },
             });
         }
         return this.prisma.salesOrder.findMany({
             where: { organizationId: orgId },
-            include: { lines: { include: { product: true } }, attachments: true, invoice: { select: { id: true, invoiceNumber: true } }, statusEvents: { orderBy: { createdAt: 'asc' } } },
+            include: { lines: { include: { product: true } }, attachments: true, invoice: { select: { id: true, invoiceNumber: true } }, statusEvents: { orderBy: { createdAt: 'asc' } }, salesRep: { select: { name: true } } },
             orderBy: { createdAt: 'desc' },
         });
     }
@@ -189,6 +188,7 @@ let OrdersService = class OrdersService {
                 lines: { include: { product: true } },
                 attachments: true,
                 statusEvents: { orderBy: { createdAt: 'asc' }, include: { actor: true } },
+                pickingList: { include: { lines: { include: { product: true } } } },
             },
         });
         if (!order) {

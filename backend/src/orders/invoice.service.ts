@@ -60,6 +60,36 @@ export class InvoiceService {
             },
         });
 
+        // ── Create a Sale record so the order appears in Sales history & dashboard ──
+        // Stock is deducted during packing — we record the financial transaction at invoice generation.
+        const sale = await (prismaClient as any).sale.create({
+            data: {
+                organizationId: orgId,
+                branchId: salesOrder.branchId,
+                customerId: salesOrder.customerId || null,
+                subTotal: subtotal,
+                discount: 0,
+                totalAmount: grandTotal,
+                details: {
+                    create: invoiceLines.map((line) => ({
+                        productId: line.productId,
+                        quantity: line.quantity,
+                        price: line.unitPrice,
+                    })),
+                },
+            },
+        });
+
+        // Record payment linked to this sale
+        await (prismaClient as any).payment.create({
+            data: {
+                referenceId: sale.id,
+                referenceType: 'SALE',
+                amount: grandTotal,
+                method: 'INVOICE',
+            },
+        });
+
         return invoice;
     }
 }

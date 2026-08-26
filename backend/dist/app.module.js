@@ -8,6 +8,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
+const core_1 = require("@nestjs/core");
 const app_controller_1 = require("./app.controller");
 const app_service_1 = require("./app.service");
 const prisma_module_1 = require("./prisma/prisma.module");
@@ -22,6 +23,8 @@ const expenses_module_1 = require("./expenses/expenses.module");
 const orders_module_1 = require("./orders/orders.module");
 const notifications_module_1 = require("./notifications/notifications.module");
 const chat_module_1 = require("./chat/chat.module");
+const dashboard_module_1 = require("./dashboard/dashboard.module");
+const tenant_interceptor_1 = require("./prisma/tenant.interceptor");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -40,9 +43,16 @@ exports.AppModule = AppModule = __decorate([
             orders_module_1.OrdersModule,
             notifications_module_1.NotificationsModule,
             chat_module_1.ChatModule,
+            dashboard_module_1.DashboardModule,
         ],
         controllers: [app_controller_1.AppController],
-        providers: [app_service_1.AppService],
+        providers: [
+            app_service_1.AppService,
+            {
+                provide: core_1.APP_INTERCEPTOR,
+                useClass: tenant_interceptor_1.TenantInterceptor,
+            },
+        ],
     })
 ], AppModule);
 //# sourceMappingURL=app.module.js.map

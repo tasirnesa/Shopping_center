@@ -231,4 +231,53 @@ export class DashboardService {
 
     return sections;
   }
+
+  async getSalesPerformance(orgId: string) {
+    const orders = await this.prisma.salesOrder.findMany({
+      where: {
+        organizationId: orgId,
+        status: { notIn: [OrderStatus.CANCELLED, OrderStatus.REJECTED] },
+      },
+      select: {
+        salesRepId: true,
+        grandTotal: true,
+        status: true,
+        salesRep: { select: { name: true } },
+      },
+    });
+
+    const repMap: Record<string, {
+      salesRepId: string;
+      name: string;
+      totalOrders: number;
+      totalRevenue: number;
+      submitted: number;
+      approved: number;
+      delivered: number;
+    }> = {};
+
+    for (const order of orders) {
+      const id = order.salesRepId;
+      if (!repMap[id]) {
+        repMap[id] = {
+          salesRepId: id,
+          name: order.salesRep?.name || 'Unknown',
+          totalOrders: 0,
+          totalRevenue: 0,
+          submitted: 0,
+          approved: 0,
+          delivered: 0,
+        };
+      }
+      repMap[id].totalOrders += 1;
+      repMap[id].totalRevenue += order.grandTotal ?? 0;
+      if (order.status === OrderStatus.SUBMITTED) repMap[id].submitted += 1;
+      const approvedStatuses: string[] = ['INVOICE_APPROVED', 'WAITING_FOR_WAREHOUSE', 'PICKING', 'READY_FOR_DELIVERY'];
+      if (approvedStatuses.includes(order.status)) repMap[id].approved += 1;
+      const deliveredStatuses: string[] = ['DELIVERED', 'COMPLETED'];
+      if (deliveredStatuses.includes(order.status)) repMap[id].delivered += 1;
+    }
+
+    return Object.values(repMap).sort((a, b) => b.totalRevenue - a.totalRevenue);
+  }
 }

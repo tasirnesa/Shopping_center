@@ -13,5 +13,8 @@
     "start:web": "npm run dev --workspace=web",
     "start:mobile": "npm start --workspace=mobile",
     "start:all": "concurrently \"npm run start:backend\" \"npm run start:web\" \"npm run start:mobile\""
+  },
+  "dependencies": {
+    "@nestjs/config": "^4.0.4"
   }
 }

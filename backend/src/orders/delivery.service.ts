@@ -147,42 +147,7 @@ export class DeliveryService {
                 'Order delivered and completed',
             );
 
-            // ── Create a Sale record so the order appears in Sales history & dashboard ──
-            // Stock was already deducted during packing — we only record the financial transaction.
-            const fullOrder = await tx.salesOrder.findUnique({
-                where: { id: orderId },
-                include: { lines: true },
-            });
 
-            if (fullOrder) {
-                const sale = await tx.sale.create({
-                    data: {
-                        organizationId: fullOrder.organizationId,
-                        branchId: fullOrder.branchId,
-                        // Map TIN to customerId if a matching customer exists, otherwise leave null
-                        subTotal: fullOrder.subtotal,
-                        discount: 0,
-                        totalAmount: fullOrder.grandTotal,
-                        details: {
-                            create: fullOrder.lines.map((line) => ({
-                                productId: line.productId,
-                                quantity: line.quantity,
-                                price: line.unitPrice,
-                            })),
-                        },
-                    },
-                });
-
-                // Record payment linked to this sale
-                await tx.payment.create({
-                    data: {
-                        referenceId: sale.id,
-                        referenceType: 'SALE',
-                        amount: fullOrder.grandTotal,
-                        method: 'INVOICE',
-                    },
-                });
-            }
 
             return { order: updatedOrder, delivery: updatedDelivery };
         });

@@ -3,67 +3,68 @@ export declare class InvoicesController {
     private readonly prisma;
     constructor(prisma: PrismaService);
     findOne(req: any, id: string): Promise<{
-        salesOrder: {
-            salesRep: {
-                email: string;
-                name: string | null;
+        lines: ({
+            product: {
+                id: string;
+                createdAt: Date;
+                updatedAt: Date;
+                organizationId: string;
+                name: string;
+                barcode: string | null;
+                categoryId: string | null;
+                brandId: string | null;
+                unitId: string | null;
+                price: number;
+                cost: number;
             };
         } & {
+            productId: string;
+            quantity: number;
+            unitPrice: number;
+            discount: number;
             id: string;
-            organizationId: string;
-            branchId: string;
-            status: import(".prisma/client").$Enums.OrderStatus;
-            createdAt: Date;
-            updatedAt: Date;
-            tin: string;
-            customerId: string | null;
-            taxRate: number;
-            salesRepId: string;
+            total: number;
+            invoiceId: string;
+        })[];
+        salesOrder: {
+            salesRep: {
+                name: string | null;
+                email: string;
+            };
+        } & {
             customerName: string;
+            tin: string;
             deliveryAddress: string;
             customerPhone: string | null;
-            subtotal: number;
-            taxAmount: number;
-            grandTotal: number;
+            branchId: string;
+            customerId: string | null;
             paymentMethod: string;
             paymentTerm: string | null;
             chequeNumber: string | null;
             creditDueDate: Date | null;
+            note: string | null;
+            id: string;
+            status: import(".prisma/client").$Enums.OrderStatus;
+            subtotal: number;
+            taxRate: number;
+            taxAmount: number;
+            grandTotal: number;
             rejectionReason: string | null;
             cancellationReason: string | null;
+            createdAt: Date;
+            updatedAt: Date;
+            organizationId: string;
+            salesRepId: string;
         };
-        lines: ({
-            product: {
-                id: string;
-                organizationId: string;
-                name: string;
-                createdAt: Date;
-                updatedAt: Date;
-                barcode: string | null;
-                price: number;
-                cost: number;
-                categoryId: string | null;
-                brandId: string | null;
-                unitId: string | null;
-            };
-        } & {
-            id: string;
-            productId: string;
-            discount: number;
-            quantity: number;
-            invoiceId: string;
-            unitPrice: number;
-            total: number;
-        })[];
     } & {
         id: string;
-        organizationId: string;
-        createdAt: Date;
-        taxRate: number;
-        salesOrderId: string;
         subtotal: number;
+        taxRate: number;
         taxAmount: number;
         grandTotal: number;
+        createdAt: Date;
+        organizationId: string;
+        salesOrderId: string;
         invoiceNumber: string;
         invoiceDate: Date;
         invoiceMakerId: string;

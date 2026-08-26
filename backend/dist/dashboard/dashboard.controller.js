@@ -37,6 +37,9 @@ let DashboardController = class DashboardController {
         }
         return this.dashboardService.getFulfillmentDashboard(orgId, req.user.role, req.user.id);
     }
+    getSalesPerformance(orgId) {
+        return this.dashboardService.getSalesPerformance(orgId);
+    }
 };
 exports.DashboardController = DashboardController;
 __decorate([
@@ -65,6 +68,14 @@ __decorate([
     __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", void 0)
 ], DashboardController.prototype, "getFulfillment", null);
+__decorate([
+    (0, common_1.Get)('sales-performance'),
+    (0, roles_decorator_1.Roles)(client_1.Role.MANAGER, client_1.Role.OWNER, client_1.Role.SYSTEM_ADMIN),
+    __param(0, (0, org_decorator_1.CurrentOrg)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], DashboardController.prototype, "getSalesPerformance", null);
 exports.DashboardController = DashboardController = __decorate([
     (0, common_1.Controller)('dashboard'),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),

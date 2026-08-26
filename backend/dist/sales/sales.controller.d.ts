@@ -14,34 +14,48 @@ export declare class SalesController {
         branchId?: string;
     }): Promise<{
         organization: {
+            tin: string | null;
             id: string;
-            email: string | null;
-            name: string;
             status: string;
             createdAt: Date;
             updatedAt: Date;
-            businessType: string | null;
-            tin: string | null;
+            name: string;
             phone: string | null;
+            email: string | null;
+            businessType: string | null;
             address: string | null;
             logo: string | null;
         };
         branch: {
             id: string;
-            organizationId: string;
-            name: string;
             createdAt: Date;
             updatedAt: Date;
+            organizationId: string;
+            name: string;
             phone: string | null;
             address: string | null;
             code: string | null;
         };
+        customer: {
+            tin: string | null;
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            organizationId: string;
+            name: string;
+            phone: string | null;
+            email: string | null;
+            efdaLicensePath: string | null;
+            efdaLicenseFileName: string | null;
+            creditLimit: number;
+            creditBalance: number;
+        } | null;
         returns: ({
             details: {
-                id: string;
-                price: number;
                 productId: string;
                 quantity: number;
+                id: string;
+                price: number;
                 returnId: string;
             }[];
         } & {
@@ -51,82 +65,82 @@ export declare class SalesController {
             totalRefund: number;
             saleId: string;
         })[];
-        customer: {
-            id: string;
-            organizationId: string;
-            email: string | null;
-            name: string;
-            createdAt: Date;
-            updatedAt: Date;
-            tin: string | null;
-            phone: string | null;
-            efdaLicensePath: string | null;
-            efdaLicenseFileName: string | null;
-            creditLimit: number;
-            creditBalance: number;
-        } | null;
         details: ({
             product: {
                 id: string;
-                organizationId: string;
-                name: string;
                 createdAt: Date;
                 updatedAt: Date;
+                organizationId: string;
+                name: string;
                 barcode: string | null;
-                price: number;
-                cost: number;
                 categoryId: string | null;
                 brandId: string | null;
                 unitId: string | null;
+                price: number;
+                cost: number;
             };
         } & {
-            id: string;
-            price: number;
             productId: string;
             quantity: number;
+            id: string;
+            price: number;
             saleId: string;
         })[];
     } & {
-        id: string;
-        organizationId: string;
+        discount: number;
         branchId: string;
+        customerId: string | null;
+        id: string;
         createdAt: Date;
         updatedAt: Date;
+        organizationId: string;
         subTotal: number;
-        discount: number;
         totalAmount: number;
-        customerId: string | null;
     }>;
     findAll(orgId: string): Promise<({
         organization: {
+            tin: string | null;
             id: string;
-            email: string | null;
-            name: string;
             status: string;
             createdAt: Date;
             updatedAt: Date;
-            businessType: string | null;
-            tin: string | null;
+            name: string;
             phone: string | null;
+            email: string | null;
+            businessType: string | null;
             address: string | null;
             logo: string | null;
         };
         branch: {
             id: string;
-            organizationId: string;
-            name: string;
             createdAt: Date;
             updatedAt: Date;
+            organizationId: string;
+            name: string;
             phone: string | null;
             address: string | null;
             code: string | null;
         };
+        customer: {
+            tin: string | null;
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            organizationId: string;
+            name: string;
+            phone: string | null;
+            email: string | null;
+            efdaLicensePath: string | null;
+            efdaLicenseFileName: string | null;
+            creditLimit: number;
+            creditBalance: number;
+        } | null;
         returns: ({
             details: {
-                id: string;
-                price: number;
                 productId: string;
                 quantity: number;
+                id: string;
+                price: number;
                 returnId: string;
             }[];
         } & {
@@ -136,82 +150,82 @@ export declare class SalesController {
             totalRefund: number;
             saleId: string;
         })[];
-        customer: {
-            id: string;
-            organizationId: string;
-            email: string | null;
-            name: string;
-            createdAt: Date;
-            updatedAt: Date;
-            tin: string | null;
-            phone: string | null;
-            efdaLicensePath: string | null;
-            efdaLicenseFileName: string | null;
-            creditLimit: number;
-            creditBalance: number;
-        } | null;
         details: ({
             product: {
                 id: string;
-                organizationId: string;
-                name: string;
                 createdAt: Date;
                 updatedAt: Date;
+                organizationId: string;
+                name: string;
                 barcode: string | null;
-                price: number;
-                cost: number;
                 categoryId: string | null;
                 brandId: string | null;
                 unitId: string | null;
+                price: number;
+                cost: number;
             };
         } & {
-            id: string;
-            price: number;
             productId: string;
             quantity: number;
+            id: string;
+            price: number;
             saleId: string;
         })[];
     } & {
-        id: string;
-        organizationId: string;
+        discount: number;
         branchId: string;
+        customerId: string | null;
+        id: string;
         createdAt: Date;
         updatedAt: Date;
+        organizationId: string;
         subTotal: number;
-        discount: number;
         totalAmount: number;
-        customerId: string | null;
     })[]>;
     findOne(orgId: string, id: string): Promise<({
         organization: {
+            tin: string | null;
             id: string;
-            email: string | null;
-            name: string;
             status: string;
             createdAt: Date;
             updatedAt: Date;
-            businessType: string | null;
-            tin: string | null;
+            name: string;
             phone: string | null;
+            email: string | null;
+            businessType: string | null;
             address: string | null;
             logo: string | null;
         };
         branch: {
             id: string;
-            organizationId: string;
-            name: string;
             createdAt: Date;
             updatedAt: Date;
+            organizationId: string;
+            name: string;
             phone: string | null;
             address: string | null;
             code: string | null;
         };
+        customer: {
+            tin: string | null;
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            organizationId: string;
+            name: string;
+            phone: string | null;
+            email: string | null;
+            efdaLicensePath: string | null;
+            efdaLicenseFileName: string | null;
+            creditLimit: number;
+            creditBalance: number;
+        } | null;
         returns: ({
             details: {
-                id: string;
-                price: number;
                 productId: string;
                 quantity: number;
+                id: string;
+                price: number;
                 returnId: string;
             }[];
         } & {
@@ -221,51 +235,37 @@ export declare class SalesController {
             totalRefund: number;
             saleId: string;
         })[];
-        customer: {
-            id: string;
-            organizationId: string;
-            email: string | null;
-            name: string;
-            createdAt: Date;
-            updatedAt: Date;
-            tin: string | null;
-            phone: string | null;
-            efdaLicensePath: string | null;
-            efdaLicenseFileName: string | null;
-            creditLimit: number;
-            creditBalance: number;
-        } | null;
         details: ({
             product: {
                 id: string;
-                organizationId: string;
-                name: string;
                 createdAt: Date;
                 updatedAt: Date;
+                organizationId: string;
+                name: string;
                 barcode: string | null;
-                price: number;
-                cost: number;
                 categoryId: string | null;
                 brandId: string | null;
                 unitId: string | null;
+                price: number;
+                cost: number;
             };
         } & {
-            id: string;
-            price: number;
             productId: string;
             quantity: number;
+            id: string;
+            price: number;
             saleId: string;
         })[];
     } & {
-        id: string;
-        organizationId: string;
+        discount: number;
         branchId: string;
+        customerId: string | null;
+        id: string;
         createdAt: Date;
         updatedAt: Date;
+        organizationId: string;
         subTotal: number;
-        discount: number;
         totalAmount: number;
-        customerId: string | null;
     }) | null>;
     processReturn(orgId: string, userBranchId: string, dto: {
         saleId: string;
@@ -277,10 +277,10 @@ export declare class SalesController {
         }[];
     }): Promise<{
         details: {
-            id: string;
-            price: number;
             productId: string;
             quantity: number;
+            id: string;
+            price: number;
             returnId: string;
         }[];
     } & {

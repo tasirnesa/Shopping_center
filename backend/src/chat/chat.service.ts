@@ -1,17 +1,22 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Inject, forwardRef } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { ChatGateway } from './chat.gateway';
 
 @Injectable()
 export class ChatService {
-    constructor(private prisma: PrismaService) { }
+    constructor(
+        private prisma: PrismaService,
+        @Inject(forwardRef(() => ChatGateway))
+        private chatGateway: ChatGateway,
+    ) { }
 
     async getUsers(user: any) {
         // Get all active users in the same organization (except the current user)
         const orgUsers = await this.prisma.user.findMany({
             where: {
-                organizationId: user.organizationId,
                 id: { not: user.id },
                 status: 'ACTIVE',
+                organizationId: user.organizationId,
             },
             select: {
                 id: true,
@@ -93,10 +98,12 @@ export class ChatService {
     }
 
     async sendMessage(user: any, recipientId: string, text: string) {
-        // Ensure recipient exists
-        const recipient = await this.prisma.user.findUnique({ where: { id: recipientId } });
+        // Ensure recipient exists AND belongs to the same organization
+        const recipient = await this.prisma.user.findFirst({
+            where: { id: recipientId, organizationId: user.organizationId },
+        });
         if (!recipient) {
-            throw new NotFoundException('Recipient not found');
+            throw new NotFoundException('Recipient not found in your organization');
         }
 
         const msg = await this.prisma.internalMessage.create({
@@ -108,11 +115,17 @@ export class ChatService {
             },
         });
 
-        return {
+        const responseMsg = {
             id: msg.id,
             text: msg.content,
             sender: 'me',
             time: msg.createdAt,
         };
+
+        // Emit via Gateway to the recipient
+        const recipientMsg = { ...responseMsg, sender: 'them', originalSenderId: user.id };
+        this.chatGateway.sendToUser(recipientId, 'newMessage', recipientMsg);
+
+        return responseMsg;
     }
 }

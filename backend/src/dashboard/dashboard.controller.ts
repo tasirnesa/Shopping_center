@@ -32,4 +32,10 @@ export class DashboardController {
     }
     return this.dashboardService.getFulfillmentDashboard(orgId, req.user.role, req.user.id);
   }
+
+  @Get('sales-performance')
+  @Roles(Role.MANAGER, Role.OWNER, Role.SYSTEM_ADMIN)
+  getSalesPerformance(@CurrentOrg() orgId: string) {
+    return this.dashboardService.getSalesPerformance(orgId);
+  }
 }

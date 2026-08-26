@@ -1,7 +1,9 @@
 import { PrismaService } from '../prisma/prisma.service';
+import { ChatGateway } from './chat.gateway';
 export declare class ChatService {
     private prisma;
-    constructor(prisma: PrismaService);
+    private chatGateway;
+    constructor(prisma: PrismaService, chatGateway: ChatGateway);
     getUsers(user: any): Promise<{
         id: string;
         name: string;

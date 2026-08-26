@@ -421,6 +421,7 @@ model SalesOrder {
   creditDueDate    DateTime?     // Credit payment due date
   rejectionReason  String?
   cancellationReason String?
+  note             String?
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
 

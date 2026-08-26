@@ -47,10 +47,10 @@ export declare class FoundationController {
     deleteUnit(orgId: string, id: string): Promise<import(".prisma/client").Prisma.BatchPayload>;
     getBranches(orgId: string): Promise<{
         id: string;
-        organizationId: string;
-        name: string;
         createdAt: Date;
         updatedAt: Date;
+        organizationId: string;
+        name: string;
         phone: string | null;
         address: string | null;
         code: string | null;
@@ -62,10 +62,10 @@ export declare class FoundationController {
         address?: string;
     }): Promise<{
         id: string;
-        organizationId: string;
-        name: string;
         createdAt: Date;
         updatedAt: Date;
+        organizationId: string;
+        name: string;
         phone: string | null;
         address: string | null;
         code: string | null;
@@ -77,20 +77,20 @@ export declare class FoundationController {
         address?: string;
     }): Promise<{
         id: string;
-        organizationId: string;
-        name: string;
         createdAt: Date;
         updatedAt: Date;
+        organizationId: string;
+        name: string;
         phone: string | null;
         address: string | null;
         code: string | null;
     }>;
     deleteBranch(orgId: string, id: string): Promise<{
         id: string;
-        organizationId: string;
-        name: string;
         createdAt: Date;
         updatedAt: Date;
+        organizationId: string;
+        name: string;
         phone: string | null;
         address: string | null;
         code: string | null;
@@ -104,13 +104,7 @@ export declare class FoundationController {
         organizationId?: string;
     }): Promise<any>;
     getUsers(orgId: string, req: any): Promise<{
-        id: string;
         branchId: string | null;
-        email: string;
-        name: string | null;
-        role: import(".prisma/client").$Enums.Role;
-        status: string;
-        createdAt: Date;
         organization: {
             id: string;
             name: string;
@@ -119,6 +113,12 @@ export declare class FoundationController {
             id: string;
             name: string;
         } | null;
+        id: string;
+        status: string;
+        createdAt: Date;
+        name: string | null;
+        email: string;
+        role: import(".prisma/client").$Enums.Role;
     }[]>;
     updateUserRole(orgId: string, id: string, body: {
         role: Role;

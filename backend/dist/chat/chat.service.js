@@ -8,21 +8,27 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ChatService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma/prisma.service");
+const chat_gateway_1 = require("./chat.gateway");
 let ChatService = class ChatService {
     prisma;
-    constructor(prisma) {
+    chatGateway;
+    constructor(prisma, chatGateway) {
         this.prisma = prisma;
+        this.chatGateway = chatGateway;
     }
     async getUsers(user) {
         const orgUsers = await this.prisma.user.findMany({
             where: {
-                organizationId: user.organizationId,
                 id: { not: user.id },
                 status: 'ACTIVE',
+                organizationId: user.organizationId,
             },
             select: {
                 id: true,
@@ -89,9 +95,11 @@ let ChatService = class ChatService {
         }));
     }
     async sendMessage(user, recipientId, text) {
-        const recipient = await this.prisma.user.findUnique({ where: { id: recipientId } });
+        const recipient = await this.prisma.user.findFirst({
+            where: { id: recipientId, organizationId: user.organizationId },
+        });
         if (!recipient) {
-            throw new common_1.NotFoundException('Recipient not found');
+            throw new common_1.NotFoundException('Recipient not found in your organization');
         }
         const msg = await this.prisma.internalMessage.create({
             data: {
@@ -101,17 +109,22 @@ let ChatService = class ChatService {
                 content: text,
             },
         });
-        return {
+        const responseMsg = {
             id: msg.id,
             text: msg.content,
             sender: 'me',
             time: msg.createdAt,
         };
+        const recipientMsg = { ...responseMsg, sender: 'them', originalSenderId: user.id };
+        this.chatGateway.sendToUser(recipientId, 'newMessage', recipientMsg);
+        return responseMsg;
     }
 };
 exports.ChatService = ChatService;
 exports.ChatService = ChatService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __param(1, (0, common_1.Inject)((0, common_1.forwardRef)(() => chat_gateway_1.ChatGateway))),
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        chat_gateway_1.ChatGateway])
 ], ChatService);
 //# sourceMappingURL=chat.service.js.map

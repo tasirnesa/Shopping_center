@@ -14,24 +14,24 @@ export declare class JwtStrategy extends JwtStrategy_base {
         organizationId: string | null;
         branchId: string | null;
         organization: {
+            tin: string | null;
             id: string;
-            email: string | null;
-            name: string;
             status: string;
             createdAt: Date;
             updatedAt: Date;
-            businessType: string | null;
-            tin: string | null;
+            name: string;
             phone: string | null;
+            email: string | null;
+            businessType: string | null;
             address: string | null;
             logo: string | null;
         } | null;
         branch: {
             id: string;
-            organizationId: string;
-            name: string;
             createdAt: Date;
             updatedAt: Date;
+            organizationId: string;
+            name: string;
             phone: string | null;
             address: string | null;
             code: string | null;

@@ -5,29 +5,29 @@ export declare class NotificationsService {
     constructor(prisma: PrismaService);
     create(organizationId: string, targetRole: Role, type: string, payload: any): Promise<{
         id: string;
-        organizationId: string;
         createdAt: Date;
-        read: boolean;
+        organizationId: string;
         type: string;
         targetRole: string;
         payload: import("@prisma/client/runtime/library").JsonValue;
+        read: boolean;
     }>;
     findUnread(organizationId: string, role: string): Promise<{
         id: string;
-        organizationId: string;
         createdAt: Date;
-        read: boolean;
+        organizationId: string;
         type: string;
         targetRole: string;
         payload: import("@prisma/client/runtime/library").JsonValue;
+        read: boolean;
     }[]>;
     markAsRead(id: string, organizationId: string): Promise<{
         id: string;
-        organizationId: string;
         createdAt: Date;
-        read: boolean;
+        organizationId: string;
         type: string;
         targetRole: string;
         payload: import("@prisma/client/runtime/library").JsonValue;
+        read: boolean;
     }>;
 }

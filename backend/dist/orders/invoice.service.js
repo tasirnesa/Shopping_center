@@ -58,6 +58,31 @@ let InvoiceService = class InvoiceService {
                 lines: true,
             },
         });
+        const sale = await prismaClient.sale.create({
+            data: {
+                organizationId: orgId,
+                branchId: salesOrder.branchId,
+                customerId: salesOrder.customerId || null,
+                subTotal: subtotal,
+                discount: 0,
+                totalAmount: grandTotal,
+                details: {
+                    create: invoiceLines.map((line) => ({
+                        productId: line.productId,
+                        quantity: line.quantity,
+                        price: line.unitPrice,
+                    })),
+                },
+            },
+        });
+        await prismaClient.payment.create({
+            data: {
+                referenceId: sale.id,
+                referenceType: 'SALE',
+                amount: grandTotal,
+                method: 'INVOICE',
+            },
+        });
         return invoice;
     }
 };

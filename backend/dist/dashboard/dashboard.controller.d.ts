@@ -16,45 +16,45 @@ export declare class DashboardController {
         recentSales: ({
             branch: {
                 id: string;
-                organizationId: string;
-                name: string;
                 createdAt: Date;
                 updatedAt: Date;
+                organizationId: string;
+                name: string;
                 phone: string | null;
-                address: string | null;
                 code: string | null;
+                address: string | null;
             };
             details: ({
                 product: {
                     id: string;
-                    organizationId: string;
-                    name: string;
                     createdAt: Date;
                     updatedAt: Date;
+                    organizationId: string;
+                    name: string;
                     barcode: string | null;
-                    price: number;
-                    cost: number;
                     categoryId: string | null;
                     brandId: string | null;
                     unitId: string | null;
+                    price: number;
+                    cost: number;
                 };
             } & {
                 id: string;
-                price: number;
-                productId: string;
                 quantity: number;
+                productId: string;
+                price: number;
                 saleId: string;
             })[];
         } & {
+            customerId: string | null;
             id: string;
-            organizationId: string;
-            branchId: string;
             createdAt: Date;
             updatedAt: Date;
-            subTotal: number;
+            organizationId: string;
+            branchId: string;
             discount: number;
+            subTotal: number;
             totalAmount: number;
-            customerId: string | null;
         })[];
         lowStockItems: {
             productId: string;
@@ -77,12 +77,21 @@ export declare class DashboardController {
         }>;
         orders: {
             id: string;
-            status: import(".prisma/client").$Enums.OrderStatus;
-            createdAt: Date;
             customerName: string;
+            status: import(".prisma/client").$Enums.OrderStatus;
             grandTotal: number;
             paymentMethod: string;
+            createdAt: Date;
         }[];
     }>;
     getFulfillment(orgId: string, req: any): {};
+    getSalesPerformance(orgId: string): Promise<{
+        salesRepId: string;
+        name: string;
+        totalOrders: number;
+        totalRevenue: number;
+        submitted: number;
+        approved: number;
+        delivered: number;
+    }[]>;
 }

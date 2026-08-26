@@ -207,6 +207,46 @@ let DashboardService = class DashboardService {
         }
         return sections;
     }
+    async getSalesPerformance(orgId) {
+        const orders = await this.prisma.salesOrder.findMany({
+            where: {
+                organizationId: orgId,
+                status: { notIn: [client_1.OrderStatus.CANCELLED, client_1.OrderStatus.REJECTED] },
+            },
+            select: {
+                salesRepId: true,
+                grandTotal: true,
+                status: true,
+                salesRep: { select: { name: true } },
+            },
+        });
+        const repMap = {};
+        for (const order of orders) {
+            const id = order.salesRepId;
+            if (!repMap[id]) {
+                repMap[id] = {
+                    salesRepId: id,
+                    name: order.salesRep?.name || 'Unknown',
+                    totalOrders: 0,
+                    totalRevenue: 0,
+                    submitted: 0,
+                    approved: 0,
+                    delivered: 0,
+                };
+            }
+            repMap[id].totalOrders += 1;
+            repMap[id].totalRevenue += order.grandTotal ?? 0;
+            if (order.status === client_1.OrderStatus.SUBMITTED)
+                repMap[id].submitted += 1;
+            const approvedStatuses = ['INVOICE_APPROVED', 'WAITING_FOR_WAREHOUSE', 'PICKING', 'READY_FOR_DELIVERY'];
+            if (approvedStatuses.includes(order.status))
+                repMap[id].approved += 1;
+            const deliveredStatuses = ['DELIVERED', 'COMPLETED'];
+            if (deliveredStatuses.includes(order.status))
+                repMap[id].delivered += 1;
+        }
+        return Object.values(repMap).sort((a, b) => b.totalRevenue - a.totalRevenue);
+    }
 };
 exports.DashboardService = DashboardService;
 exports.DashboardService = DashboardService = __decorate([

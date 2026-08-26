@@ -15,5 +15,6 @@ export declare class CreateOrderDto {
     paymentTerm?: string;
     chequeNumber?: string;
     creditDueDate?: Date;
+    note?: string;
     lines: CreateOrderLineDto[];
 }

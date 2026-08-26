@@ -9,15 +9,15 @@ export declare class DeliveryService {
     constructor(prisma: PrismaService, stateMachine: StateMachineService, audit: AuditService);
     createDelivery(prismaClient: Prisma.TransactionClient, salesOrder: SalesOrder, invoiceId: string): Promise<{
         id: string;
-        status: import(".prisma/client").$Enums.DeliveryStatus;
-        createdAt: Date;
-        updatedAt: Date;
-        salesOrderId: string;
         customerName: string;
         deliveryAddress: string;
         customerPhone: string | null;
+        status: import(".prisma/client").$Enums.DeliveryStatus;
         confirmationPath: string | null;
         confirmedAt: Date | null;
+        createdAt: Date;
+        updatedAt: Date;
+        salesOrderId: string;
         invoiceId: string;
         driverId: string | null;
         confirmedById: string | null;
@@ -25,19 +25,19 @@ export declare class DeliveryService {
     pickup(orderId: string, driverId: string, organizationId: string): Promise<{
         order: {
             id: string;
-            organizationId: string;
-            branchId: string;
-            status: import(".prisma/client").$Enums.OrderStatus;
-            createdAt: Date;
-            updatedAt: Date;
-            tin: string;
-            customerId: string | null;
-            taxRate: number;
-            salesRepId: string;
             customerName: string;
             deliveryAddress: string;
             customerPhone: string | null;
+            status: import(".prisma/client").$Enums.OrderStatus;
+            createdAt: Date;
+            updatedAt: Date;
+            organizationId: string;
+            branchId: string;
+            salesRepId: string;
+            customerId: string | null;
+            tin: string;
             subtotal: number;
+            taxRate: number;
             taxAmount: number;
             grandTotal: number;
             paymentMethod: string;
@@ -46,18 +46,19 @@ export declare class DeliveryService {
             creditDueDate: Date | null;
             rejectionReason: string | null;
             cancellationReason: string | null;
+            note: string | null;
         };
         delivery: {
             id: string;
-            status: import(".prisma/client").$Enums.DeliveryStatus;
-            createdAt: Date;
-            updatedAt: Date;
-            salesOrderId: string;
             customerName: string;
             deliveryAddress: string;
             customerPhone: string | null;
+            status: import(".prisma/client").$Enums.DeliveryStatus;
             confirmationPath: string | null;
             confirmedAt: Date | null;
+            createdAt: Date;
+            updatedAt: Date;
+            salesOrderId: string;
             invoiceId: string;
             driverId: string | null;
             confirmedById: string | null;
@@ -66,19 +67,19 @@ export declare class DeliveryService {
     confirmDelivery(orderId: string, driverId: string, organizationId: string, confirmationPath?: string): Promise<{
         order: {
             id: string;
-            organizationId: string;
-            branchId: string;
-            status: import(".prisma/client").$Enums.OrderStatus;
-            createdAt: Date;
-            updatedAt: Date;
-            tin: string;
-            customerId: string | null;
-            taxRate: number;
-            salesRepId: string;
             customerName: string;
             deliveryAddress: string;
             customerPhone: string | null;
+            status: import(".prisma/client").$Enums.OrderStatus;
+            createdAt: Date;
+            updatedAt: Date;
+            organizationId: string;
+            branchId: string;
+            salesRepId: string;
+            customerId: string | null;
+            tin: string;
             subtotal: number;
+            taxRate: number;
             taxAmount: number;
             grandTotal: number;
             paymentMethod: string;
@@ -87,18 +88,19 @@ export declare class DeliveryService {
             creditDueDate: Date | null;
             rejectionReason: string | null;
             cancellationReason: string | null;
+            note: string | null;
         };
         delivery: {
             id: string;
-            status: import(".prisma/client").$Enums.DeliveryStatus;
-            createdAt: Date;
-            updatedAt: Date;
-            salesOrderId: string;
             customerName: string;
             deliveryAddress: string;
             customerPhone: string | null;
+            status: import(".prisma/client").$Enums.DeliveryStatus;
             confirmationPath: string | null;
             confirmedAt: Date | null;
+            createdAt: Date;
+            updatedAt: Date;
+            salesOrderId: string;
             invoiceId: string;
             driverId: string | null;
             confirmedById: string | null;
@@ -107,19 +109,19 @@ export declare class DeliveryService {
     pickupByDeliveryId(deliveryId: string, driverId: string, organizationId: string): Promise<{
         order: {
             id: string;
-            organizationId: string;
-            branchId: string;
-            status: import(".prisma/client").$Enums.OrderStatus;
-            createdAt: Date;
-            updatedAt: Date;
-            tin: string;
-            customerId: string | null;
-            taxRate: number;
-            salesRepId: string;
             customerName: string;
             deliveryAddress: string;
             customerPhone: string | null;
+            status: import(".prisma/client").$Enums.OrderStatus;
+            createdAt: Date;
+            updatedAt: Date;
+            organizationId: string;
+            branchId: string;
+            salesRepId: string;
+            customerId: string | null;
+            tin: string;
             subtotal: number;
+            taxRate: number;
             taxAmount: number;
             grandTotal: number;
             paymentMethod: string;
@@ -128,18 +130,19 @@ export declare class DeliveryService {
             creditDueDate: Date | null;
             rejectionReason: string | null;
             cancellationReason: string | null;
+            note: string | null;
         };
         delivery: {
             id: string;
-            status: import(".prisma/client").$Enums.DeliveryStatus;
-            createdAt: Date;
-            updatedAt: Date;
-            salesOrderId: string;
             customerName: string;
             deliveryAddress: string;
             customerPhone: string | null;
+            status: import(".prisma/client").$Enums.DeliveryStatus;
             confirmationPath: string | null;
             confirmedAt: Date | null;
+            createdAt: Date;
+            updatedAt: Date;
+            salesOrderId: string;
             invoiceId: string;
             driverId: string | null;
             confirmedById: string | null;
@@ -148,19 +151,19 @@ export declare class DeliveryService {
     confirmDeliveryById(deliveryId: string, driverId: string, organizationId: string, confirmationPath: string): Promise<{
         order: {
             id: string;
-            organizationId: string;
-            branchId: string;
-            status: import(".prisma/client").$Enums.OrderStatus;
-            createdAt: Date;
-            updatedAt: Date;
-            tin: string;
-            customerId: string | null;
-            taxRate: number;
-            salesRepId: string;
             customerName: string;
             deliveryAddress: string;
             customerPhone: string | null;
+            status: import(".prisma/client").$Enums.OrderStatus;
+            createdAt: Date;
+            updatedAt: Date;
+            organizationId: string;
+            branchId: string;
+            salesRepId: string;
+            customerId: string | null;
+            tin: string;
             subtotal: number;
+            taxRate: number;
             taxAmount: number;
             grandTotal: number;
             paymentMethod: string;
@@ -169,18 +172,19 @@ export declare class DeliveryService {
             creditDueDate: Date | null;
             rejectionReason: string | null;
             cancellationReason: string | null;
+            note: string | null;
         };
         delivery: {
             id: string;
-            status: import(".prisma/client").$Enums.DeliveryStatus;
-            createdAt: Date;
-            updatedAt: Date;
-            salesOrderId: string;
             customerName: string;
             deliveryAddress: string;
             customerPhone: string | null;
+            status: import(".prisma/client").$Enums.DeliveryStatus;
             confirmationPath: string | null;
             confirmedAt: Date | null;
+            createdAt: Date;
+            updatedAt: Date;
+            salesOrderId: string;
             invoiceId: string;
             driverId: string | null;
             confirmedById: string | null;
@@ -188,33 +192,33 @@ export declare class DeliveryService {
     }>;
     findAll(userId: string, role: Role, orgId: string): Promise<({
         salesOrder: {
-            organizationId: string;
             customerName: string;
             deliveryAddress: string;
             customerPhone: string | null;
+            organizationId: string;
         };
         invoice: {
             invoiceNumber: string;
         };
     } & {
         id: string;
-        status: import(".prisma/client").$Enums.DeliveryStatus;
-        createdAt: Date;
-        updatedAt: Date;
-        salesOrderId: string;
         customerName: string;
         deliveryAddress: string;
         customerPhone: string | null;
+        status: import(".prisma/client").$Enums.DeliveryStatus;
         confirmationPath: string | null;
         confirmedAt: Date | null;
+        createdAt: Date;
+        updatedAt: Date;
+        salesOrderId: string;
         invoiceId: string;
         driverId: string | null;
         confirmedById: string | null;
     })[] | ({
         salesOrder: {
-            organizationId: string;
             customerName: string;
             deliveryAddress: string;
+            organizationId: string;
         };
         invoice: {
             invoiceNumber: string;
@@ -225,15 +229,15 @@ export declare class DeliveryService {
         } | null;
     } & {
         id: string;
-        status: import(".prisma/client").$Enums.DeliveryStatus;
-        createdAt: Date;
-        updatedAt: Date;
-        salesOrderId: string;
         customerName: string;
         deliveryAddress: string;
         customerPhone: string | null;
+        status: import(".prisma/client").$Enums.DeliveryStatus;
         confirmationPath: string | null;
         confirmedAt: Date | null;
+        createdAt: Date;
+        updatedAt: Date;
+        salesOrderId: string;
         invoiceId: string;
         driverId: string | null;
         confirmedById: string | null;
@@ -241,19 +245,19 @@ export declare class DeliveryService {
     findOne(id: string, userId: string, role: Role, orgId: string): Promise<{
         salesOrder: {
             id: string;
-            organizationId: string;
-            branchId: string;
-            status: import(".prisma/client").$Enums.OrderStatus;
-            createdAt: Date;
-            updatedAt: Date;
-            tin: string;
-            customerId: string | null;
-            taxRate: number;
-            salesRepId: string;
             customerName: string;
             deliveryAddress: string;
             customerPhone: string | null;
+            status: import(".prisma/client").$Enums.OrderStatus;
+            createdAt: Date;
+            updatedAt: Date;
+            organizationId: string;
+            branchId: string;
+            salesRepId: string;
+            customerId: string | null;
+            tin: string;
             subtotal: number;
+            taxRate: number;
             taxAmount: number;
             grandTotal: number;
             paymentMethod: string;
@@ -262,38 +266,39 @@ export declare class DeliveryService {
             creditDueDate: Date | null;
             rejectionReason: string | null;
             cancellationReason: string | null;
+            note: string | null;
         };
         invoice: {
             lines: ({
                 product: {
                     id: string;
-                    organizationId: string;
-                    name: string;
                     createdAt: Date;
                     updatedAt: Date;
+                    name: string;
+                    organizationId: string;
                     barcode: string | null;
-                    price: number;
-                    cost: number;
                     categoryId: string | null;
                     brandId: string | null;
                     unitId: string | null;
+                    price: number;
+                    cost: number;
                 };
             } & {
                 id: string;
-                productId: string;
-                discount: number;
-                quantity: number;
                 invoiceId: string;
+                productId: string;
+                quantity: number;
                 unitPrice: number;
+                discount: number;
                 total: number;
             })[];
         } & {
             id: string;
-            organizationId: string;
             createdAt: Date;
-            taxRate: number;
             salesOrderId: string;
+            organizationId: string;
             subtotal: number;
+            taxRate: number;
             taxAmount: number;
             grandTotal: number;
             invoiceNumber: string;
@@ -306,15 +311,15 @@ export declare class DeliveryService {
         } | null;
     } & {
         id: string;
-        status: import(".prisma/client").$Enums.DeliveryStatus;
-        createdAt: Date;
-        updatedAt: Date;
-        salesOrderId: string;
         customerName: string;
         deliveryAddress: string;
         customerPhone: string | null;
+        status: import(".prisma/client").$Enums.DeliveryStatus;
         confirmationPath: string | null;
         confirmedAt: Date | null;
+        createdAt: Date;
+        updatedAt: Date;
+        salesOrderId: string;
         invoiceId: string;
         driverId: string | null;
         confirmedById: string | null;

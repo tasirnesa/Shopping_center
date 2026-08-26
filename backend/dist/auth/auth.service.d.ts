@@ -28,14 +28,14 @@ export declare class AuthService {
         };
     }>;
     register(registerDto: RegisterDto): Promise<{
-        id: string;
-        organizationId: string | null;
         branchId: string | null;
-        email: string;
-        name: string | null;
-        role: import(".prisma/client").$Enums.Role;
+        id: string;
         status: string;
         createdAt: Date;
         updatedAt: Date;
+        organizationId: string | null;
+        name: string | null;
+        email: string;
+        role: import(".prisma/client").$Enums.Role;
     }>;
 }
