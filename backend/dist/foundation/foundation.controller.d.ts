@@ -47,13 +47,13 @@ export declare class FoundationController {
     deleteUnit(orgId: string, id: string): Promise<import(".prisma/client").Prisma.BatchPayload>;
     getBranches(orgId: string): Promise<{
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
         organizationId: string;
         name: string;
+        code: string | null;
         phone: string | null;
         address: string | null;
-        code: string | null;
+        createdAt: Date;
+        updatedAt: Date;
     }[]>;
     createBranch(orgId: string, body: {
         name: string;
@@ -62,13 +62,13 @@ export declare class FoundationController {
         address?: string;
     }): Promise<{
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
         organizationId: string;
         name: string;
+        code: string | null;
         phone: string | null;
         address: string | null;
-        code: string | null;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
     updateBranch(orgId: string, id: string, body: {
         name?: string;
@@ -77,23 +77,23 @@ export declare class FoundationController {
         address?: string;
     }): Promise<{
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
         organizationId: string;
         name: string;
+        code: string | null;
         phone: string | null;
         address: string | null;
-        code: string | null;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
     deleteBranch(orgId: string, id: string): Promise<{
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
         organizationId: string;
         name: string;
+        code: string | null;
         phone: string | null;
         address: string | null;
-        code: string | null;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
     createUser(orgId: string, req: any, body: {
         email: string;
@@ -104,7 +104,8 @@ export declare class FoundationController {
         organizationId?: string;
     }): Promise<any>;
     getUsers(orgId: string, req: any): Promise<{
-        branchId: string | null;
+        id: string;
+        name: string | null;
         organization: {
             id: string;
             name: string;
@@ -113,12 +114,11 @@ export declare class FoundationController {
             id: string;
             name: string;
         } | null;
-        id: string;
-        status: string;
         createdAt: Date;
-        name: string | null;
+        branchId: string | null;
         email: string;
         role: import(".prisma/client").$Enums.Role;
+        status: string;
     }[]>;
     updateUserRole(orgId: string, id: string, body: {
         role: Role;
@@ -126,4 +126,45 @@ export declare class FoundationController {
     updateUserStatus(orgId: string, id: string, body: {
         status: 'ACTIVE' | 'INACTIVE';
     }): Promise<import(".prisma/client").Prisma.BatchPayload>;
+    updateUserEmail(orgId: string, id: string, body: {
+        email: string;
+    }): Promise<import(".prisma/client").Prisma.BatchPayload>;
+    getSettings(orgId: string): Promise<{
+        id: string;
+        organizationId: string;
+        createdAt: Date;
+        updatedAt: Date;
+        currency: string;
+        taxRate: number;
+        receiptFooter: string | null;
+        language: string;
+        fiscalYear: string | null;
+        timezone: string;
+    } | {
+        currency: string;
+        taxRate: number;
+        timezone: string;
+        receiptFooter: null;
+        language: string;
+        fiscalYear: null;
+    }>;
+    updateSettings(orgId: string, body: {
+        currency?: string;
+        taxRate?: number;
+        timezone?: string;
+        receiptFooter?: string;
+        language?: string;
+        fiscalYear?: string;
+    }): Promise<{
+        id: string;
+        organizationId: string;
+        createdAt: Date;
+        updatedAt: Date;
+        currency: string;
+        taxRate: number;
+        receiptFooter: string | null;
+        language: string;
+        fiscalYear: string | null;
+        timezone: string;
+    }>;
 }

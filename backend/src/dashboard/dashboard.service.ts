@@ -232,6 +232,149 @@ export class DashboardService {
     return sections;
   }
 
+  async getAdminDashboard(orgId: string) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+    const lastMonthStart = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+    const lastMonthEnd   = new Date(today.getFullYear(), today.getMonth(), 0, 23, 59, 59);
+
+    const [
+      // POS Sales
+      totalSalesCount, todaySales, monthSales, lastMonthSales,
+      // Orders
+      ordersToday, ordersMonth,
+      // Fulfillment pipeline
+      submitted, invoiced, inWarehouse, outForDelivery, deliveredToday,
+      // Inventory
+      stockItems, lowStock, outOfStock,
+      // Customers & Suppliers
+      totalCustomers, totalSuppliers,
+      // Expenses
+      monthExpenses, todayExpenses,
+      // Users
+      activeUsers,
+      // Top products (from POS sales)
+      posWithDetails,
+    ] = await Promise.all([
+      // POS Sales counts
+      this.prisma.sale.count({ where: { organizationId: orgId } }),
+      this.prisma.sale.aggregate({
+        where: { organizationId: orgId, createdAt: { gte: today, lt: tomorrow } },
+        _sum: { totalAmount: true }, _count: true,
+      }),
+      this.prisma.sale.aggregate({
+        where: { organizationId: orgId, createdAt: { gte: monthStart } },
+        _sum: { totalAmount: true }, _count: true,
+      }),
+      this.prisma.sale.aggregate({
+        where: { organizationId: orgId, createdAt: { gte: lastMonthStart, lte: lastMonthEnd } },
+        _sum: { totalAmount: true }, _count: true,
+      }),
+      // Orders (fulfillment)
+      this.prisma.salesOrder.count({
+        where: { organizationId: orgId, createdAt: { gte: today, lt: tomorrow },
+          status: { notIn: [OrderStatus.CANCELLED, OrderStatus.REJECTED] } },
+      }),
+      this.prisma.salesOrder.aggregate({
+        where: { organizationId: orgId, createdAt: { gte: monthStart },
+          status: { notIn: [OrderStatus.CANCELLED, OrderStatus.REJECTED] } },
+        _sum: { grandTotal: true }, _count: true,
+      }),
+      // Pipeline
+      this.prisma.salesOrder.count({ where: { organizationId: orgId, status: OrderStatus.SUBMITTED } }),
+      this.prisma.invoice.count({ where: { organizationId: orgId, createdAt: { gte: today, lt: tomorrow } } }),
+      this.prisma.salesOrder.count({ where: { organizationId: orgId, status: { in: [OrderStatus.WAITING_FOR_WAREHOUSE, OrderStatus.PICKING, OrderStatus.PACKED] } } }),
+      this.prisma.delivery.count({ where: { salesOrder: { organizationId: orgId }, status: 'OUT_FOR_DELIVERY' as any } }),
+      this.prisma.delivery.count({ where: { salesOrder: { organizationId: orgId }, status: 'DELIVERED' as any, confirmedAt: { gte: today, lt: tomorrow } } }),
+      // Inventory
+      this.prisma.stockBalance.count({ where: { product: { organizationId: orgId } } }),
+      this.prisma.stockBalance.count({ where: { product: { organizationId: orgId }, quantity: { gt: 0, lt: LOW_STOCK_THRESHOLD } } }),
+      this.prisma.stockBalance.count({ where: { product: { organizationId: orgId }, quantity: { lte: 0 } } }),
+      // Customers & Suppliers
+      this.prisma.customer.count({ where: { organizationId: orgId } }),
+      this.prisma.supplier.count({ where: { organizationId: orgId } }),
+      // Expenses
+      this.prisma.expense.aggregate({
+        where: { organizationId: orgId, date: { gte: monthStart } },
+        _sum: { amount: true },
+      }),
+      this.prisma.expense.aggregate({
+        where: { organizationId: orgId, date: { gte: today, lt: tomorrow } },
+        _sum: { amount: true },
+      }),
+      // Users
+      this.prisma.user.count({ where: { organizationId: orgId, status: 'ACTIVE' } }),
+      // Top 5 products by POS revenue this month
+      this.prisma.sale.findMany({
+        where: { organizationId: orgId, createdAt: { gte: monthStart } },
+        include: { details: { include: { product: { select: { name: true } } } } },
+      }),
+    ]);
+
+    // 7-day POS sales chart
+    const allSalesThisWeek = await this.prisma.sale.findMany({
+      where: { organizationId: orgId, createdAt: { gte: new Date(Date.now() - 6 * 86400000) } },
+      select: { totalAmount: true, createdAt: true },
+    });
+    const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    const salesByDay = Array.from({ length: 7 }, (_, i) => {
+      const d = new Date(today); d.setDate(d.getDate() - (6 - i));
+      const dayStart = new Date(d); dayStart.setHours(0,0,0,0);
+      const dayEnd   = new Date(d); dayEnd.setHours(23,59,59,999);
+      const amount = allSalesThisWeek
+        .filter(s => new Date(s.createdAt) >= dayStart && new Date(s.createdAt) <= dayEnd)
+        .reduce((sum, s) => sum + s.totalAmount, 0);
+      return { name: DAYS[dayStart.getDay()], amount, isToday: i === 6 };
+    });
+
+    // Top products from POS this month
+    const prodMap: Record<string, { name: string; revenue: number; qty: number }> = {};
+    for (const sale of posWithDetails) {
+      for (const d of sale.details) {
+        const name = d.product?.name || 'Unknown';
+        if (!prodMap[name]) prodMap[name] = { name, revenue: 0, qty: 0 };
+        prodMap[name].revenue += d.price * d.quantity;
+        prodMap[name].qty += d.quantity;
+      }
+    }
+    const topProducts = Object.values(prodMap).sort((a, b) => b.revenue - a.revenue).slice(0, 5);
+
+    // Month-over-month POS sales change %
+    const thisMonthRev  = monthSales._sum.totalAmount ?? 0;
+    const lastMonthRev  = lastMonthSales._sum.totalAmount ?? 0;
+    const revenueGrowth = lastMonthRev > 0 ? ((thisMonthRev - lastMonthRev) / lastMonthRev) * 100 : null;
+
+    return {
+      // Revenue
+      todayRevenue:      todaySales._sum.totalAmount  ?? 0,
+      todaySalesCount:   todaySales._count            ?? 0,
+      monthRevenue:      thisMonthRev,
+      monthSalesCount:   monthSales._count            ?? 0,
+      revenueGrowth,
+      // Orders
+      ordersToday,
+      ordersMonthCount:  ordersMonth._count           ?? 0,
+      ordersMonthValue:  ordersMonth._sum.grandTotal  ?? 0,
+      // Pipeline
+      pipeline: { submitted, invoiced, inWarehouse, outForDelivery, deliveredToday },
+      // Inventory
+      inventory: { stockItems, lowStock, outOfStock },
+      // Business health
+      totalCustomers, totalSuppliers,
+      activeUsers,
+      // Expenses
+      todayExpenses:  todayExpenses._sum.amount  ?? 0,
+      monthExpenses:  monthExpenses._sum.amount  ?? 0,
+      // Charts
+      salesByDay,
+      topProducts,
+    };
+  }
+
   async getSalesPerformance(orgId: string) {
     const orders = await this.prisma.salesOrder.findMany({
       where: {
@@ -279,5 +422,50 @@ export class DashboardService {
     }
 
     return Object.values(repMap).sort((a, b) => b.totalRevenue - a.totalRevenue);
+  }
+
+  async getSystemDashboard() {
+    const today = new Date();
+    const lastWeek = new Date(today);
+    lastWeek.setDate(today.getDate() - 6);
+    lastWeek.setHours(0, 0, 0, 0);
+
+    const [
+      totalOrgs, newOrgsThisWeek,
+      totalUsers, activeUsers,
+      totalBranches
+    ] = await Promise.all([
+      this.prisma.organization.count(),
+      this.prisma.organization.count({ where: { createdAt: { gte: lastWeek } } }),
+      this.prisma.user.count(),
+      this.prisma.user.count({ where: { status: 'ACTIVE' } }),
+      this.prisma.branch.count()
+    ]);
+
+    const recentOrgs = await this.prisma.organization.findMany({
+      where: { createdAt: { gte: lastWeek } },
+      select: { createdAt: true }
+    });
+    const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const orgSignupsByDay = Array.from({ length: 7 }, (_, i) => {
+      const d = new Date(today);
+      d.setDate(today.getDate() - (6 - i));
+      const dayStart = new Date(d); dayStart.setHours(0, 0, 0, 0);
+      const dayEnd = new Date(d); dayEnd.setHours(23, 59, 59, 999);
+      const count = recentOrgs.filter(o => {
+        const c = new Date(o.createdAt);
+        return c >= dayStart && c <= dayEnd;
+      }).length;
+      return { name: DAYS[dayStart.getDay()], signups: count, isToday: i === 6 };
+    });
+
+    return {
+      stats: {
+        totalOrgs, newOrgsThisWeek,
+        totalUsers, activeUsers,
+        totalBranches
+      },
+      orgSignupsByDay
+    };
   }
 }

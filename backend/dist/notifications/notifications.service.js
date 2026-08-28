@@ -33,12 +33,15 @@ let NotificationsService = class NotificationsService {
         return notif;
     }
     async findUnread(organizationId, role) {
+        const where = {
+            targetRole: role,
+            read: false,
+        };
+        if (organizationId) {
+            where.organizationId = organizationId;
+        }
         return this.prisma.notification.findMany({
-            where: {
-                organizationId,
-                targetRole: role,
-                read: false,
-            },
+            where,
             orderBy: { createdAt: 'desc' },
         });
     }

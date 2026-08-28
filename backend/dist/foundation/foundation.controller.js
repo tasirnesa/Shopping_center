@@ -80,6 +80,15 @@ let FoundationController = class FoundationController {
     updateUserStatus(orgId, id, body) {
         return this.foundationService.updateUserStatus(orgId, id, body.status);
     }
+    updateUserEmail(orgId, id, body) {
+        return this.foundationService.updateUserEmail(orgId, id, body.email);
+    }
+    getSettings(orgId) {
+        return this.foundationService.getSettings(orgId);
+    }
+    updateSettings(orgId, body) {
+        return this.foundationService.updateSettings(orgId, body);
+    }
 };
 exports.FoundationController = FoundationController;
 __decorate([
@@ -231,6 +240,33 @@ __decorate([
     __metadata("design:paramtypes", [String, String, Object]),
     __metadata("design:returntype", void 0)
 ], FoundationController.prototype, "updateUserStatus", null);
+__decorate([
+    (0, common_1.Patch)('users/:id/email'),
+    (0, roles_decorator_1.Roles)(client_1.Role.OWNER, client_1.Role.MANAGER, client_1.Role.SYSTEM_ADMIN),
+    __param(0, (0, org_decorator_1.CurrentOrg)()),
+    __param(1, (0, common_1.Param)('id')),
+    __param(2, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, Object]),
+    __metadata("design:returntype", void 0)
+], FoundationController.prototype, "updateUserEmail", null);
+__decorate([
+    (0, common_1.Get)('settings'),
+    (0, roles_decorator_1.Roles)(client_1.Role.OWNER, client_1.Role.MANAGER),
+    __param(0, (0, org_decorator_1.CurrentOrg)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], FoundationController.prototype, "getSettings", null);
+__decorate([
+    (0, common_1.Patch)('settings'),
+    (0, roles_decorator_1.Roles)(client_1.Role.OWNER, client_1.Role.MANAGER),
+    __param(0, (0, org_decorator_1.CurrentOrg)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", void 0)
+], FoundationController.prototype, "updateSettings", null);
 exports.FoundationController = FoundationController = __decorate([
     (0, common_1.Controller)('foundation'),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),

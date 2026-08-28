@@ -9,8 +9,9 @@ import SalesPage from "./pages/SalesPage";
 import InventoryPage from "./pages/InventoryPage";
 import ReportsPage from "./pages/ReportsPage";
 import AdminPage from "./pages/AdminPage";
-
 import OrdersPage from "./pages/OrdersPage";
+import SystemOrganizationsPage from "./pages/SystemOrganizationsPage";
+import SystemUsersPage from "./pages/SystemUsersPage";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const token = localStorage.getItem("token");
@@ -39,6 +40,8 @@ function App() {
             <Route path="inventory" element={<InventoryPage />} />
             <Route path="reports" element={<ReportsPage />} />
             <Route path="admin" element={<AdminPage />} />
+            <Route path="organizations" element={<SystemOrganizationsPage />} />
+            <Route path="users" element={<SystemUsersPage />} />
           </Route>
         </Routes>
       </BrowserRouter>

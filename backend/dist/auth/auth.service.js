@@ -47,12 +47,16 @@ const common_1 = require("@nestjs/common");
 const jwt_1 = require("@nestjs/jwt");
 const prisma_service_1 = require("../prisma/prisma.service");
 const bcrypt = __importStar(require("bcrypt"));
+const notifications_service_1 = require("../notifications/notifications.service");
+const client_1 = require("@prisma/client");
 let AuthService = class AuthService {
     prisma;
     jwtService;
-    constructor(prisma, jwtService) {
+    notificationsService;
+    constructor(prisma, jwtService, notificationsService) {
         this.prisma = prisma;
         this.jwtService = jwtService;
+        this.notificationsService = notificationsService;
     }
     async validateUser(email, pass) {
         const user = await this.prisma.user.findUnique({
@@ -156,16 +160,33 @@ let AuthService = class AuthService {
             throw new common_1.UnauthorizedException('User not found');
         const passwordMatch = await bcrypt.compare(dto.currentPassword, user.password);
         if (!passwordMatch)
-            throw new common_1.UnauthorizedException('Current password is incorrect');
+            throw new common_1.BadRequestException('Current password is incorrect');
         const hashed = await bcrypt.hash(dto.newPassword, 10);
         await this.prisma.user.update({ where: { id: userId }, data: { password: hashed } });
         return { message: 'Password changed successfully' };
+    }
+    async requestEmailChange(userId, dto) {
+        const user = await this.prisma.user.findUnique({ where: { id: userId } });
+        if (!user)
+            throw new common_1.UnauthorizedException('User not found');
+        if (!user.organizationId)
+            throw new common_1.BadRequestException('Organization not found for user');
+        const payload = {
+            message: `User ${user.name} (${user.email}) requested an email change to ${dto.newEmail}. Reason: ${dto.reason}`,
+            userId: user.id,
+            currentEmail: user.email,
+            newEmail: dto.newEmail,
+            reason: dto.reason,
+        };
+        await this.notificationsService.create(user.organizationId, client_1.Role.OWNER, 'EMAIL_CHANGE_REQUEST', payload);
+        return { message: 'Your email change request has been sent to the administrator.' };
     }
 };
 exports.AuthService = AuthService;
 exports.AuthService = AuthService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        jwt_1.JwtService])
+        jwt_1.JwtService,
+        notifications_service_1.NotificationsService])
 ], AuthService);
 //# sourceMappingURL=auth.service.js.map

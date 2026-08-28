@@ -144,6 +144,35 @@ let FoundationService = class FoundationService {
             data: { status },
         });
     }
+    async updateUserEmail(orgId, id, email) {
+        try {
+            return await this.prisma.user.updateMany({
+                where: { id, organizationId: orgId },
+                data: { email },
+            });
+        }
+        catch (e) {
+            if (e.code === 'P2002')
+                throw new common_1.BadRequestException('Email already registered');
+            throw e;
+        }
+    }
+    async getSettings(orgId) {
+        const settings = await this.prisma.organizationSettings.findUnique({
+            where: { organizationId: orgId },
+        });
+        return settings ?? {
+            currency: 'ETB', taxRate: 15, timezone: 'Africa/Addis_Ababa',
+            receiptFooter: null, language: 'en', fiscalYear: null,
+        };
+    }
+    async updateSettings(orgId, data) {
+        return this.prisma.organizationSettings.upsert({
+            where: { organizationId: orgId },
+            create: { organizationId: orgId, ...data },
+            update: data,
+        });
+    }
 };
 exports.FoundationService = FoundationService;
 exports.FoundationService = FoundationService = __decorate([

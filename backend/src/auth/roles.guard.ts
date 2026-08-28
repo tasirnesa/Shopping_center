@@ -17,11 +17,6 @@ export class RolesGuard implements CanActivate {
     }
     const { user } = context.switchToHttp().getRequest();
 
-    // SYSTEM_ADMIN can access everything
-    if (user?.role === Role.SYSTEM_ADMIN) {
-      return true;
-    }
-
     return requiredRoles.some((role) => user?.role === role);
   }
 }

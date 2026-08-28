@@ -79,54 +79,42 @@ export default function AdminPage() {
           variant="scrollable"
           scrollButtons="auto"
         >
-          {isSysAdmin && (
-            <Tab icon={<Business />} iconPosition="start" label="Organizations" />
-          )}
+          {isSysAdmin && <Tab icon={<Business />} iconPosition="start" label="Organizations" />}
           <Tab icon={<AdminPanelSettings />} iconPosition="start" label="Users & Roles" />
-          <Tab icon={<Store />} iconPosition="start" label="Branches" />
-          <Tab icon={<Category />} iconPosition="start" label="Categories" />
-          <Tab
-            icon={<BrandingWatermark />}
-            iconPosition="start"
-            label="Brands"
-          />
-          <Tab icon={<Straighten />} iconPosition="start" label="Units" />
-          {!isSysAdmin && (
-            <Tab icon={<Business />} iconPosition="start" label="Org Settings" />
-          )}
+          {!isSysAdmin && <Tab icon={<Store />} iconPosition="start" label="Branches" />}
+          {!isSysAdmin && <Tab icon={<Category />} iconPosition="start" label="Categories" />}
+          {!isSysAdmin && <Tab icon={<BrandingWatermark />} iconPosition="start" label="Brands" />}
+          {!isSysAdmin && <Tab icon={<Straighten />} iconPosition="start" label="Units" />}
+          {!isSysAdmin && <Tab icon={<Business />} iconPosition="start" label="Org Settings" />}
         </Tabs>
       </Paper>
 
-      {/* Since tabs are dynamic, we calculate indices based on isSysAdmin */}
-      {isSysAdmin && (
-        <TabPanel value={tab} index={0}>
-          <OrganizationsTab />
-        </TabPanel>
-      )}
+      <TabPanel value={tab} index={0}>
+        <UsersTab isSysAdmin={false} />
+      </TabPanel>
 
-      <TabPanel value={tab} index={isSysAdmin ? 1 : 0}>
-        <UsersTab isSysAdmin={isSysAdmin} />
-      </TabPanel>
-      <TabPanel value={tab} index={isSysAdmin ? 2 : 1}>
-        <BranchesTab />
-      </TabPanel>
-      <TabPanel value={tab} index={isSysAdmin ? 3 : 2}>
-        <SimpleListTab
-          endpoint="/foundation/categories"
-          title="Category"
-          hasDescription
-        />
-      </TabPanel>
-      <TabPanel value={tab} index={isSysAdmin ? 4 : 3}>
-        <SimpleListTab endpoint="/foundation/brands" title="Brand" />
-      </TabPanel>
-      <TabPanel value={tab} index={isSysAdmin ? 5 : 4}>
-        <SimpleListTab endpoint="/foundation/units" title="Unit" />
-      </TabPanel>
       {!isSysAdmin && (
-        <TabPanel value={tab} index={5}>
-          <OrganizationSettingsTab />
-        </TabPanel>
+        <>
+          <TabPanel value={tab} index={1}>
+            <BranchesTab />
+          </TabPanel>
+          <TabPanel value={tab} index={2}>
+            <SimpleListTab
+              endpoint="/foundation/categories"
+              title="Category"
+              hasDescription
+            />
+          </TabPanel>
+          <TabPanel value={tab} index={3}>
+            <SimpleListTab endpoint="/foundation/brands" title="Brand" />
+          </TabPanel>
+          <TabPanel value={tab} index={4}>
+            <SimpleListTab endpoint="/foundation/units" title="Unit" />
+          </TabPanel>
+          <TabPanel value={tab} index={5}>
+            <OrganizationSettingsTab />
+          </TabPanel>
+        </>
       )}
     </Box>
   );
@@ -317,6 +305,7 @@ function UsersTab({ isSysAdmin }: { isSysAdmin: boolean }) {
 
   // States for adding user
   const [role, setRole] = useState("");
+  const [editEmail, setEditEmail] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
@@ -345,8 +334,17 @@ function UsersTab({ isSysAdmin }: { isSysAdmin: boolean }) {
     load();
   }, []);
 
-  const handleRoleChange = async () => {
-    await api.patch(`/foundation/users/${selectedUser.id}/role`, { role });
+  const handleEditUser = async () => {
+    try {
+      // If email changed, patch it
+      if (editEmail !== selectedUser.email) {
+        await api.patch(`/foundation/users/${selectedUser.id}/email`, { email: editEmail });
+      }
+      // Always patch role as before
+      await api.patch(`/foundation/users/${selectedUser.id}/role`, { role });
+    } catch (e: any) {
+      alert(e.response?.data?.message || "Failed to update user");
+    }
     setOpen(false);
     load();
   };
@@ -452,10 +450,11 @@ function UsersTab({ isSysAdmin }: { isSysAdmin: boolean }) {
                       onClick={() => {
                         setSelectedUser(u);
                         setRole(u.role);
+                        setEditEmail(u.email);
                         setOpen(true);
                       }}
                     >
-                      Edit Role
+                      Edit User
                     </Button>
                   </TableCell>
                 </TableRow>
@@ -466,11 +465,15 @@ function UsersTab({ isSysAdmin }: { isSysAdmin: boolean }) {
       </TableContainer>
 
       <Dialog open={open} onClose={() => setOpen(false)}>
-        <DialogTitle sx={{ fontWeight: 700 }}>Change Role</DialogTitle>
+        <DialogTitle sx={{ fontWeight: 700 }}>Edit User</DialogTitle>
         <DialogContent>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-            {selectedUser?.email}
-          </Typography>
+          <TextField
+            label="Email Address"
+            fullWidth
+            sx={{ mt: 1, mb: 2 }}
+            value={editEmail}
+            onChange={(e) => setEditEmail(e.target.value)}
+          />
           <FormControl fullWidth sx={{ minWidth: 200 }}>
             <InputLabel>Role</InputLabel>
             <Select
@@ -492,7 +495,7 @@ function UsersTab({ isSysAdmin }: { isSysAdmin: boolean }) {
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 2 }}>
           <Button onClick={() => setOpen(false)}>Cancel</Button>
-          <Button variant="contained" onClick={handleRoleChange}>
+          <Button variant="contained" onClick={handleEditUser}>
             Save
           </Button>
         </DialogActions>
@@ -587,7 +590,7 @@ function UsersTab({ isSysAdmin }: { isSysAdmin: boolean }) {
   );
 }
 
-function OrganizationsTab() {
+export function OrganizationsTab() {
   const [orgs, setOrgs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);

@@ -12,7 +12,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.RolesGuard = void 0;
 const common_1 = require("@nestjs/common");
 const core_1 = require("@nestjs/core");
-const client_1 = require("@prisma/client");
 const roles_decorator_1 = require("./roles.decorator");
 let RolesGuard = class RolesGuard {
     reflector;
@@ -28,9 +27,6 @@ let RolesGuard = class RolesGuard {
             return true;
         }
         const { user } = context.switchToHttp().getRequest();
-        if (user?.role === client_1.Role.SYSTEM_ADMIN) {
-            return true;
-        }
         return requiredRoles.some((role) => user?.role === role);
     }
 };

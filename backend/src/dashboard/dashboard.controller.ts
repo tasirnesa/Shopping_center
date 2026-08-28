@@ -33,9 +33,21 @@ export class DashboardController {
     return this.dashboardService.getFulfillmentDashboard(orgId, req.user.role, req.user.id);
   }
 
+  @Get('admin')
+  @Roles(Role.MANAGER, Role.OWNER, Role.SYSTEM_ADMIN)
+  getAdminDashboard(@CurrentOrg() orgId: string) {
+    return this.dashboardService.getAdminDashboard(orgId);
+  }
+
   @Get('sales-performance')
   @Roles(Role.MANAGER, Role.OWNER, Role.SYSTEM_ADMIN)
   getSalesPerformance(@CurrentOrg() orgId: string) {
     return this.dashboardService.getSalesPerformance(orgId);
+  }
+
+  @Get('system')
+  @Roles(Role.SYSTEM_ADMIN)
+  getSystemDashboard() {
+    return this.dashboardService.getSystemDashboard();
   }
 }

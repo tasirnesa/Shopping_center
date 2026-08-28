@@ -10,12 +10,16 @@ import * as bcrypt from 'bcrypt';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
+import { RequestEmailChangeDto } from './dto/request-email-change.dto';
+import { NotificationsService } from '../notifications/notifications.service';
+import { Role } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
+    private notificationsService: NotificationsService,
   ) {}
 
   async validateUser(email: string, pass: string): Promise<any> {
@@ -136,5 +140,28 @@ export class AuthService {
     const hashed = await bcrypt.hash(dto.newPassword, 10);
     await this.prisma.user.update({ where: { id: userId }, data: { password: hashed } });
     return { message: 'Password changed successfully' };
+  }
+
+  async requestEmailChange(userId: string, dto: RequestEmailChangeDto) {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user) throw new UnauthorizedException('User not found');
+    if (!user.organizationId) throw new BadRequestException('Organization not found for user');
+
+    const payload = {
+      message: `User ${user.name} (${user.email}) requested an email change to ${dto.newEmail}. Reason: ${dto.reason}`,
+      userId: user.id,
+      currentEmail: user.email,
+      newEmail: dto.newEmail,
+      reason: dto.reason,
+    };
+
+    await this.notificationsService.create(
+      user.organizationId,
+      Role.OWNER,
+      'EMAIL_CHANGE_REQUEST',
+      payload,
+    );
+
+    return { message: 'Your email change request has been sent to the administrator.' };
   }
 }

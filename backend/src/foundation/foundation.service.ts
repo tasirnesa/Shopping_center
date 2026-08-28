@@ -164,4 +164,39 @@ export class FoundationService {
       data: { status },
     });
   }
+
+  async updateUserEmail(orgId: string, id: string, email: string) {
+    try {
+      return await this.prisma.user.updateMany({
+        where: { id, organizationId: orgId },
+        data: { email },
+      });
+    } catch (e: any) {
+      if (e.code === 'P2002') throw new BadRequestException('Email already registered');
+      throw e;
+    }
+  }
+
+  // ───── Org Settings ─────
+  async getSettings(orgId: string) {
+    const settings = await this.prisma.organizationSettings.findUnique({
+      where: { organizationId: orgId },
+    });
+    // Return defaults if not yet configured
+    return settings ?? {
+      currency: 'ETB', taxRate: 15, timezone: 'Africa/Addis_Ababa',
+      receiptFooter: null, language: 'en', fiscalYear: null,
+    };
+  }
+
+  async updateSettings(orgId: string, data: {
+    currency?: string; taxRate?: number; timezone?: string;
+    receiptFooter?: string | null; language?: string; fiscalYear?: string | null;
+  }) {
+    return this.prisma.organizationSettings.upsert({
+      where:  { organizationId: orgId },
+      create: { organizationId: orgId, ...data },
+      update: data,
+    });
+  }
 }

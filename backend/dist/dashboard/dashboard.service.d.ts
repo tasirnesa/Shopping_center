@@ -15,21 +15,21 @@ export declare class DashboardService {
         }[];
         recentSales: ({
             branch: {
+                organizationId: string;
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
-                organizationId: string;
                 name: string;
-                phone: string | null;
                 code: string | null;
+                phone: string | null;
                 address: string | null;
             };
             details: ({
                 product: {
+                    organizationId: string;
                     id: string;
                     createdAt: Date;
                     updatedAt: Date;
-                    organizationId: string;
                     name: string;
                     barcode: string | null;
                     categoryId: string | null;
@@ -40,21 +40,21 @@ export declare class DashboardService {
                 };
             } & {
                 id: string;
-                quantity: number;
                 productId: string;
+                quantity: number;
                 price: number;
                 saleId: string;
             })[];
         } & {
-            customerId: string | null;
+            organizationId: string;
             id: string;
+            branchId: string;
+            customerId: string | null;
+            subTotal: number;
+            discount: number;
+            totalAmount: number;
             createdAt: Date;
             updatedAt: Date;
-            organizationId: string;
-            branchId: string;
-            discount: number;
-            subTotal: number;
-            totalAmount: number;
         })[];
         lowStockItems: {
             productId: string;
@@ -77,14 +77,51 @@ export declare class DashboardService {
         }>;
         orders: {
             id: string;
+            createdAt: Date;
             customerName: string;
             status: import(".prisma/client").$Enums.OrderStatus;
             grandTotal: number;
             paymentMethod: string;
-            createdAt: Date;
         }[];
     }>;
     getFulfillmentDashboard(orgId: string, role: string, userId?: string): Promise<any>;
+    getAdminDashboard(orgId: string): Promise<{
+        todayRevenue: number;
+        todaySalesCount: number;
+        monthRevenue: number;
+        monthSalesCount: number;
+        revenueGrowth: number | null;
+        ordersToday: number;
+        ordersMonthCount: number;
+        ordersMonthValue: number;
+        pipeline: {
+            submitted: number;
+            invoiced: number;
+            inWarehouse: number;
+            outForDelivery: number;
+            deliveredToday: number;
+        };
+        inventory: {
+            stockItems: number;
+            lowStock: number;
+            outOfStock: number;
+        };
+        totalCustomers: number;
+        totalSuppliers: number;
+        activeUsers: number;
+        todayExpenses: number;
+        monthExpenses: number;
+        salesByDay: {
+            name: string;
+            amount: number;
+            isToday: boolean;
+        }[];
+        topProducts: {
+            name: string;
+            revenue: number;
+            qty: number;
+        }[];
+    }>;
     getSalesPerformance(orgId: string): Promise<{
         salesRepId: string;
         name: string;
@@ -94,4 +131,18 @@ export declare class DashboardService {
         approved: number;
         delivered: number;
     }[]>;
+    getSystemDashboard(): Promise<{
+        stats: {
+            totalOrgs: number;
+            newOrgsThisWeek: number;
+            totalUsers: number;
+            activeUsers: number;
+            totalBranches: number;
+        };
+        orgSignupsByDay: {
+            name: string;
+            signups: number;
+            isToday: boolean;
+        }[];
+    }>;
 }

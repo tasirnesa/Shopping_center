@@ -23,13 +23,17 @@ export class NotificationsService {
         return notif;
     }
 
-    async findUnread(organizationId: string, role: string) {
+    async findUnread(organizationId: string | null, role: string) {
+        const where: any = {
+            targetRole: role as Role,
+            read: false,
+        };
+        // SYSTEM_ADMIN has no organizationId — skip org filter so Prisma doesn't reject null
+        if (organizationId) {
+            where.organizationId = organizationId;
+        }
         return this.prisma.notification.findMany({
-            where: {
-                organizationId,
-                targetRole: role as Role,
-                read: false,
-            },
+            where,
             orderBy: { createdAt: 'desc' },
         });
     }

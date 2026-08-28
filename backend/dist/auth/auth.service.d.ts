@@ -3,10 +3,13 @@ import { PrismaService } from '../prisma/prisma.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
+import { RequestEmailChangeDto } from './dto/request-email-change.dto';
+import { NotificationsService } from '../notifications/notifications.service';
 export declare class AuthService {
     private prisma;
     private jwtService;
-    constructor(prisma: PrismaService, jwtService: JwtService);
+    private notificationsService;
+    constructor(prisma: PrismaService, jwtService: JwtService, notificationsService: NotificationsService);
     validateUser(email: string, pass: string): Promise<any>;
     login(loginDto: LoginDto): Promise<{
         access_token: string;
@@ -30,16 +33,19 @@ export declare class AuthService {
     }>;
     register(registerDto: RegisterDto): Promise<{
         id: string;
-        email: string;
+        createdAt: Date;
+        organizationId: string | null;
         name: string | null;
+        email: string;
+        branchId: string | null;
         role: import(".prisma/client").$Enums.Role;
         status: string;
-        createdAt: Date;
         updatedAt: Date;
-        organizationId: string | null;
-        branchId: string | null;
     }>;
     changePassword(userId: string, dto: ChangePasswordDto): Promise<{
+        message: string;
+    }>;
+    requestEmailChange(userId: string, dto: RequestEmailChangeDto): Promise<{
         message: string;
     }>;
 }

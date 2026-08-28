@@ -18,6 +18,7 @@ const auth_service_1 = require("./auth.service");
 const login_dto_1 = require("./dto/login.dto");
 const register_dto_1 = require("./dto/register.dto");
 const change_password_dto_1 = require("./dto/change-password.dto");
+const request_email_change_dto_1 = require("./dto/request-email-change.dto");
 const jwt_auth_guard_1 = require("./jwt-auth.guard");
 let AuthController = class AuthController {
     authService;
@@ -32,6 +33,9 @@ let AuthController = class AuthController {
     }
     async changePassword(req, dto) {
         return this.authService.changePassword(req.user.id, dto);
+    }
+    async requestEmailChange(req, dto) {
+        return this.authService.requestEmailChange(req.user.id, dto);
     }
 };
 exports.AuthController = AuthController;
@@ -58,6 +62,15 @@ __decorate([
     __metadata("design:paramtypes", [Object, change_password_dto_1.ChangePasswordDto]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "changePassword", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Post)('request-email-change'),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, request_email_change_dto_1.RequestEmailChangeDto]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "requestEmailChange", null);
 exports.AuthController = AuthController = __decorate([
     (0, common_1.Controller)('auth'),
     __metadata("design:paramtypes", [auth_service_1.AuthService])

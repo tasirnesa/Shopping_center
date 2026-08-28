@@ -31,6 +31,8 @@ import {
   Storefront,
   BarChart,
   LocalShipping,
+  Domain,
+  Group,
 } from "@mui/icons-material";
 import { sidebarGradient } from "../theme";
 import api from "../api";
@@ -59,6 +61,18 @@ const allMenuItems = [
   },
   { text: "Inventory", icon: <Inventory2 />, path: "/inventory", roles: null },
   { text: "Reports", icon: <BarChart />, path: "/reports", roles: null },
+  {
+    text: "Organizations",
+    icon: <Domain />,
+    path: "/organizations",
+    roles: ["SYSTEM_ADMIN"],
+  },
+  {
+    text: "Users",
+    icon: <Group />,
+    path: "/users",
+    roles: ["SYSTEM_ADMIN"],
+  },
   {
     text: "Admin",
     icon: <AdminPanelSettings />,
@@ -129,9 +143,12 @@ export default function Layout() {
   const handleMenuOpen = (e: React.MouseEvent<HTMLElement>) => setAnchorEl(e.currentTarget);
   const handleMenuClose = () => setAnchorEl(null);
 
-  const menuItems = allMenuItems.filter(
-    (item) => !item.roles || item.roles.includes(user?.role),
-  );
+  const menuItems = allMenuItems.filter((item) => {
+    if (user?.role === "SYSTEM_ADMIN") {
+      return ["Dashboard", "Organizations", "Users"].includes(item.text);
+    }
+    return !item.roles || item.roles.includes(user?.role);
+  });
 
   const handleLogout = () => {
     setAnchorEl(null);

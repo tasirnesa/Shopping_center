@@ -11,6 +11,7 @@ import {
   useTheme,
   alpha,
 } from "@mui/material";
+import { Domain, Group } from "@mui/icons-material";
 import {
   XAxis,
   YAxis,
@@ -51,6 +52,15 @@ function getUser() {
 
 export default function DashboardPage() {
   const navigate = useNavigate();
+  const user = getUser();
+  const isSystemAdmin = user?.role === "SYSTEM_ADMIN";
+
+  if (isSystemAdmin) return <SystemAdminDashboard user={user} />;
+  return <ShopDashboard user={user} navigate={navigate} />;
+}
+
+function ShopDashboard({ user, navigate }: { user: any, navigate: any }) {
+
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
     products: 0,
@@ -117,6 +127,7 @@ export default function DashboardPage() {
     fetchData();
   }, []);
 
+
   if (loading) {
     return (
       <Box>
@@ -136,7 +147,6 @@ export default function DashboardPage() {
     );
   }
 
-  const user = getUser();
   const userName = user?.email ? user.email.split("@")[0] : "Admin";
   const friendlyName = userName.charAt(0).toUpperCase() + userName.slice(1);
 
@@ -459,6 +469,125 @@ export default function DashboardPage() {
                     ))}
                   </Box>
                 )}
+              </Paper>
+            </Grid>
+          </Grid>
+        </Box>
+      </Fade>
+    </Box>
+  );
+}
+
+function SystemAdminDashboard({ user }: { user: any }) {
+  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState<any>(null);
+  const theme = useTheme();
+
+  useEffect(() => {
+    api.get("/dashboard/system").then((res) => {
+      setData(res.data);
+      setLoading(false);
+    }).catch((err) => {
+      console.error(err);
+      setLoading(false);
+    });
+  }, []);
+
+  if (loading) {
+    return (
+      <Box>
+        <Skeleton variant="text" width={200} height={48} />
+        <Grid container spacing={3} mt={1}>
+          {[1, 2, 3].map((i) => (
+            <Grid item xs={12} sm={4} key={i}>
+              <Skeleton variant="rounded" height={100} sx={{ borderRadius: 3 }} />
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
+    );
+  }
+
+  const glassStyle = {
+    background: `linear-gradient(135deg, ${alpha(theme.palette.background.paper, 0.95)}, ${alpha(theme.palette.background.paper, 0.75)})`,
+    backdropFilter: "blur(12px)",
+    border: `1px solid ${alpha(theme.palette.divider, 0.15)}`,
+    borderRadius: "16px",
+    boxShadow: `0 8px 32px 0 ${alpha(theme.palette.common.black, 0.05)}`,
+  };
+
+  const stats = data?.stats || { totalOrgs: 0, newOrgsThisWeek: 0, totalUsers: 0, activeUsers: 0, totalBranches: 0 };
+  const chartData = data?.orgSignupsByDay || [];
+
+  const userName = user?.email ? user.email.split("@")[0] : "Admin";
+  const friendlyName = userName.charAt(0).toUpperCase() + userName.slice(1);
+
+  return (
+    <Box sx={{ pb: { xs: 8, md: 2 }, mt: { xs: 3, sm: 4, md: 5 }, px: { md: 1 } }}>
+      <Fade in={true} timeout={700}>
+        <Box>
+          <Box mb={2}>
+            <PageHeader
+              title={`Welcome back, ${friendlyName}! 👋`}
+              subtitle="Here's a quick overview of system-wide performance."
+            />
+          </Box>
+
+          <Grid container spacing={2} mb={4}>
+            <Grid item xs={12} sm={4}>
+              <StatCard
+                title="Total Organizations"
+                value={stats.totalOrgs}
+                icon={<Domain />}
+                color="#6366f1"
+                trend={`${stats.newOrgsThisWeek} new this week`}
+              />
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <StatCard
+                title="Active Users"
+                value={stats.activeUsers}
+                icon={<Group />}
+                color="#10b981"
+                trend={`${stats.totalUsers} total registered`}
+              />
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <StatCard
+                title="Total Branches"
+                value={stats.totalBranches}
+                icon={<Storefront />}
+                color="#f59e0b"
+              />
+            </Grid>
+          </Grid>
+
+          <Grid container spacing={3}>
+            <Grid item xs={12}>
+              <Paper sx={{ p: { xs: 2, md: 3 }, borderRadius: 4, ...glassStyle }}>
+                <Box display="flex" alignItems="center" gap={1} mb={3}>
+                  <Box sx={{ p: 1, borderRadius: 2, bgcolor: alpha(theme.palette.primary.main, 0.1) }}>
+                    <ShowChart color="primary" />
+                  </Box>
+                  <Typography variant="h6" sx={{ fontWeight: 700 }}>
+                    Organization Signups (Last 7 Days)
+                  </Typography>
+                </Box>
+                <ResponsiveContainer width="100%" height={300}>
+                  <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                    <defs>
+                      <linearGradient id="orgGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#6366f1" stopOpacity={0.4} />
+                        <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke={alpha(theme.palette.divider, 0.5)} vertical={false} />
+                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: theme.palette.text.secondary }} dy={10} />
+                    <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: theme.palette.text.secondary }} />
+                    <Tooltip contentStyle={{ borderRadius: 12, border: "none", boxShadow: "0 4px 20px rgba(0,0,0,0.1)" }} formatter={(v: number) => [v, "New Orgs"]} />
+                    <Area type="monotone" dataKey="signups" stroke="#6366f1" strokeWidth={3} fill="url(#orgGrad)" animationDuration={1500} />
+                  </AreaChart>
+                </ResponsiveContainer>
               </Paper>
             </Grid>
           </Grid>

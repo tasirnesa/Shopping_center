@@ -37,8 +37,14 @@ let DashboardController = class DashboardController {
         }
         return this.dashboardService.getFulfillmentDashboard(orgId, req.user.role, req.user.id);
     }
+    getAdminDashboard(orgId) {
+        return this.dashboardService.getAdminDashboard(orgId);
+    }
     getSalesPerformance(orgId) {
         return this.dashboardService.getSalesPerformance(orgId);
+    }
+    getSystemDashboard() {
+        return this.dashboardService.getSystemDashboard();
     }
 };
 exports.DashboardController = DashboardController;
@@ -69,6 +75,14 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], DashboardController.prototype, "getFulfillment", null);
 __decorate([
+    (0, common_1.Get)('admin'),
+    (0, roles_decorator_1.Roles)(client_1.Role.MANAGER, client_1.Role.OWNER, client_1.Role.SYSTEM_ADMIN),
+    __param(0, (0, org_decorator_1.CurrentOrg)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], DashboardController.prototype, "getAdminDashboard", null);
+__decorate([
     (0, common_1.Get)('sales-performance'),
     (0, roles_decorator_1.Roles)(client_1.Role.MANAGER, client_1.Role.OWNER, client_1.Role.SYSTEM_ADMIN),
     __param(0, (0, org_decorator_1.CurrentOrg)()),
@@ -76,6 +90,13 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], DashboardController.prototype, "getSalesPerformance", null);
+__decorate([
+    (0, common_1.Get)('system'),
+    (0, roles_decorator_1.Roles)(client_1.Role.SYSTEM_ADMIN),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], DashboardController.prototype, "getSystemDashboard", null);
 exports.DashboardController = DashboardController = __decorate([
     (0, common_1.Controller)('dashboard'),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),

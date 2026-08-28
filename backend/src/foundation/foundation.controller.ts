@@ -153,4 +153,33 @@ export class FoundationController {
   ) {
     return this.foundationService.updateUserStatus(orgId, id, body.status);
   }
+
+  @Patch('users/:id/email')
+  @Roles(Role.OWNER, Role.MANAGER, Role.SYSTEM_ADMIN)
+  updateUserEmail(
+    @CurrentOrg() orgId: string,
+    @Param('id') id: string,
+    @Body() body: { email: string },
+  ) {
+    return this.foundationService.updateUserEmail(orgId, id, body.email);
+  }
+
+  // Org Settings
+  @Get('settings')
+  @Roles(Role.OWNER, Role.MANAGER)
+  getSettings(@CurrentOrg() orgId: string) {
+    return this.foundationService.getSettings(orgId);
+  }
+
+  @Patch('settings')
+  @Roles(Role.OWNER, Role.MANAGER)
+  updateSettings(
+    @CurrentOrg() orgId: string,
+    @Body() body: {
+      currency?: string; taxRate?: number; timezone?: string;
+      receiptFooter?: string; language?: string; fiscalYear?: string;
+    },
+  ) {
+    return this.foundationService.updateSettings(orgId, body);
+  }
 }

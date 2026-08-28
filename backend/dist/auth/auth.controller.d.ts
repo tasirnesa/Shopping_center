@@ -2,6 +2,7 @@ import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
+import { RequestEmailChangeDto } from './dto/request-email-change.dto';
 export declare class AuthController {
     private readonly authService;
     constructor(authService: AuthService);
@@ -27,16 +28,19 @@ export declare class AuthController {
     }>;
     register(registerDto: RegisterDto): Promise<{
         id: string;
-        email: string;
+        createdAt: Date;
+        organizationId: string | null;
         name: string | null;
+        email: string;
+        branchId: string | null;
         role: import(".prisma/client").$Enums.Role;
         status: string;
-        createdAt: Date;
         updatedAt: Date;
-        organizationId: string | null;
-        branchId: string | null;
     }>;
     changePassword(req: any, dto: ChangePasswordDto): Promise<{
+        message: string;
+    }>;
+    requestEmailChange(req: any, dto: RequestEmailChangeDto): Promise<{
         message: string;
     }>;
 }
