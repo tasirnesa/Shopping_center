@@ -261,8 +261,7 @@ __decorate([
 ], OrdersController.prototype, "confirmDelivery", null);
 __decorate([
     (0, common_1.Post)(':id/attachments'),
-    (0, roles_decorator_1.Roles)(client_1.Role.SALES_REP, client_1.Role.OWNER),
-    (0, order_owner_decorator_1.OrderOwner)(),
+    (0, roles_decorator_1.Roles)(client_1.Role.SALES_REP, client_1.Role.OWNER, client_1.Role.MANAGER),
     (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('file')),
     __param(0, (0, common_1.Req)()),
     __param(1, (0, common_1.Param)('id')),

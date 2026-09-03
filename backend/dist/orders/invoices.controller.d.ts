@@ -3,12 +3,42 @@ export declare class InvoicesController {
     private readonly prisma;
     constructor(prisma: PrismaService);
     findOne(req: any, id: string): Promise<{
+        salesOrder: {
+            salesRep: {
+                name: string | null;
+                email: string;
+            };
+        } & {
+            organizationId: string;
+            id: string;
+            branchId: string;
+            customerId: string | null;
+            createdAt: Date;
+            updatedAt: Date;
+            salesRepId: string;
+            customerName: string;
+            tin: string;
+            deliveryAddress: string;
+            customerPhone: string | null;
+            status: import(".prisma/client").$Enums.OrderStatus;
+            subtotal: number;
+            taxRate: number;
+            taxAmount: number;
+            grandTotal: number;
+            paymentMethod: string;
+            paymentTerm: string | null;
+            chequeNumber: string | null;
+            creditDueDate: Date | null;
+            rejectionReason: string | null;
+            cancellationReason: string | null;
+            note: string | null;
+        };
         lines: ({
             product: {
+                organizationId: string;
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
-                organizationId: string;
                 name: string;
                 barcode: string | null;
                 categoryId: string | null;
@@ -18,52 +48,22 @@ export declare class InvoicesController {
                 cost: number;
             };
         } & {
+            id: string;
+            discount: number;
             productId: string;
             quantity: number;
-            unitPrice: number;
-            discount: number;
-            id: string;
-            total: number;
             invoiceId: string;
+            unitPrice: number;
+            total: number;
         })[];
-        salesOrder: {
-            salesRep: {
-                name: string | null;
-                email: string;
-            };
-        } & {
-            customerName: string;
-            tin: string;
-            deliveryAddress: string;
-            customerPhone: string | null;
-            branchId: string;
-            customerId: string | null;
-            paymentMethod: string;
-            paymentTerm: string | null;
-            chequeNumber: string | null;
-            creditDueDate: Date | null;
-            note: string | null;
-            id: string;
-            status: import(".prisma/client").$Enums.OrderStatus;
-            subtotal: number;
-            taxRate: number;
-            taxAmount: number;
-            grandTotal: number;
-            rejectionReason: string | null;
-            cancellationReason: string | null;
-            createdAt: Date;
-            updatedAt: Date;
-            organizationId: string;
-            salesRepId: string;
-        };
     } & {
+        organizationId: string;
         id: string;
+        createdAt: Date;
         subtotal: number;
         taxRate: number;
         taxAmount: number;
         grandTotal: number;
-        createdAt: Date;
-        organizationId: string;
         salesOrderId: string;
         invoiceNumber: string;
         invoiceDate: Date;

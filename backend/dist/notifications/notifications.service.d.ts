@@ -6,30 +6,30 @@ export declare class NotificationsService {
     private readonly notificationsGateway;
     constructor(prisma: PrismaService, notificationsGateway: NotificationsGateway);
     create(organizationId: string, targetRole: Role, type: string, payload: any): Promise<{
+        organizationId: string;
         id: string;
-        targetRole: string;
+        createdAt: Date;
         type: string;
+        targetRole: string;
         payload: import("@prisma/client/runtime/library").JsonValue;
         read: boolean;
-        createdAt: Date;
-        organizationId: string;
     }>;
     findUnread(organizationId: string | null, role: string): Promise<{
+        organizationId: string;
         id: string;
-        targetRole: string;
+        createdAt: Date;
         type: string;
+        targetRole: string;
         payload: import("@prisma/client/runtime/library").JsonValue;
         read: boolean;
-        createdAt: Date;
-        organizationId: string;
     }[]>;
     markAsRead(id: string, organizationId: string): Promise<{
+        organizationId: string;
         id: string;
-        targetRole: string;
+        createdAt: Date;
         type: string;
+        targetRole: string;
         payload: import("@prisma/client/runtime/library").JsonValue;
         read: boolean;
-        createdAt: Date;
-        organizationId: string;
     }>;
 }

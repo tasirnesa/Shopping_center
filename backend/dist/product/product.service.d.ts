@@ -12,26 +12,26 @@ export declare class ProductService {
         cost: number;
     }): Promise<{
         category: {
-            id: string;
             organizationId: string;
+            id: string;
             name: string;
             description: string | null;
         } | null;
         brand: {
-            id: string;
             organizationId: string;
+            id: string;
             name: string;
         } | null;
         unit: {
-            id: string;
             organizationId: string;
+            id: string;
             name: string;
         } | null;
     } & {
+        organizationId: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        organizationId: string;
         name: string;
         barcode: string | null;
         categoryId: string | null;
@@ -42,26 +42,26 @@ export declare class ProductService {
     }>;
     findAll(orgId: string): Promise<({
         category: {
-            id: string;
             organizationId: string;
+            id: string;
             name: string;
             description: string | null;
         } | null;
         brand: {
-            id: string;
             organizationId: string;
+            id: string;
             name: string;
         } | null;
         unit: {
-            id: string;
             organizationId: string;
+            id: string;
             name: string;
         } | null;
     } & {
+        organizationId: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        organizationId: string;
         name: string;
         barcode: string | null;
         categoryId: string | null;
@@ -72,26 +72,26 @@ export declare class ProductService {
     })[]>;
     findOne(orgId: string, id: string): Promise<({
         category: {
-            id: string;
             organizationId: string;
+            id: string;
             name: string;
             description: string | null;
         } | null;
         brand: {
-            id: string;
             organizationId: string;
+            id: string;
             name: string;
         } | null;
         unit: {
-            id: string;
             organizationId: string;
+            id: string;
             name: string;
         } | null;
     } & {
+        organizationId: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        organizationId: string;
         name: string;
         barcode: string | null;
         categoryId: string | null;
@@ -102,26 +102,26 @@ export declare class ProductService {
     }) | null>;
     findByBarcode(orgId: string, barcode: string): Promise<({
         category: {
-            id: string;
             organizationId: string;
+            id: string;
             name: string;
             description: string | null;
         } | null;
         brand: {
-            id: string;
             organizationId: string;
+            id: string;
             name: string;
         } | null;
         unit: {
-            id: string;
             organizationId: string;
+            id: string;
             name: string;
         } | null;
     } & {
+        organizationId: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        organizationId: string;
         name: string;
         barcode: string | null;
         categoryId: string | null;
@@ -132,26 +132,26 @@ export declare class ProductService {
     }) | null>;
     update(orgId: string, id: string, data: any): Promise<({
         category: {
-            id: string;
             organizationId: string;
+            id: string;
             name: string;
             description: string | null;
         } | null;
         brand: {
-            id: string;
             organizationId: string;
+            id: string;
             name: string;
         } | null;
         unit: {
-            id: string;
             organizationId: string;
+            id: string;
             name: string;
         } | null;
     } & {
+        organizationId: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        organizationId: string;
         name: string;
         barcode: string | null;
         categoryId: string | null;
@@ -161,10 +161,10 @@ export declare class ProductService {
         cost: number;
     }) | null>;
     remove(orgId: string, id: string): Promise<{
+        organizationId: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        organizationId: string;
         name: string;
         barcode: string | null;
         categoryId: string | null;

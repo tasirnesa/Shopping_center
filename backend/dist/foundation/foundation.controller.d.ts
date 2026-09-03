@@ -4,8 +4,8 @@ export declare class FoundationController {
     private readonly foundationService;
     constructor(foundationService: FoundationService);
     getCategories(orgId: string): Promise<{
-        id: string;
         organizationId: string;
+        id: string;
         name: string;
         description: string | null;
     }[]>;
@@ -13,47 +13,47 @@ export declare class FoundationController {
         name: string;
         description?: string;
     }): Promise<{
-        id: string;
         organizationId: string;
+        id: string;
         name: string;
         description: string | null;
     }>;
     deleteCategory(orgId: string, id: string): Promise<import(".prisma/client").Prisma.BatchPayload>;
     getBrands(orgId: string): Promise<{
-        id: string;
         organizationId: string;
+        id: string;
         name: string;
     }[]>;
     createBrand(orgId: string, body: {
         name: string;
     }): Promise<{
-        id: string;
         organizationId: string;
+        id: string;
         name: string;
     }>;
     deleteBrand(orgId: string, id: string): Promise<import(".prisma/client").Prisma.BatchPayload>;
     getUnits(orgId: string): Promise<{
-        id: string;
         organizationId: string;
+        id: string;
         name: string;
     }[]>;
     createUnit(orgId: string, body: {
         name: string;
     }): Promise<{
-        id: string;
         organizationId: string;
+        id: string;
         name: string;
     }>;
     deleteUnit(orgId: string, id: string): Promise<import(".prisma/client").Prisma.BatchPayload>;
     getBranches(orgId: string): Promise<{
-        id: string;
         organizationId: string;
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
         name: string;
         code: string | null;
         phone: string | null;
         address: string | null;
-        createdAt: Date;
-        updatedAt: Date;
     }[]>;
     createBranch(orgId: string, body: {
         name: string;
@@ -61,14 +61,14 @@ export declare class FoundationController {
         phone?: string;
         address?: string;
     }): Promise<{
-        id: string;
         organizationId: string;
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
         name: string;
         code: string | null;
         phone: string | null;
         address: string | null;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     updateBranch(orgId: string, id: string, body: {
         name?: string;
@@ -76,24 +76,24 @@ export declare class FoundationController {
         phone?: string;
         address?: string;
     }): Promise<{
-        id: string;
         organizationId: string;
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
         name: string;
         code: string | null;
         phone: string | null;
         address: string | null;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     deleteBranch(orgId: string, id: string): Promise<{
-        id: string;
         organizationId: string;
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
         name: string;
         code: string | null;
         phone: string | null;
         address: string | null;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     createUser(orgId: string, req: any, body: {
         email: string;
@@ -105,7 +105,8 @@ export declare class FoundationController {
     }): Promise<any>;
     getUsers(orgId: string, req: any): Promise<{
         id: string;
-        name: string | null;
+        branchId: string | null;
+        createdAt: Date;
         organization: {
             id: string;
             name: string;
@@ -114,11 +115,10 @@ export declare class FoundationController {
             id: string;
             name: string;
         } | null;
-        createdAt: Date;
-        branchId: string | null;
+        name: string | null;
+        status: string;
         email: string;
         role: import(".prisma/client").$Enums.Role;
-        status: string;
     }[]>;
     updateUserRole(orgId: string, id: string, body: {
         role: Role;
@@ -130,12 +130,12 @@ export declare class FoundationController {
         email: string;
     }): Promise<import(".prisma/client").Prisma.BatchPayload>;
     getSettings(orgId: string): Promise<{
-        id: string;
         organizationId: string;
+        id: string;
         createdAt: Date;
         updatedAt: Date;
-        currency: string;
         taxRate: number;
+        currency: string;
         receiptFooter: string | null;
         language: string;
         fiscalYear: string | null;
@@ -156,12 +156,12 @@ export declare class FoundationController {
         language?: string;
         fiscalYear?: string;
     }): Promise<{
-        id: string;
         organizationId: string;
+        id: string;
         createdAt: Date;
         updatedAt: Date;
-        currency: string;
         taxRate: number;
+        currency: string;
         receiptFooter: string | null;
         language: string;
         fiscalYear: string | null;

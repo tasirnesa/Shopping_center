@@ -3,13 +3,13 @@ export declare class CustomersService {
     private prisma;
     constructor(prisma: PrismaService);
     findAll(orgId: string): Promise<{
-        tin: string | null;
+        organizationId: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        organizationId: string;
         name: string;
         phone: string | null;
+        tin: string | null;
         email: string | null;
         efdaLicensePath: string | null;
         efdaLicenseFileName: string | null;
@@ -17,13 +17,13 @@ export declare class CustomersService {
         creditBalance: number;
     }[]>;
     findOne(orgId: string, id: string): Promise<{
-        tin: string | null;
+        organizationId: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        organizationId: string;
         name: string;
         phone: string | null;
+        tin: string | null;
         email: string | null;
         efdaLicensePath: string | null;
         efdaLicenseFileName: string | null;
@@ -37,13 +37,13 @@ export declare class CustomersService {
         tin?: string;
         creditLimit?: number;
     }): Promise<{
-        tin: string | null;
+        organizationId: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        organizationId: string;
         name: string;
         phone: string | null;
+        tin: string | null;
         email: string | null;
         efdaLicensePath: string | null;
         efdaLicenseFileName: string | null;
@@ -57,13 +57,13 @@ export declare class CustomersService {
         tin?: string;
         creditLimit?: number;
     }): Promise<{
-        tin: string | null;
+        organizationId: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        organizationId: string;
         name: string;
         phone: string | null;
+        tin: string | null;
         email: string | null;
         efdaLicensePath: string | null;
         efdaLicenseFileName: string | null;
@@ -71,13 +71,13 @@ export declare class CustomersService {
         creditBalance: number;
     } | null>;
     remove(orgId: string, id: string): Promise<{
-        tin: string | null;
+        organizationId: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        organizationId: string;
         name: string;
         phone: string | null;
+        tin: string | null;
         email: string | null;
         efdaLicensePath: string | null;
         efdaLicenseFileName: string | null;
@@ -85,13 +85,13 @@ export declare class CustomersService {
         creditBalance: number;
     } | null>;
     saveEfdaLicense(orgId: string, id: string, filePath: string, fileName: string): Promise<{
-        tin: string | null;
+        organizationId: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        organizationId: string;
         name: string;
         phone: string | null;
+        tin: string | null;
         email: string | null;
         efdaLicensePath: string | null;
         efdaLicenseFileName: string | null;
@@ -105,13 +105,13 @@ export declare class CustomersService {
         creditBalance: number;
     }>;
     addCredit(orgId: string, customerId: string, amount: number): Promise<{
-        tin: string | null;
+        organizationId: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        organizationId: string;
         name: string;
         phone: string | null;
+        tin: string | null;
         email: string | null;
         efdaLicensePath: string | null;
         efdaLicenseFileName: string | null;
@@ -119,13 +119,13 @@ export declare class CustomersService {
         creditBalance: number;
     }>;
     settleCredit(orgId: string, customerId: string, amount: number): Promise<{
-        tin: string | null;
+        organizationId: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        organizationId: string;
         name: string;
         phone: string | null;
+        tin: string | null;
         email: string | null;
         efdaLicensePath: string | null;
         efdaLicenseFileName: string | null;

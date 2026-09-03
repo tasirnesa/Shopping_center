@@ -119,8 +119,7 @@ export class OrdersController {
     }
 
     @Post(':id/attachments')
-    @Roles(Role.SALES_REP, Role.OWNER)
-    @OrderOwner()
+    @Roles(Role.SALES_REP, Role.OWNER, Role.MANAGER)
     @UseInterceptors(FileInterceptor('file'))
     uploadAttachment(
         @Req() req: any,

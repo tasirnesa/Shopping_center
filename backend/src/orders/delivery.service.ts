@@ -40,11 +40,12 @@ export class DeliveryService {
     async pickup(orderId: string, driverId: string, organizationId: string) {
         return this.prisma.$transaction(async (tx) => {
             const order = await tx.salesOrder.findUnique({
-                where: { id: orderId, organizationId },
+                where: { id: orderId },
                 include: { delivery: true },
             });
 
-            if (!order) throw new NotFoundException('Order not found');
+            if (!order) throw new NotFoundException(`Order ${orderId} not found`);
+            if (order.organizationId !== organizationId) throw new ForbiddenException();
             if (!order.delivery) throw new NotFoundException('Delivery record not found for this order');
 
             // Validate state machine transition
@@ -97,11 +98,12 @@ export class DeliveryService {
 
         return this.prisma.$transaction(async (tx) => {
             const order = await tx.salesOrder.findUnique({
-                where: { id: orderId, organizationId },
+                where: { id: orderId },
                 include: { delivery: true },
             });
 
-            if (!order) throw new NotFoundException('Order not found');
+            if (!order) throw new NotFoundException(`Order ${orderId} not found`);
+            if (order.organizationId !== organizationId) throw new ForbiddenException();
             if (!order.delivery) throw new NotFoundException('Delivery record not found for this order');
 
             // Only the assigned driver is restricted; OWNER/MANAGER can confirm on their behalf

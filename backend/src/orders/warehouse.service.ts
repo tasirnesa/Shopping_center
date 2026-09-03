@@ -235,10 +235,11 @@ export class WarehouseService {
     async startPicking(orderId: string, storeManId: string, organizationId: string) {
         return this.prisma.$transaction(async (tx) => {
             const order = await tx.salesOrder.findUnique({
-                where: { id: orderId, organizationId },
+                where: { id: orderId },
                 include: { lines: true },
             });
-            if (!order) throw new NotFoundException('Order not found');
+            if (!order) throw new NotFoundException(`Order ${orderId} not found`);
+            if (order.organizationId !== organizationId) throw new ForbiddenException();
 
             const nextStatus = this.stateMachine.transition(order.status, 'start-picking', Role.STORE_MAN);
 
@@ -261,11 +262,11 @@ export class WarehouseService {
      * Req 3.3, 3.5, 3.6
      */
     async confirmPickingForOrder(orderId: string, storeManId: string, organizationId: string) {
-        // Validate the order exists and belongs to the org before entering the transaction
         const order = await this.prisma.salesOrder.findUnique({
-            where: { id: orderId, organizationId },
+            where: { id: orderId },
         });
-        if (!order) throw new NotFoundException('Order not found');
+        if (!order) throw new NotFoundException(`Order ${orderId} not found`);
+        if (order.organizationId !== organizationId) throw new ForbiddenException();
 
         return this.prisma.$transaction(async (tx) => {
             return this.confirmPicking(tx, orderId, storeManId);

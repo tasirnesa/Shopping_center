@@ -167,11 +167,13 @@ let WarehouseService = class WarehouseService {
     async startPicking(orderId, storeManId, organizationId) {
         return this.prisma.$transaction(async (tx) => {
             const order = await tx.salesOrder.findUnique({
-                where: { id: orderId, organizationId },
+                where: { id: orderId },
                 include: { lines: true },
             });
             if (!order)
-                throw new common_1.NotFoundException('Order not found');
+                throw new common_1.NotFoundException(`Order ${orderId} not found`);
+            if (order.organizationId !== organizationId)
+                throw new common_1.ForbiddenException();
             const nextStatus = this.stateMachine.transition(order.status, 'start-picking', client_1.Role.STORE_MAN);
             const updatedOrder = await tx.salesOrder.update({
                 where: { id: orderId },
@@ -184,10 +186,12 @@ let WarehouseService = class WarehouseService {
     }
     async confirmPickingForOrder(orderId, storeManId, organizationId) {
         const order = await this.prisma.salesOrder.findUnique({
-            where: { id: orderId, organizationId },
+            where: { id: orderId },
         });
         if (!order)
-            throw new common_1.NotFoundException('Order not found');
+            throw new common_1.NotFoundException(`Order ${orderId} not found`);
+        if (order.organizationId !== organizationId)
+            throw new common_1.ForbiddenException();
         return this.prisma.$transaction(async (tx) => {
             return this.confirmPicking(tx, orderId, storeManId);
         });

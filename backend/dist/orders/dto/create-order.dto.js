@@ -51,7 +51,6 @@ class CreateOrderDto {
     paymentTerm;
     chequeNumber;
     creditDueDate;
-    note;
     lines;
 }
 exports.CreateOrderDto = CreateOrderDto;
@@ -106,11 +105,6 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", Date)
 ], CreateOrderDto.prototype, "creditDueDate", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", String)
-], CreateOrderDto.prototype, "note", void 0);
 __decorate([
     (0, class_validator_1.IsArray)(),
     (0, class_validator_1.ValidateNested)({ each: true }),

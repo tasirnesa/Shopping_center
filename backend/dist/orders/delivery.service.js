@@ -39,11 +39,13 @@ let DeliveryService = class DeliveryService {
     async pickup(orderId, driverId, organizationId) {
         return this.prisma.$transaction(async (tx) => {
             const order = await tx.salesOrder.findUnique({
-                where: { id: orderId, organizationId },
+                where: { id: orderId },
                 include: { delivery: true },
             });
             if (!order)
-                throw new common_1.NotFoundException('Order not found');
+                throw new common_1.NotFoundException(`Order ${orderId} not found`);
+            if (order.organizationId !== organizationId)
+                throw new common_1.ForbiddenException();
             if (!order.delivery)
                 throw new common_1.NotFoundException('Delivery record not found for this order');
             const nextStatus = this.stateMachine.transition(order.status, 'pickup', client_1.Role.DRIVER);
@@ -68,11 +70,13 @@ let DeliveryService = class DeliveryService {
         }
         return this.prisma.$transaction(async (tx) => {
             const order = await tx.salesOrder.findUnique({
-                where: { id: orderId, organizationId },
+                where: { id: orderId },
                 include: { delivery: true },
             });
             if (!order)
-                throw new common_1.NotFoundException('Order not found');
+                throw new common_1.NotFoundException(`Order ${orderId} not found`);
+            if (order.organizationId !== organizationId)
+                throw new common_1.ForbiddenException();
             if (!order.delivery)
                 throw new common_1.NotFoundException('Delivery record not found for this order');
             const actor = await tx.user.findUnique({ where: { id: driverId }, select: { role: true } });

@@ -42,11 +42,11 @@ export class OrdersService {
             };
         });
 
-        const org = await this.prisma.organization.findUnique({
+        const org = orgId ? await this.prisma.organization.findUnique({
             where: { id: orgId },
             select: { businessType: true, settings: true }
-        });
-        
+        }) : null;
+
         const isDrugOrg = org?.businessType?.toUpperCase().includes('PHARMACY') || org?.businessType?.toUpperCase().includes('DRUG');
         const taxRate = isDrugOrg ? 0 : (org?.settings?.taxRate ?? 15);
         const taxAmount = subtotal * (taxRate / 100);
@@ -95,7 +95,6 @@ export class OrdersService {
                     chequeNumber: dto.chequeNumber,
                     creditDueDate: dto.creditDueDate,
                     paymentTerm: dto.paymentTerm,
-                    note: dto.note?.trim() || null,
                     status: OrderStatus.DRAFT,
                     subtotal,
                     taxRate,
@@ -125,7 +124,7 @@ export class OrdersService {
                 }
             }
 
-            await this.audit.recordTransition(tx, order.id, null, OrderStatus.DRAFT, userId, dto.note?.trim() ? `Order created: ${dto.note.trim()}` : 'Order created');
+            await this.audit.recordTransition(tx, order.id, null, OrderStatus.DRAFT, userId, 'Order created');
 
             return { ...order, customerId: resolvedCustomerId };
         });
@@ -238,8 +237,10 @@ export class OrdersService {
             include: { attachments: true, lines: true },
         });
 
-        if (!order) throw new NotFoundException();
+        if (!order) throw new NotFoundException(`Order ${id} not found`);
         if (order.organizationId !== orgId) throw new ForbiddenException();
+
+
 
         // SALES_REP can only submit their own orders
         const user = await this.prisma.user.findUnique({ where: { id: userId }, select: { role: true } });
@@ -288,7 +289,7 @@ export class OrdersService {
 
     async uploadAttachment(id: string, userId: string, orgId: string, type: any, file: any) {
         const order = await this.prisma.salesOrder.findUnique({ where: { id } });
-        if (!order) throw new NotFoundException();
+        if (!order) throw new NotFoundException(`Order ${id} not found`);
         if (order.organizationId !== orgId) throw new ForbiddenException();
 
         // Only the order owner (SALES_REP) or elevated roles can upload
@@ -350,7 +351,7 @@ export class OrdersService {
             include: { attachments: true, lines: true },
         });
 
-        if (!order) throw new NotFoundException();
+        if (!order) throw new NotFoundException(`Order ${id} not found`);
         if (order.organizationId !== orgId) throw new ForbiddenException();
 
         this.stateMachine.transition(order.status, 'approve', Role.INVOICE_MAKER);

@@ -5,13 +5,13 @@ export declare class CustomersController {
     private readonly fileUploadService;
     constructor(customersService: CustomersService, fileUploadService: FileUploadService);
     findAll(orgId: string): Promise<{
-        tin: string | null;
+        organizationId: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        organizationId: string;
         name: string;
         phone: string | null;
+        tin: string | null;
         email: string | null;
         efdaLicensePath: string | null;
         efdaLicenseFileName: string | null;
@@ -19,13 +19,13 @@ export declare class CustomersController {
         creditBalance: number;
     }[]>;
     findOne(orgId: string, id: string): Promise<{
-        tin: string | null;
+        organizationId: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        organizationId: string;
         name: string;
         phone: string | null;
+        tin: string | null;
         email: string | null;
         efdaLicensePath: string | null;
         efdaLicenseFileName: string | null;
@@ -39,13 +39,13 @@ export declare class CustomersController {
         tin?: string;
         creditLimit?: number;
     }): Promise<{
-        tin: string | null;
+        organizationId: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        organizationId: string;
         name: string;
         phone: string | null;
+        tin: string | null;
         email: string | null;
         efdaLicensePath: string | null;
         efdaLicenseFileName: string | null;
@@ -59,13 +59,13 @@ export declare class CustomersController {
         tin?: string;
         creditLimit?: number;
     }): Promise<{
-        tin: string | null;
+        organizationId: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        organizationId: string;
         name: string;
         phone: string | null;
+        tin: string | null;
         email: string | null;
         efdaLicensePath: string | null;
         efdaLicenseFileName: string | null;
@@ -73,13 +73,13 @@ export declare class CustomersController {
         creditBalance: number;
     } | null>;
     remove(orgId: string, id: string): Promise<{
-        tin: string | null;
+        organizationId: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        organizationId: string;
         name: string;
         phone: string | null;
+        tin: string | null;
         email: string | null;
         efdaLicensePath: string | null;
         efdaLicenseFileName: string | null;
@@ -87,13 +87,13 @@ export declare class CustomersController {
         creditBalance: number;
     } | null>;
     uploadEfda(orgId: string, id: string, file: any): Promise<{
-        tin: string | null;
+        organizationId: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        organizationId: string;
         name: string;
         phone: string | null;
+        tin: string | null;
         email: string | null;
         efdaLicensePath: string | null;
         efdaLicenseFileName: string | null;

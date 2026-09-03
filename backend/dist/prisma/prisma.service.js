@@ -32,6 +32,12 @@ let PrismaService = class PrismaService extends client_1.PrismaClient {
                         params.args.where = {};
                     if (params.args.where.organizationId === undefined) {
                         params.args.where.organizationId = store.organizationId;
+                        if (params.action === 'findUnique') {
+                            params.action = 'findFirst';
+                        }
+                        else if (params.action === 'findUniqueOrThrow') {
+                            params.action = 'findFirstOrThrow';
+                        }
                     }
                 }
                 if (params.action === 'create' || params.action === 'createMany') {

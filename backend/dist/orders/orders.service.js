@@ -87,10 +87,10 @@ let OrdersService = class OrdersService {
                 total,
             };
         });
-        const org = await this.prisma.organization.findUnique({
+        const org = orgId ? await this.prisma.organization.findUnique({
             where: { id: orgId },
             select: { businessType: true, settings: true }
-        });
+        }) : null;
         const isDrugOrg = org?.businessType?.toUpperCase().includes('PHARMACY') || org?.businessType?.toUpperCase().includes('DRUG');
         const taxRate = isDrugOrg ? 0 : (org?.settings?.taxRate ?? 15);
         const taxAmount = subtotal * (taxRate / 100);
@@ -136,7 +136,6 @@ let OrdersService = class OrdersService {
                     chequeNumber: dto.chequeNumber,
                     creditDueDate: dto.creditDueDate,
                     paymentTerm: dto.paymentTerm,
-                    note: dto.note?.trim() || null,
                     status: client_1.OrderStatus.DRAFT,
                     subtotal,
                     taxRate,
@@ -163,7 +162,7 @@ let OrdersService = class OrdersService {
                     });
                 }
             }
-            await this.audit.recordTransition(tx, order.id, null, client_1.OrderStatus.DRAFT, userId, dto.note?.trim() ? `Order created: ${dto.note.trim()}` : 'Order created');
+            await this.audit.recordTransition(tx, order.id, null, client_1.OrderStatus.DRAFT, userId, 'Order created');
             return { ...order, customerId: resolvedCustomerId };
         });
     }
@@ -269,7 +268,7 @@ let OrdersService = class OrdersService {
             include: { attachments: true, lines: true },
         });
         if (!order)
-            throw new common_1.NotFoundException();
+            throw new common_1.NotFoundException(`Order ${id} not found`);
         if (order.organizationId !== orgId)
             throw new common_1.ForbiddenException();
         const user = await this.prisma.user.findUnique({ where: { id: userId }, select: { role: true } });
@@ -309,7 +308,7 @@ let OrdersService = class OrdersService {
     async uploadAttachment(id, userId, orgId, type, file) {
         const order = await this.prisma.salesOrder.findUnique({ where: { id } });
         if (!order)
-            throw new common_1.NotFoundException();
+            throw new common_1.NotFoundException(`Order ${id} not found`);
         if (order.organizationId !== orgId)
             throw new common_1.ForbiddenException();
         const user = await this.prisma.user.findUnique({ where: { id: userId }, select: { role: true } });
@@ -363,7 +362,7 @@ let OrdersService = class OrdersService {
             include: { attachments: true, lines: true },
         });
         if (!order)
-            throw new common_1.NotFoundException();
+            throw new common_1.NotFoundException(`Order ${id} not found`);
         if (order.organizationId !== orgId)
             throw new common_1.ForbiddenException();
         this.stateMachine.transition(order.status, 'approve', client_1.Role.INVOICE_MAKER);

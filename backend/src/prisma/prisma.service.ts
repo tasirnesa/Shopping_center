@@ -32,6 +32,16 @@ export class PrismaService
 
           if (params.args.where.organizationId === undefined) {
             params.args.where.organizationId = store.organizationId;
+
+            // findUnique / findUniqueOrThrow require that ALL where fields
+            // belong to a unique index. Since organizationId is not part of
+            // the @id unique index, injecting it into a findUnique call causes
+            // Prisma to return null silently. Downgrade to findFirst equivalents.
+            if (params.action === 'findUnique') {
+              params.action = 'findFirst' as typeof params.action;
+            } else if (params.action === 'findUniqueOrThrow') {
+              params.action = 'findFirstOrThrow' as typeof params.action;
+            }
           }
         }
 

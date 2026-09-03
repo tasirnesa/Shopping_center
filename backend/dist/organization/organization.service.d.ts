@@ -8,21 +8,21 @@ export declare class OrganizationService {
             products: number;
         };
         branches: {
+            organizationId: string;
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            organizationId: string;
             name: string;
+            code: string | null;
             phone: string | null;
             address: string | null;
-            code: string | null;
         }[];
         settings: {
+            organizationId: string;
             id: string;
-            taxRate: number;
             createdAt: Date;
             updatedAt: Date;
-            organizationId: string;
+            taxRate: number;
             currency: string;
             receiptFooter: string | null;
             language: string;
@@ -30,40 +30,40 @@ export declare class OrganizationService {
             timezone: string;
         } | null;
     } & {
-        tin: string | null;
         id: string;
-        status: string;
         createdAt: Date;
         updatedAt: Date;
         name: string;
         phone: string | null;
-        email: string | null;
-        businessType: string | null;
         address: string | null;
+        tin: string | null;
+        status: string;
+        businessType: string | null;
+        email: string | null;
         logo: string | null;
     })[]>;
     findOne(id: string): Promise<{
         _count: {
-            sales: number;
             users: number;
+            sales: number;
             products: number;
         };
         branches: {
+            organizationId: string;
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            organizationId: string;
             name: string;
+            code: string | null;
             phone: string | null;
             address: string | null;
-            code: string | null;
         }[];
         settings: {
+            organizationId: string;
             id: string;
-            taxRate: number;
             createdAt: Date;
             updatedAt: Date;
-            organizationId: string;
+            taxRate: number;
             currency: string;
             receiptFooter: string | null;
             language: string;
@@ -71,16 +71,16 @@ export declare class OrganizationService {
             timezone: string;
         } | null;
     } & {
-        tin: string | null;
         id: string;
-        status: string;
         createdAt: Date;
         updatedAt: Date;
         name: string;
         phone: string | null;
-        email: string | null;
-        businessType: string | null;
         address: string | null;
+        tin: string | null;
+        status: string;
+        businessType: string | null;
+        email: string | null;
         logo: string | null;
     }>;
     create(data: {
@@ -92,11 +92,11 @@ export declare class OrganizationService {
         address?: string;
     }): Promise<{
         settings: {
+            organizationId: string;
             id: string;
-            taxRate: number;
             createdAt: Date;
             updatedAt: Date;
-            organizationId: string;
+            taxRate: number;
             currency: string;
             receiptFooter: string | null;
             language: string;
@@ -104,25 +104,25 @@ export declare class OrganizationService {
             timezone: string;
         } | null;
     } & {
-        tin: string | null;
         id: string;
-        status: string;
         createdAt: Date;
         updatedAt: Date;
         name: string;
         phone: string | null;
-        email: string | null;
-        businessType: string | null;
         address: string | null;
+        tin: string | null;
+        status: string;
+        businessType: string | null;
+        email: string | null;
         logo: string | null;
     }>;
     update(id: string, data: any): Promise<{
         settings: {
+            organizationId: string;
             id: string;
-            taxRate: number;
             createdAt: Date;
             updatedAt: Date;
-            organizationId: string;
+            taxRate: number;
             currency: string;
             receiptFooter: string | null;
             language: string;
@@ -130,16 +130,16 @@ export declare class OrganizationService {
             timezone: string;
         } | null;
     } & {
-        tin: string | null;
         id: string;
-        status: string;
         createdAt: Date;
         updatedAt: Date;
         name: string;
         phone: string | null;
-        email: string | null;
-        businessType: string | null;
         address: string | null;
+        tin: string | null;
+        status: string;
+        businessType: string | null;
+        email: string | null;
         logo: string | null;
     }>;
     updateSettings(orgId: string, data: {
@@ -150,11 +150,11 @@ export declare class OrganizationService {
         fiscalYear?: string;
         timezone?: string;
     }): Promise<{
+        organizationId: string;
         id: string;
-        taxRate: number;
         createdAt: Date;
         updatedAt: Date;
-        organizationId: string;
+        taxRate: number;
         currency: string;
         receiptFooter: string | null;
         language: string;
@@ -162,11 +162,11 @@ export declare class OrganizationService {
         timezone: string;
     }>;
     getSettings(orgId: string): Promise<{
+        organizationId: string;
         id: string;
-        taxRate: number;
         createdAt: Date;
         updatedAt: Date;
-        organizationId: string;
+        taxRate: number;
         currency: string;
         receiptFooter: string | null;
         language: string;
@@ -174,16 +174,16 @@ export declare class OrganizationService {
         timezone: string;
     } | null>;
     remove(id: string): Promise<{
-        tin: string | null;
         id: string;
-        status: string;
         createdAt: Date;
         updatedAt: Date;
         name: string;
         phone: string | null;
-        email: string | null;
-        businessType: string | null;
         address: string | null;
+        tin: string | null;
+        status: string;
+        businessType: string | null;
+        email: string | null;
         logo: string | null;
     }>;
 }

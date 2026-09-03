@@ -72,10 +72,6 @@ export class CreateOrderDto {
     @IsOptional()
     creditDueDate?: Date;
 
-    @IsString()
-    @IsOptional()
-    note?: string;
-
     @IsArray()
     @ValidateNested({ each: true })
     @ArrayMinSize(1)
