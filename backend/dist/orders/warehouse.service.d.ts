@@ -37,20 +37,21 @@ export declare class WarehouseService {
         salesOrderId: string;
     }>;
     confirmPicking(prismaClient: Prisma.TransactionClient, salesOrderId: string, actorId: string): Promise<{
+        organizationId: string;
+        branchId: string;
         id: string;
+        createdAt: Date;
+        status: import(".prisma/client").$Enums.OrderStatus;
+        updatedAt: Date;
+        tin: string;
+        customerId: string | null;
+        taxRate: number;
+        note: string | null;
+        salesRepId: string;
         customerName: string;
         deliveryAddress: string;
         customerPhone: string | null;
-        status: import(".prisma/client").$Enums.OrderStatus;
-        createdAt: Date;
-        updatedAt: Date;
-        organizationId: string;
-        branchId: string;
-        salesRepId: string;
-        customerId: string | null;
-        tin: string;
         subtotal: number;
-        taxRate: number;
         taxAmount: number;
         grandTotal: number;
         paymentMethod: string;
@@ -59,25 +60,25 @@ export declare class WarehouseService {
         creditDueDate: Date | null;
         rejectionReason: string | null;
         cancellationReason: string | null;
-        note: string | null;
     }>;
     reverseStockDeduction(prismaClient: Prisma.TransactionClient, order: SalesOrderWithLines): Promise<void>;
     startPicking(orderId: string, storeManId: string, organizationId: string): Promise<{
         order: {
+            organizationId: string;
+            branchId: string;
             id: string;
+            createdAt: Date;
+            status: import(".prisma/client").$Enums.OrderStatus;
+            updatedAt: Date;
+            tin: string;
+            customerId: string | null;
+            taxRate: number;
+            note: string | null;
+            salesRepId: string;
             customerName: string;
             deliveryAddress: string;
             customerPhone: string | null;
-            status: import(".prisma/client").$Enums.OrderStatus;
-            createdAt: Date;
-            updatedAt: Date;
-            organizationId: string;
-            branchId: string;
-            salesRepId: string;
-            customerId: string | null;
-            tin: string;
             subtotal: number;
-            taxRate: number;
             taxAmount: number;
             grandTotal: number;
             paymentMethod: string;
@@ -86,7 +87,6 @@ export declare class WarehouseService {
             creditDueDate: Date | null;
             rejectionReason: string | null;
             cancellationReason: string | null;
-            note: string | null;
         };
         pickingList: {
             lines: {
@@ -104,20 +104,21 @@ export declare class WarehouseService {
         };
     }>;
     confirmPickingForOrder(orderId: string, storeManId: string, organizationId: string): Promise<{
+        organizationId: string;
+        branchId: string;
         id: string;
+        createdAt: Date;
+        status: import(".prisma/client").$Enums.OrderStatus;
+        updatedAt: Date;
+        tin: string;
+        customerId: string | null;
+        taxRate: number;
+        note: string | null;
+        salesRepId: string;
         customerName: string;
         deliveryAddress: string;
         customerPhone: string | null;
-        status: import(".prisma/client").$Enums.OrderStatus;
-        createdAt: Date;
-        updatedAt: Date;
-        organizationId: string;
-        branchId: string;
-        salesRepId: string;
-        customerId: string | null;
-        tin: string;
         subtotal: number;
-        taxRate: number;
         taxAmount: number;
         grandTotal: number;
         paymentMethod: string;
@@ -126,7 +127,6 @@ export declare class WarehouseService {
         creditDueDate: Date | null;
         rejectionReason: string | null;
         cancellationReason: string | null;
-        note: string | null;
     }>;
 }
 export {};

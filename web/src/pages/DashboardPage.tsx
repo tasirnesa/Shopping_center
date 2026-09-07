@@ -11,7 +11,7 @@ import {
   useTheme,
   alpha,
 } from "@mui/material";
-import { Domain, Group } from "@mui/icons-material";
+import { Domain, Group, Storefront } from "@mui/icons-material";
 import {
   XAxis,
   YAxis,

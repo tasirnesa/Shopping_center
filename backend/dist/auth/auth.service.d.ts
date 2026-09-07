@@ -33,14 +33,14 @@ export declare class AuthService {
     }>;
     register(registerDto: RegisterDto): Promise<{
         organizationId: string | null;
-        id: string;
-        branchId: string | null;
-        createdAt: Date;
-        updatedAt: Date;
-        name: string | null;
-        status: string;
         email: string;
+        name: string | null;
         role: import(".prisma/client").$Enums.Role;
+        branchId: string | null;
+        id: string;
+        createdAt: Date;
+        status: string;
+        updatedAt: Date;
     }>;
     changePassword(userId: string, dto: ChangePasswordDto): Promise<{
         message: string;

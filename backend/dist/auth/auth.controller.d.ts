@@ -28,14 +28,14 @@ export declare class AuthController {
     }>;
     register(registerDto: RegisterDto): Promise<{
         organizationId: string | null;
-        id: string;
-        branchId: string | null;
-        createdAt: Date;
-        updatedAt: Date;
-        name: string | null;
-        status: string;
         email: string;
+        name: string | null;
         role: import(".prisma/client").$Enums.Role;
+        branchId: string | null;
+        id: string;
+        createdAt: Date;
+        status: string;
+        updatedAt: Date;
     }>;
     changePassword(req: any, dto: ChangePasswordDto): Promise<{
         message: string;

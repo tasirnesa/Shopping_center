@@ -5,19 +5,19 @@ export declare class NotificationsController {
     getMyNotifications(req: any): Promise<{
         organizationId: string;
         id: string;
-        createdAt: Date;
-        type: string;
         targetRole: string;
+        type: string;
         payload: import("@prisma/client/runtime/library").JsonValue;
         read: boolean;
+        createdAt: Date;
     }[]>;
     markRead(id: string, req: any): Promise<{
         organizationId: string;
         id: string;
-        createdAt: Date;
-        type: string;
         targetRole: string;
+        type: string;
         payload: import("@prisma/client/runtime/library").JsonValue;
         read: boolean;
+        createdAt: Date;
     }>;
 }

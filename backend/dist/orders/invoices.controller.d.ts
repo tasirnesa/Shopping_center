@@ -5,24 +5,25 @@ export declare class InvoicesController {
     findOne(req: any, id: string): Promise<{
         salesOrder: {
             salesRep: {
-                name: string | null;
                 email: string;
+                name: string | null;
             };
         } & {
             organizationId: string;
-            id: string;
             branchId: string;
-            customerId: string | null;
+            id: string;
             createdAt: Date;
+            status: import(".prisma/client").$Enums.OrderStatus;
             updatedAt: Date;
+            tin: string;
+            customerId: string | null;
+            taxRate: number;
+            note: string | null;
             salesRepId: string;
             customerName: string;
-            tin: string;
             deliveryAddress: string;
             customerPhone: string | null;
-            status: import(".prisma/client").$Enums.OrderStatus;
             subtotal: number;
-            taxRate: number;
             taxAmount: number;
             grandTotal: number;
             paymentMethod: string;
@@ -31,26 +32,25 @@ export declare class InvoicesController {
             creditDueDate: Date | null;
             rejectionReason: string | null;
             cancellationReason: string | null;
-            note: string | null;
         };
         lines: ({
             product: {
                 organizationId: string;
+                name: string;
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
-                name: string;
                 barcode: string | null;
+                price: number;
+                cost: number;
                 categoryId: string | null;
                 brandId: string | null;
                 unitId: string | null;
-                price: number;
-                cost: number;
             };
         } & {
             id: string;
-            discount: number;
             productId: string;
+            discount: number;
             quantity: number;
             invoiceId: string;
             unitPrice: number;
@@ -60,11 +60,11 @@ export declare class InvoicesController {
         organizationId: string;
         id: string;
         createdAt: Date;
-        subtotal: number;
         taxRate: number;
+        salesOrderId: string;
+        subtotal: number;
         taxAmount: number;
         grandTotal: number;
-        salesOrderId: string;
         invoiceNumber: string;
         invoiceDate: Date;
         invoiceMakerId: string;

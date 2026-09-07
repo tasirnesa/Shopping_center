@@ -6,21 +6,21 @@ export declare class ExpensesController {
     findAll(orgId: string, branchId?: string): Promise<({
         branch: {
             organizationId: string;
+            name: string;
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            name: string;
-            code: string | null;
             phone: string | null;
             address: string | null;
+            code: string | null;
         };
     } & {
         organizationId: string;
-        id: string;
         branchId: string;
+        id: string;
         createdAt: Date;
-        amount: number;
         description: string;
+        amount: number;
         date: Date;
     })[]>;
     summary(orgId: string): Promise<{
@@ -31,30 +31,30 @@ export declare class ExpensesController {
     create(orgId: string, dto: CreateExpenseDto): Promise<{
         branch: {
             organizationId: string;
+            name: string;
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            name: string;
-            code: string | null;
             phone: string | null;
             address: string | null;
+            code: string | null;
         };
     } & {
         organizationId: string;
-        id: string;
         branchId: string;
+        id: string;
         createdAt: Date;
-        amount: number;
         description: string;
+        amount: number;
         date: Date;
     }>;
     remove(orgId: string, id: string): Promise<{
         organizationId: string;
-        id: string;
         branchId: string;
+        id: string;
         createdAt: Date;
-        amount: number;
         description: string;
+        amount: number;
         date: Date;
     }>;
 }

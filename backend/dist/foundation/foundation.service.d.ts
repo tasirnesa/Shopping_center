@@ -5,8 +5,8 @@ export declare class FoundationService {
     constructor(prisma: PrismaService);
     getCategories(orgId: string): Promise<{
         organizationId: string;
-        id: string;
         name: string;
+        id: string;
         description: string | null;
     }[]>;
     createCategory(orgId: string, data: {
@@ -14,46 +14,46 @@ export declare class FoundationService {
         description?: string;
     }): Promise<{
         organizationId: string;
-        id: string;
         name: string;
+        id: string;
         description: string | null;
     }>;
     deleteCategory(orgId: string, id: string): Promise<import(".prisma/client").Prisma.BatchPayload>;
     getBrands(orgId: string): Promise<{
         organizationId: string;
-        id: string;
         name: string;
+        id: string;
     }[]>;
     createBrand(orgId: string, data: {
         name: string;
     }): Promise<{
         organizationId: string;
-        id: string;
         name: string;
+        id: string;
     }>;
     deleteBrand(orgId: string, id: string): Promise<import(".prisma/client").Prisma.BatchPayload>;
     getUnits(orgId: string): Promise<{
         organizationId: string;
-        id: string;
         name: string;
+        id: string;
     }[]>;
     createUnit(orgId: string, data: {
         name: string;
     }): Promise<{
         organizationId: string;
-        id: string;
         name: string;
+        id: string;
     }>;
     deleteUnit(orgId: string, id: string): Promise<import(".prisma/client").Prisma.BatchPayload>;
     getBranches(orgId: string): Promise<{
         organizationId: string;
+        name: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
-        code: string | null;
         phone: string | null;
         address: string | null;
+        code: string | null;
     }[]>;
     createBranch(orgId: string, data: {
         name: string;
@@ -62,13 +62,13 @@ export declare class FoundationService {
         address?: string;
     }): Promise<{
         organizationId: string;
+        name: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
-        code: string | null;
         phone: string | null;
         address: string | null;
+        code: string | null;
     }>;
     updateBranch(orgId: string, id: string, data: {
         name?: string;
@@ -77,23 +77,23 @@ export declare class FoundationService {
         address?: string;
     }): Promise<{
         organizationId: string;
+        name: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
-        code: string | null;
         phone: string | null;
         address: string | null;
+        code: string | null;
     }>;
     deleteBranch(orgId: string, id: string): Promise<{
         organizationId: string;
+        name: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
-        code: string | null;
         phone: string | null;
         address: string | null;
+        code: string | null;
     }>;
     createUser(data: {
         email: string;
@@ -104,21 +104,21 @@ export declare class FoundationService {
         branchId?: string;
     }): Promise<any>;
     getUsers(orgId?: string): Promise<{
-        id: string;
-        branchId: string | null;
-        createdAt: Date;
         organization: {
-            id: string;
             name: string;
+            id: string;
         } | null;
         branch: {
-            id: string;
             name: string;
+            id: string;
         } | null;
-        name: string | null;
-        status: string;
         email: string;
+        name: string | null;
         role: import(".prisma/client").$Enums.Role;
+        branchId: string | null;
+        id: string;
+        createdAt: Date;
+        status: string;
     }[]>;
     updateUserRole(orgId: string, id: string, role: Role): Promise<import(".prisma/client").Prisma.BatchPayload>;
     updateUserStatus(orgId: string, id: string, status: string): Promise<import(".prisma/client").Prisma.BatchPayload>;
@@ -128,8 +128,8 @@ export declare class FoundationService {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        taxRate: number;
         currency: string;
+        taxRate: number;
         receiptFooter: string | null;
         language: string;
         fiscalYear: string | null;
@@ -154,8 +154,8 @@ export declare class FoundationService {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        taxRate: number;
         currency: string;
+        taxRate: number;
         receiptFooter: string | null;
         language: string;
         fiscalYear: string | null;

@@ -8,128 +8,128 @@ export declare class InventoryController {
     constructor(inventoryService: InventoryService);
     getSuppliers(orgId: string): Promise<{
         organizationId: string;
+        email: string | null;
+        name: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
-        email: string | null;
         contact: string | null;
     }[]>;
     createSupplier(orgId: string, dto: CreateSupplierDto): Promise<{
         organizationId: string;
+        email: string | null;
+        name: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
-        email: string | null;
         contact: string | null;
     }>;
     getPurchases(orgId: string): Promise<({
         branch: {
             organizationId: string;
+            name: string;
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            name: string;
-            code: string | null;
             phone: string | null;
             address: string | null;
+            code: string | null;
+        };
+        supplier: {
+            organizationId: string;
+            email: string | null;
+            name: string;
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            contact: string | null;
         };
         details: ({
             product: {
                 organizationId: string;
+                name: string;
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
-                name: string;
                 barcode: string | null;
+                price: number;
+                cost: number;
                 categoryId: string | null;
                 brandId: string | null;
                 unitId: string | null;
-                price: number;
-                cost: number;
             };
         } & {
             id: string;
+            cost: number;
             productId: string;
             quantity: number;
-            cost: number;
             purchaseId: string;
         })[];
-        supplier: {
-            organizationId: string;
-            id: string;
-            createdAt: Date;
-            updatedAt: Date;
-            name: string;
-            email: string | null;
-            contact: string | null;
-        };
     } & {
         organizationId: string;
-        id: string;
         branchId: string;
-        totalAmount: number;
+        id: string;
         createdAt: Date;
         updatedAt: Date;
+        totalAmount: number;
         supplierId: string;
     })[]>;
     createPurchase(orgId: string, dto: CreatePurchaseDto): Promise<{
         details: {
             id: string;
+            cost: number;
             productId: string;
             quantity: number;
-            cost: number;
             purchaseId: string;
         }[];
     } & {
         organizationId: string;
-        id: string;
         branchId: string;
-        totalAmount: number;
+        id: string;
         createdAt: Date;
         updatedAt: Date;
+        totalAmount: number;
         supplierId: string;
     }>;
     getStockBalance(orgId: string, branchId?: string): Promise<({
         branch: {
             organizationId: string;
+            name: string;
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            name: string;
-            code: string | null;
             phone: string | null;
             address: string | null;
+            code: string | null;
         };
         product: {
             category: {
                 organizationId: string;
-                id: string;
                 name: string;
+                id: string;
                 description: string | null;
             } | null;
             unit: {
                 organizationId: string;
-                id: string;
                 name: string;
+                id: string;
             } | null;
         } & {
             organizationId: string;
+            name: string;
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            name: string;
             barcode: string | null;
+            price: number;
+            cost: number;
             categoryId: string | null;
             brandId: string | null;
             unitId: string | null;
-            price: number;
-            cost: number;
         };
     } & {
-        id: string;
         branchId: string;
+        id: string;
         updatedAt: Date;
         productId: string;
         quantity: number;
@@ -137,43 +137,43 @@ export declare class InventoryController {
     getTransactions(orgId: string, branchId?: string): Promise<({
         branch: {
             organizationId: string;
+            name: string;
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            name: string;
-            code: string | null;
             phone: string | null;
             address: string | null;
+            code: string | null;
         };
         product: {
             organizationId: string;
+            name: string;
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            name: string;
             barcode: string | null;
+            price: number;
+            cost: number;
             categoryId: string | null;
             brandId: string | null;
             unitId: string | null;
-            price: number;
-            cost: number;
         };
     } & {
-        id: string;
         branchId: string;
+        id: string;
+        type: string;
         createdAt: Date;
         productId: string;
         quantity: number;
-        type: string;
         reference: string | null;
     })[]>;
     adjustStock(orgId: string, dto: AdjustStockDto): Promise<{
-        id: string;
         branchId: string;
+        id: string;
+        type: string;
         createdAt: Date;
         productId: string;
         quantity: number;
-        type: string;
         reference: string | null;
     }>;
     transferStock(orgId: string, dto: TransferStockDto): Promise<{

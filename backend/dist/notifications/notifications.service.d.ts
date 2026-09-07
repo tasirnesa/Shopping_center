@@ -8,28 +8,28 @@ export declare class NotificationsService {
     create(organizationId: string, targetRole: Role, type: string, payload: any): Promise<{
         organizationId: string;
         id: string;
-        createdAt: Date;
-        type: string;
         targetRole: string;
+        type: string;
         payload: import("@prisma/client/runtime/library").JsonValue;
         read: boolean;
+        createdAt: Date;
     }>;
     findUnread(organizationId: string | null, role: string): Promise<{
         organizationId: string;
         id: string;
-        createdAt: Date;
-        type: string;
         targetRole: string;
+        type: string;
         payload: import("@prisma/client/runtime/library").JsonValue;
         read: boolean;
+        createdAt: Date;
     }[]>;
     markAsRead(id: string, organizationId: string): Promise<{
         organizationId: string;
         id: string;
-        createdAt: Date;
-        type: string;
         targetRole: string;
+        type: string;
         payload: import("@prisma/client/runtime/library").JsonValue;
         read: boolean;
+        createdAt: Date;
     }>;
 }

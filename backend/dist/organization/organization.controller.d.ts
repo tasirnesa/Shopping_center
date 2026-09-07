@@ -3,43 +3,43 @@ export declare class OrganizationController {
     private readonly organizationService;
     constructor(organizationService: OrganizationService);
     findAll(): Promise<({
-        _count: {
-            users: number;
-            products: number;
-        };
         branches: {
             organizationId: string;
+            name: string;
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            name: string;
-            code: string | null;
             phone: string | null;
             address: string | null;
+            code: string | null;
         }[];
         settings: {
             organizationId: string;
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            taxRate: number;
             currency: string;
+            taxRate: number;
             receiptFooter: string | null;
             language: string;
             fiscalYear: string | null;
             timezone: string;
         } | null;
+        _count: {
+            users: number;
+            products: number;
+        };
     } & {
+        email: string | null;
+        name: string;
         id: string;
         createdAt: Date;
+        status: string;
         updatedAt: Date;
-        name: string;
+        businessType: string | null;
+        tin: string | null;
         phone: string | null;
         address: string | null;
-        tin: string | null;
-        status: string;
-        businessType: string | null;
-        email: string | null;
         logo: string | null;
     })[]>;
     create(dto: {
@@ -55,65 +55,65 @@ export declare class OrganizationController {
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            taxRate: number;
             currency: string;
+            taxRate: number;
             receiptFooter: string | null;
             language: string;
             fiscalYear: string | null;
             timezone: string;
         } | null;
     } & {
+        email: string | null;
+        name: string;
         id: string;
         createdAt: Date;
+        status: string;
         updatedAt: Date;
-        name: string;
+        businessType: string | null;
+        tin: string | null;
         phone: string | null;
         address: string | null;
-        tin: string | null;
-        status: string;
-        businessType: string | null;
-        email: string | null;
         logo: string | null;
     }>;
     findOne(id: string): Promise<{
-        _count: {
-            users: number;
-            sales: number;
-            products: number;
-        };
         branches: {
             organizationId: string;
+            name: string;
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            name: string;
-            code: string | null;
             phone: string | null;
             address: string | null;
+            code: string | null;
         }[];
         settings: {
             organizationId: string;
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            taxRate: number;
             currency: string;
+            taxRate: number;
             receiptFooter: string | null;
             language: string;
             fiscalYear: string | null;
             timezone: string;
         } | null;
+        _count: {
+            users: number;
+            products: number;
+            sales: number;
+        };
     } & {
+        email: string | null;
+        name: string;
         id: string;
         createdAt: Date;
+        status: string;
         updatedAt: Date;
-        name: string;
+        businessType: string | null;
+        tin: string | null;
         phone: string | null;
         address: string | null;
-        tin: string | null;
-        status: string;
-        businessType: string | null;
-        email: string | null;
         logo: string | null;
     }>;
     update(id: string, dto: any): Promise<{
@@ -122,37 +122,37 @@ export declare class OrganizationController {
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            taxRate: number;
             currency: string;
+            taxRate: number;
             receiptFooter: string | null;
             language: string;
             fiscalYear: string | null;
             timezone: string;
         } | null;
     } & {
+        email: string | null;
+        name: string;
         id: string;
         createdAt: Date;
+        status: string;
         updatedAt: Date;
-        name: string;
+        businessType: string | null;
+        tin: string | null;
         phone: string | null;
         address: string | null;
-        tin: string | null;
-        status: string;
-        businessType: string | null;
-        email: string | null;
         logo: string | null;
     }>;
     remove(id: string): Promise<{
+        email: string | null;
+        name: string;
         id: string;
         createdAt: Date;
+        status: string;
         updatedAt: Date;
-        name: string;
+        businessType: string | null;
+        tin: string | null;
         phone: string | null;
         address: string | null;
-        tin: string | null;
-        status: string;
-        businessType: string | null;
-        email: string | null;
         logo: string | null;
     }>;
     getMySettings(orgId: string): Promise<{
@@ -160,8 +160,8 @@ export declare class OrganizationController {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        taxRate: number;
         currency: string;
+        taxRate: number;
         receiptFooter: string | null;
         language: string;
         fiscalYear: string | null;
@@ -172,8 +172,8 @@ export declare class OrganizationController {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        taxRate: number;
         currency: string;
+        taxRate: number;
         receiptFooter: string | null;
         language: string;
         fiscalYear: string | null;
