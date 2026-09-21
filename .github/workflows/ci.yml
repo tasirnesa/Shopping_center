@@ -10,37 +10,37 @@ on:
       - main
 
 jobs:
-   backend:
-    name: Backend - Build and Test
-    runs-on: ubuntu-latest
+  backend:
+  name: Backend - Build and Test
+  runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: backend
+  defaults:
+    run:
+      working-directory: backend
 
-    steps:
-      - name: Checkout source code
-        uses: actions/checkout@v4
+  steps:
+    - name: Checkout source code
+      uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-          cache-dependency-path: package-lock.json
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 22
+        cache: npm
+        cache-dependency-path: package-lock.json
 
-      - name: Install dependencies
-        working-directory: .
-        run: npm ci
+    - name: Install dependencies
+      working-directory: .
+      run: npm ci
 
-      - name: Generate Prisma Client
-        run: npx prisma generate
+    - name: Generate Prisma Client
+      run: npx prisma generate --schema=prisma/schema.prisma
 
-      - name: Build backend
-        run: npm run build
+    - name: Build backend
+      run: npm run build
 
-      - name: Test backend
-        run: npm test
+    - name: Test backend
+      run: npm test
 
   web:
     name: Web - Build
