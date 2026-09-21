@@ -460,7 +460,6 @@ model Attachment {
 }
 
 enum AttachmentType {
-  TRADE_LICENSE
   EFDA_LICENSE
   PAYMENT_RECEIPT
   PURCHASE_ORDER

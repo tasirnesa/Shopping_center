@@ -252,11 +252,11 @@ export class OrdersService {
             throw new BadRequestException('Order is missing mandatory fields');
         }
 
-        const hasTradeLicense = order.attachments.some(
-            a => a.type === 'TRADE_LICENSE' || a.type === 'EFDA_LICENSE'
+        const hasEfda = order.attachments.some(
+            a => a.type === 'EFDA_LICENSE'
         );
         const hasPaymentReceipt = order.attachments.some(a => a.type === 'PAYMENT_RECEIPT');
-        if (!hasTradeLicense) {
+        if (!hasEfda) {
             throw new BadRequestException('Order must have EFDA License attachment before submitting');
         }
 
@@ -318,7 +318,7 @@ export class OrdersService {
             }
         });
 
-        if ((type === 'TRADE_LICENSE' || type === 'EFDA_LICENSE') && order.customerId) {
+        if (type === 'EFDA_LICENSE' && order.customerId) {
             await this.prisma.customer.update({
                 where: { id: order.customerId },
                 data: {

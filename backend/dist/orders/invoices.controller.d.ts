@@ -16,13 +16,13 @@ export declare class InvoicesController {
             status: import(".prisma/client").$Enums.OrderStatus;
             updatedAt: Date;
             tin: string;
-            customerId: string | null;
             taxRate: number;
             note: string | null;
-            salesRepId: string;
             customerName: string;
             deliveryAddress: string;
             customerPhone: string | null;
+            salesRepId: string;
+            customerId: string | null;
             subtotal: number;
             taxAmount: number;
             grandTotal: number;
@@ -41,19 +41,19 @@ export declare class InvoicesController {
                 createdAt: Date;
                 updatedAt: Date;
                 barcode: string | null;
-                price: number;
-                cost: number;
                 categoryId: string | null;
                 brandId: string | null;
                 unitId: string | null;
+                price: number;
+                cost: number;
             };
         } & {
             id: string;
-            productId: string;
-            discount: number;
-            quantity: number;
             invoiceId: string;
+            productId: string;
+            quantity: number;
             unitPrice: number;
+            discount: number;
             total: number;
         })[];
     } & {

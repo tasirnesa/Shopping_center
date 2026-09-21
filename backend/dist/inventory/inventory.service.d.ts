@@ -52,17 +52,17 @@ export declare class InventoryService {
                 createdAt: Date;
                 updatedAt: Date;
                 barcode: string | null;
-                price: number;
-                cost: number;
                 categoryId: string | null;
                 brandId: string | null;
                 unitId: string | null;
+                price: number;
+                cost: number;
             };
         } & {
             id: string;
-            cost: number;
             productId: string;
             quantity: number;
+            cost: number;
             purchaseId: string;
         })[];
     } & {
@@ -77,9 +77,9 @@ export declare class InventoryService {
     createPurchase(orgId: string, dto: CreatePurchaseDto): Promise<{
         details: {
             id: string;
-            cost: number;
             productId: string;
             quantity: number;
+            cost: number;
             purchaseId: string;
         }[];
     } & {
@@ -121,11 +121,11 @@ export declare class InventoryService {
             createdAt: Date;
             updatedAt: Date;
             barcode: string | null;
-            price: number;
-            cost: number;
             categoryId: string | null;
             brandId: string | null;
             unitId: string | null;
+            price: number;
+            cost: number;
         };
     } & {
         branchId: string;
@@ -152,11 +152,11 @@ export declare class InventoryService {
             createdAt: Date;
             updatedAt: Date;
             barcode: string | null;
-            price: number;
-            cost: number;
             categoryId: string | null;
             brandId: string | null;
             unitId: string | null;
+            price: number;
+            cost: number;
         };
     } & {
         branchId: string;

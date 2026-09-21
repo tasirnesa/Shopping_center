@@ -32,17 +32,17 @@ export declare class DashboardService {
                     createdAt: Date;
                     updatedAt: Date;
                     barcode: string | null;
-                    price: number;
-                    cost: number;
                     categoryId: string | null;
                     brandId: string | null;
                     unitId: string | null;
+                    price: number;
+                    cost: number;
                 };
             } & {
                 id: string;
-                price: number;
                 productId: string;
                 quantity: number;
+                price: number;
                 saleId: string;
             })[];
         } & {
@@ -51,10 +51,10 @@ export declare class DashboardService {
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            subTotal: number;
-            discount: number;
-            totalAmount: number;
             customerId: string | null;
+            discount: number;
+            subTotal: number;
+            totalAmount: number;
         })[];
         lowStockItems: {
             productId: string;

@@ -34,11 +34,11 @@ export declare class ProductController {
         createdAt: Date;
         updatedAt: Date;
         barcode: string | null;
-        price: number;
-        cost: number;
         categoryId: string | null;
         brandId: string | null;
         unitId: string | null;
+        price: number;
+        cost: number;
     }>;
     findAll(orgId: string): Promise<({
         category: {
@@ -64,11 +64,11 @@ export declare class ProductController {
         createdAt: Date;
         updatedAt: Date;
         barcode: string | null;
-        price: number;
-        cost: number;
         categoryId: string | null;
         brandId: string | null;
         unitId: string | null;
+        price: number;
+        cost: number;
     })[]>;
     findByBarcode(orgId: string, barcode: string): Promise<({
         category: {
@@ -94,11 +94,11 @@ export declare class ProductController {
         createdAt: Date;
         updatedAt: Date;
         barcode: string | null;
-        price: number;
-        cost: number;
         categoryId: string | null;
         brandId: string | null;
         unitId: string | null;
+        price: number;
+        cost: number;
     }) | null>;
     findOne(orgId: string, id: string): Promise<({
         category: {
@@ -124,11 +124,11 @@ export declare class ProductController {
         createdAt: Date;
         updatedAt: Date;
         barcode: string | null;
-        price: number;
-        cost: number;
         categoryId: string | null;
         brandId: string | null;
         unitId: string | null;
+        price: number;
+        cost: number;
     }) | null>;
     update(orgId: string, id: string, dto: any): Promise<({
         category: {
@@ -154,11 +154,11 @@ export declare class ProductController {
         createdAt: Date;
         updatedAt: Date;
         barcode: string | null;
-        price: number;
-        cost: number;
         categoryId: string | null;
         brandId: string | null;
         unitId: string | null;
+        price: number;
+        cost: number;
     }) | null>;
     remove(orgId: string, id: string): Promise<{
         organizationId: string;
@@ -167,10 +167,10 @@ export declare class ProductController {
         createdAt: Date;
         updatedAt: Date;
         barcode: string | null;
-        price: number;
-        cost: number;
         categoryId: string | null;
         brandId: string | null;
         unitId: string | null;
+        price: number;
+        cost: number;
     } | null>;
 }
