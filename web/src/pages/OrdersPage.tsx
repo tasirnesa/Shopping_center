@@ -33,6 +33,7 @@ import {
   LocalShipping,
   Inventory,
   Refresh,
+  Map as MapIcon,
 } from "@mui/icons-material";
 import api from "../api";
 import PageHeader from "../components/PageHeader";
@@ -199,20 +200,30 @@ function OrderRow({ order, userRole, onAction }: { order: any; userRole: string;
                 <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
                   Delivery: {order.deliveryAddress}
                 </Typography>
-                {/* Invoice print button — shown once order is approved */}
-                {order.invoice && (
+                <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
                   <Button
                     size="small"
                     variant="outlined"
-                    startIcon={<CheckCircle />}
-                    onClick={() => {
-                      const token = localStorage.getItem("token");
-                      window.open(`http://localhost:3000/invoices/${order.invoice.id}/print?token=${token}`, "_blank");
-                    }}
+                    startIcon={<MapIcon />}
+                    onClick={() => window.open(`https://maps.google.com/?q=${encodeURIComponent(order.deliveryAddress)}`, "_blank")}
                   >
-                    {order.invoice.invoiceNumber} — Print Invoice
+                    Open in Maps
                   </Button>
-                )}
+                  {/* Invoice print button — shown once order is approved */}
+                  {order.invoice && (
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      startIcon={<CheckCircle />}
+                      onClick={() => {
+                        const token = localStorage.getItem("token");
+                        window.open(`http://localhost:3000/invoices/${order.invoice.id}/print?token=${token}`, "_blank");
+                      }}
+                    >
+                      {order.invoice.invoiceNumber} — Print
+                    </Button>
+                  )}
+                </Box>
               </Box>
 
               {/* Attachments */}

@@ -32,6 +32,15 @@ export class ProductController {
       unitId?: string;
       price: number;
       cost: number;
+      // Medicine-specific fields
+      genericName?: string;
+      dosageForm?: string;
+      strength?: string;
+      storageCondition?: string;
+      prescriptionStatus?: string;
+      manufacturer?: string;
+      countryOfOrigin?: string;
+      registrationNumber?: string;
     },
   ) {
     return this.productService.create(orgId, dto);

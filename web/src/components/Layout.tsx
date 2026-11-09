@@ -12,7 +12,6 @@ import {
   Typography,
   IconButton,
   Avatar,
-  Chip,
   Tooltip,
   alpha,
   Select,
@@ -33,7 +32,15 @@ import {
   LocalShipping,
   Domain,
   Group,
+  PeopleAlt,
+  AccountBalance,
+  Notifications,
+  NotificationsNone,
+  Chat,
+  DarkMode,
+  LightMode,
 } from "@mui/icons-material";
+import { useDarkMode } from "../App";
 import { sidebarGradient } from "../theme";
 import api from "../api";
 
@@ -50,34 +57,46 @@ function getUser() {
 }
 
 const allMenuItems = [
-  { text: "Dashboard", icon: <Dashboard />, path: "/", roles: null },
-  { text: "Products", icon: <Inventory />, path: "/products", roles: null },
-  { text: "Sales", icon: <ShoppingCart />, path: "/sales", roles: null },
+  // Dashboard — all roles
+  { text: "Dashboard",   icon: <Dashboard />,           path: "/",              roles: ["OWNER", "MANAGER", "CASHIER", "STORE_KEEPER", "SALES_REP", "INVOICE_MAKER", "STORE_MAN", "DRIVER"] },
+  // Products — inventory managers only
+  { text: "Products",    icon: <Inventory />,            path: "/products",      roles: ["OWNER", "MANAGER", "STORE_KEEPER"] },
+  // Sales / POS — cashier and above
+  { text: "Sales",       icon: <ShoppingCart />,         path: "/sales",         roles: ["OWNER", "MANAGER", "CASHIER", "SALES_REP"] },
+  // Orders — fulfillment pipeline roles
   {
-    text: "Orders",
-    icon: <LocalShipping />,
-    path: "/orders",
-    roles: ["SALES_REP", "INVOICE_MAKER", "STORE_MAN", "DRIVER", "MANAGER", "OWNER", "SYSTEM_ADMIN"],
+    text: "Orders",      icon: <LocalShipping />,         path: "/orders",
+    roles: ["SALES_REP", "INVOICE_MAKER", "STORE_MAN", "DRIVER", "MANAGER", "OWNER"],
   },
-  { text: "Inventory", icon: <Inventory2 />, path: "/inventory", roles: null },
-  { text: "Reports", icon: <BarChart />, path: "/reports", roles: null },
+  // Customers — sales + management
   {
-    text: "Organizations",
-    icon: <Domain />,
-    path: "/organizations",
-    roles: ["SYSTEM_ADMIN"],
+    text: "Customers",   icon: <PeopleAlt />,             path: "/customers",
+    roles: ["OWNER", "MANAGER", "INVOICE_MAKER", "SALES_REP"],
+  },
+  // Inventory — warehouse roles
+  { text: "Inventory",   icon: <Inventory2 />,           path: "/inventory",     roles: ["OWNER", "MANAGER", "STORE_KEEPER", "STORE_MAN"] },
+  // Expenses — management only
+  {
+    text: "Expenses",    icon: <AccountBalance />,        path: "/expenses",
+    roles: ["OWNER", "MANAGER"],
+  },
+  // Chat — all org users (not SYSTEM_ADMIN)
+  {
+    text: "Chat",        icon: <Chat />,                  path: "/chat",
+    roles: ["OWNER", "MANAGER", "SALES_REP", "INVOICE_MAKER", "STORE_MAN", "DRIVER", "CASHIER", "STORE_KEEPER"],
+  },
+  // Reports — management only
+  { text: "Reports",     icon: <BarChart />,              path: "/reports",       roles: ["OWNER", "MANAGER"] },
+  // System Admin only
+  {
+    text: "Organizations", icon: <Domain />,              path: "/organizations", roles: ["SYSTEM_ADMIN"],
   },
   {
-    text: "Users",
-    icon: <Group />,
-    path: "/users",
-    roles: ["SYSTEM_ADMIN"],
+    text: "Users",       icon: <Group />,                 path: "/users",         roles: ["SYSTEM_ADMIN"],
   },
   {
-    text: "Admin",
-    icon: <AdminPanelSettings />,
-    path: "/admin",
-    roles: ["SYSTEM_ADMIN", "OWNER", "MANAGER"],
+    text: "Admin",       icon: <AdminPanelSettings />,    path: "/admin",
+    roles: ["OWNER", "MANAGER"],
   },
 ];
 
@@ -139,6 +158,26 @@ export default function Layout() {
   const location = useLocation();
   const user = getUser();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [notifAnchor, setNotifAnchor] = useState<null | HTMLElement>(null);
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const { isDark, toggle: toggleDark } = useDarkMode();
+  const unreadCount = notifications.filter((n) => !n.read).length;
+
+  useEffect(() => {
+    const fetchNotifs = () => {
+      api.get("/notifications").then((r) => setNotifications(r.data)).catch(() => {});
+    };
+    fetchNotifs();
+    const id = setInterval(fetchNotifs, 30000);
+    return () => clearInterval(id);
+  }, []);
+
+  const markRead = async (id: string) => {
+    try {
+      await api.patch(`/notifications/${id}/read`);
+      setNotifications((prev) => prev.map((n) => n.id === id ? { ...n, read: true } : n));
+    } catch {}
+  };
 
   const handleMenuOpen = (e: React.MouseEvent<HTMLElement>) => setAnchorEl(e.currentTarget);
   const handleMenuClose = () => setAnchorEl(null);
@@ -147,7 +186,7 @@ export default function Layout() {
     if (user?.role === "SYSTEM_ADMIN") {
       return ["Dashboard", "Organizations", "Users"].includes(item.text);
     }
-    return !item.roles || item.roles.includes(user?.role);
+    return item.roles.includes(user?.role);
   });
 
   const handleLogout = () => {
@@ -185,7 +224,86 @@ export default function Layout() {
             {user?.organization?.name || "Shop Center"}
           </Typography>
 
-          <IconButton onClick={handleMenuOpen} size="small" sx={{ ml: 2, p: 0.5, border: '2px solid transparent', transition: '0.2s', '&:hover': { borderColor: 'primary.main' } }}>
+          {/* Dark mode toggle */}
+          <Tooltip title={isDark ? "Light mode" : "Dark mode"}>
+            <IconButton size="small" onClick={toggleDark}>
+              {isDark ? <LightMode fontSize="small" /> : <DarkMode fontSize="small" />}
+            </IconButton>
+          </Tooltip>
+
+          {/* Notifications Bell */}
+          <Tooltip title="Notifications">
+            <IconButton
+              size="small"
+              onClick={(e) => setNotifAnchor(e.currentTarget)}
+              sx={{ position: "relative" }}
+            >
+              {unreadCount > 0 ? (
+                <Notifications sx={{ color: "warning.main" }} />
+              ) : (
+                <NotificationsNone />
+              )}
+              {unreadCount > 0 && (
+                <Box sx={{
+                  position: "absolute", top: 4, right: 4,
+                  width: 16, height: 16, borderRadius: "50%",
+                  bgcolor: "error.main", color: "#fff",
+                  fontSize: 10, fontWeight: 700,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                }}>
+                  {unreadCount > 9 ? "9+" : unreadCount}
+                </Box>
+              )}
+            </IconButton>
+          </Tooltip>
+
+          {/* Notifications dropdown */}
+          <Menu
+            anchorEl={notifAnchor}
+            open={Boolean(notifAnchor)}
+            onClose={() => setNotifAnchor(null)}
+            slotProps={{ paper: { sx: { width: 340, maxHeight: 480, mt: 1.5, borderRadius: 2 } } }}
+            transformOrigin={{ horizontal: "right", vertical: "top" }}
+            anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+          >
+            <Box sx={{ px: 2.5, py: 1.5, borderBottom: "1px solid", borderColor: "divider" }}>
+              <Typography fontWeight={700}>Notifications</Typography>
+            </Box>
+            {notifications.length === 0 ? (
+              <Box sx={{ p: 3, textAlign: "center" }}>
+                <NotificationsNone sx={{ fontSize: 40, color: "text.disabled", mb: 1 }} />
+                <Typography variant="body2" color="text.secondary">No notifications</Typography>
+              </Box>
+            ) : (
+              notifications.slice(0, 10).map((n) => (
+                <MenuItem
+                  key={n.id}
+                  onClick={() => { markRead(n.id); setNotifAnchor(null); }}
+                  sx={{
+                    whiteSpace: "normal",
+                    bgcolor: n.read ? "transparent" : "primary.50",
+                    borderLeft: n.read ? "none" : "3px solid",
+                    borderColor: "primary.main",
+                    py: 1.5, px: 2.5,
+                    alignItems: "flex-start",
+                  }}
+                >
+                  <Box>
+                    <Typography variant="body2" fontWeight={n.read ? 400 : 700}>
+                      {n.payload?.customerName
+                        ? `Order from ${n.payload.customerName}`
+                        : n.type?.replace(/_/g, " ") || "Notification"}
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      {new Date(n.createdAt).toLocaleString()}
+                    </Typography>
+                  </Box>
+                </MenuItem>
+              ))
+            )}
+          </Menu>
+
+          <IconButton onClick={handleMenuOpen} size="small" sx={{ ml: 1, p: 0.5, border: '2px solid transparent', transition: '0.2s', '&:hover': { borderColor: 'primary.main' } }}>
             <Avatar sx={{ width: 36, height: 36, bgcolor: "primary.main", fontSize: 14, fontWeight: 700 }}>
               {(user?.name || user?.email)?.[0]?.toUpperCase() || "U"}
             </Avatar>

@@ -15,6 +15,14 @@ export class ProductService {
       unitId?: string;
       price: number;
       cost: number;
+      genericName?: string;
+      dosageForm?: string;
+      strength?: string;
+      storageCondition?: string;
+      prescriptionStatus?: string;
+      manufacturer?: string;
+      countryOfOrigin?: string;
+      registrationNumber?: string;
     },
   ) {
     return this.prisma.product.create({
@@ -34,7 +42,10 @@ export class ProductService {
   async findOne(orgId: string, id: string) {
     return this.prisma.product.findFirst({
       where: { id, organizationId: orgId },
-      include: { category: true, brand: true, unit: true },
+      include: {
+        category: true, brand: true, unit: true,
+        stockBalances: { include: { batches: true } },
+      },
     });
   }
 

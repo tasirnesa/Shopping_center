@@ -17,7 +17,7 @@ export class DashboardService {
       }),
       this.prisma.stockBalance.findMany({
         where: { product: { organizationId: orgId } },
-        include: { product: true },
+        include: { product: true, batches: true },
       }),
       this.prisma.sale.findMany({
         where: { organizationId: orgId },
@@ -29,6 +29,33 @@ export class DashboardService {
         take: 5,
       }),
     ]);
+
+    // ── Expiry alerts: batches expiring within 6 months ──
+    const expiryNow = new Date();
+    const sixMonthsFromNow = new Date();
+    sixMonthsFromNow.setMonth(sixMonthsFromNow.getMonth() + 6);
+
+    const expiryAlerts: any[] = [];
+    for (const sb of stockBalances) {
+      for (const batch of sb.batches) {
+        if (batch.expiryDate && batch.quantity > 0) {
+          const expiry = new Date(batch.expiryDate);
+          if (expiry <= sixMonthsFromNow) {
+            const daysUntilExpiry = Math.floor((expiry.getTime() - expiryNow.getTime()) / (1000 * 60 * 60 * 24));
+            expiryAlerts.push({
+              productId: sb.productId,
+              productName: sb.product?.name,
+              batchNumber: batch.batchNumber,
+              expiryDate: batch.expiryDate,
+              quantity: batch.quantity,
+              daysUntilExpiry,
+              status: daysUntilExpiry < 0 ? 'EXPIRED' : daysUntilExpiry < 90 ? 'CRITICAL' : 'WARNING',
+            });
+          }
+        }
+      }
+    }
+    expiryAlerts.sort((a, b) => a.daysUntilExpiry - b.daysUntilExpiry);
 
     const revenue = sales.reduce((sum, s) => sum + s.totalAmount, 0);
     const lowStockItems = stockBalances.filter(
@@ -95,7 +122,53 @@ export class DashboardService {
           quantity: s.quantity,
         })),
       topProducts,
+      expiryAlerts: expiryAlerts.slice(0, 20),
     };
+  }
+
+  // ── Expiry alerts: batches nearing expiry or already expired ──────────────────
+  async getExpiryAlerts(orgId: string) {
+    const stockBalances = await this.prisma.stockBalance.findMany({
+      where: { product: { organizationId: orgId } },
+      include: { product: true, batches: true },
+    });
+
+    const now = new Date();
+    const sixMonthsFromNow = new Date();
+    sixMonthsFromNow.setMonth(sixMonthsFromNow.getMonth() + 6);
+
+    const alerts: any[] = [];
+    for (const sb of stockBalances) {
+      for (const batch of sb.batches) {
+        if (batch.expiryDate && batch.quantity > 0) {
+          const expiry = new Date(batch.expiryDate);
+          if (expiry <= sixMonthsFromNow) {
+            const daysUntilExpiry = Math.floor(
+              (expiry.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+            );
+            alerts.push({
+              id: batch.id,
+              productId: sb.productId,
+              productName: sb.product?.name,
+              genericName: sb.product?.genericName,
+              strength: sb.product?.strength,
+              batchNumber: batch.batchNumber,
+              expiryDate: batch.expiryDate,
+              quantity: batch.quantity,
+              daysUntilExpiry,
+              status:
+                daysUntilExpiry < 0
+                  ? 'EXPIRED'
+                  : daysUntilExpiry < 90
+                    ? 'CRITICAL'
+                    : 'WARNING',
+            });
+          }
+        }
+      }
+    }
+    alerts.sort((a, b) => a.daysUntilExpiry - b.daysUntilExpiry);
+    return alerts;
   }
 
   // Today's sales orders breakdown by payment method (for Sales Rep dashboard)

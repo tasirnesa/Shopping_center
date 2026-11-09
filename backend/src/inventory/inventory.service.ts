@@ -56,19 +56,54 @@ export class InventoryService {
               productId: d.productId,
               quantity: d.quantity,
               cost: d.cost,
+              batchNumber: d.batchNumber || null,
+              expiryDate: d.expiryDate ? new Date(d.expiryDate) : null,
+              manufacturedDate: d.manufacturedDate ? new Date(d.manufacturedDate) : null,
             })),
           },
         },
         include: { details: true },
       });
 
+      // Update stock balance + create batch records
       for (const detail of dto.details) {
-        await this.upsertStockBalance(
+        const stockBalance = await this.upsertStockBalance(
           tx,
           dto.branchId,
           detail.productId,
           detail.quantity,
         );
+
+        // Create or update batch record if batch number is provided
+        if (detail.batchNumber) {
+          const existingBatch = await tx.stockBatch.findUnique({
+            where: {
+              stockBalanceId_batchNumber: {
+                stockBalanceId: stockBalance.id,
+                batchNumber: detail.batchNumber,
+              },
+            },
+          });
+
+          if (existingBatch) {
+            await tx.stockBatch.update({
+              where: { id: existingBatch.id },
+              data: {
+                quantity: { increment: detail.quantity },
+                expiryDate: detail.expiryDate ? new Date(detail.expiryDate) : existingBatch.expiryDate,
+              },
+            });
+          } else {
+            await tx.stockBatch.create({
+              data: {
+                stockBalanceId: stockBalance.id,
+                batchNumber: detail.batchNumber,
+                expiryDate: detail.expiryDate ? new Date(detail.expiryDate) : null,
+                quantity: detail.quantity,
+              },
+            });
+          }
+        }
 
         await tx.inventoryTransaction.create({
           data: {
@@ -77,6 +112,8 @@ export class InventoryService {
             type: 'IN',
             quantity: detail.quantity,
             reference: `Purchase:${purchase.id}`,
+            batchNumber: detail.batchNumber || null,
+            expiryDate: detail.expiryDate ? new Date(detail.expiryDate) : null,
           },
         });
       }
@@ -101,6 +138,9 @@ export class InventoryService {
       include: {
         product: { include: { category: true, unit: true } },
         branch: true,
+        batches: {
+          orderBy: { expiryDate: 'asc' },
+        },
       },
       orderBy: { product: { name: 'asc' } },
     });

@@ -29,7 +29,10 @@ import {
   TrendingUp,
   ShowChart,
   AdminPanelSettings,
+  LocalShipping,
+  EmojiEvents,
 } from "@mui/icons-material";
+import { Avatar } from "@mui/material";
 import api from "../api";
 import PageHeader from "../components/PageHeader";
 import StatCard from "../components/StatCard";
@@ -73,19 +76,36 @@ function ShopDashboard({ user, navigate }: { user: any, navigate: any }) {
   >([]);
   const [recentSales, setRecentSales] = useState<any[]>([]);
   const [lowStockItems, setLowStockItems] = useState<any[]>([]);
+  const [todayOrders, setTodayOrders] = useState<any>(null);
+  const [salesPerf, setSalesPerf] = useState<any[]>([]);
   const theme = useTheme();
+
+  const isSalesRep = user?.role === "SALES_REP";
+  const isManager = ["MANAGER", "OWNER"].includes(user?.role);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [productsRes, salesRes, stockRes] = await Promise.all([
+        const promises: Promise<any>[] = [
           api.get("/products"),
           api.get("/sales"),
           api.get("/inventory/stock-balance"),
-        ]);
-        const products = productsRes.data;
-        const sales = salesRes.data;
-        const stock = stockRes.data;
+        ];
+
+        // SALES_REP: fetch today's orders breakdown
+        if (isSalesRep || isManager) {
+          promises.push(api.get("/dashboard/today-orders").catch(() => null));
+        }
+
+        // MANAGER/OWNER: fetch sales performance leaderboard
+        if (isManager) {
+          promises.push(api.get("/dashboard/sales-performance").catch(() => null));
+        }
+
+        const results = await Promise.all(promises);
+        const products = results[0].data;
+        const sales = results[1].data;
+        const stock = results[2].data;
 
         const revenue = sales.reduce(
           (sum: number, s: any) => sum + s.totalAmount,
@@ -118,6 +138,12 @@ function ShopDashboard({ user, navigate }: { user: any, navigate: any }) {
         setSalesData(chartData);
         setRecentSales(sales.slice(-5).reverse());
         setLowStockItems(lowItems.slice(0, 5));
+
+        // Today's orders
+        if (results[3]?.data) setTodayOrders(results[3].data);
+
+        // Sales performance
+        if (results[4]?.data) setSalesPerf(results[4].data);
       } catch (err) {
         console.error(err);
       } finally {
@@ -212,6 +238,87 @@ function ShopDashboard({ user, navigate }: { user: any, navigate: any }) {
               />
             </Grid>
           </Grid>
+
+          {/* Today's Orders Summary (SALES_REP & MANAGER) */}
+          {todayOrders && (
+            <Grid container spacing={2} sx={{ mb: 3 }}>
+              <Grid item xs={12}>
+                <Paper sx={{ p: 3, borderRadius: 4, ...glassStyle }}>
+                  <Box display="flex" alignItems="center" gap={1.5} mb={2}>
+                    <Box sx={{ p: 1, borderRadius: 2, bgcolor: alpha(theme.palette.primary.main, 0.1) }}>
+                      <LocalShipping color="primary" />
+                    </Box>
+                    <Box>
+                      <Typography variant="h6" sx={{ fontWeight: 700 }}>
+                        Today's Orders — {todayOrders.totalOrders} order{todayOrders.totalOrders !== 1 ? "s" : ""}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        {new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}
+                      </Typography>
+                    </Box>
+                    <Box sx={{ ml: "auto", textAlign: "right" }}>
+                      <Typography variant="h5" sx={{ fontWeight: 900, color: "primary.main" }}>
+                        ETB {(todayOrders.grandTotal ?? 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">Total Revenue</Typography>
+                    </Box>
+                  </Box>
+
+                  {/* Payment method breakdown */}
+                  {todayOrders.paymentBreakdown && Object.keys(todayOrders.paymentBreakdown).length > 0 && (
+                    <Box sx={{ display: "flex", gap: 1.5, flexWrap: "wrap" }}>
+                      {Object.entries(todayOrders.paymentBreakdown).map(([method, data]: [string, any]) => (
+                        <Chip
+                          key={method}
+                          label={`${method}: ETB ${data.total.toLocaleString("en-US", { minimumFractionDigits: 0 })} (${data.count})`}
+                          size="small"
+                          sx={{ fontWeight: 600 }}
+                          variant="outlined"
+                        />
+                      ))}
+                    </Box>
+                  )}
+                </Paper>
+              </Grid>
+            </Grid>
+          )}
+
+          {/* Sales Performance Leaderboard (MANAGER & OWNER) */}
+          {isManager && salesPerf.length > 0 && (
+            <Grid container spacing={2} sx={{ mb: 3 }}>
+              <Grid item xs={12} md={6}>
+                <Paper sx={{ p: 3, borderRadius: 4, ...glassStyle }}>
+                  <Box display="flex" alignItems="center" gap={1} mb={2}>
+                    <EmojiEvents sx={{ color: "#f59e0b" }} />
+                    <Typography variant="h6" sx={{ fontWeight: 700 }}>
+                      Sales Team Performance
+                    </Typography>
+                  </Box>
+                  <Box display="flex" flexDirection="column" gap={1}>
+                    {salesPerf.map((rep, idx) => (
+                      <Box key={rep.salesRepId} display="flex" alignItems="center" gap={1.5} p={1.5} sx={{ borderRadius: 2, bgcolor: alpha(theme.palette.background.default, 0.5) }}>
+                        <Typography sx={{ width: 24, fontSize: 18, fontWeight: 900, textAlign: "center" }}>
+                          {idx === 0 ? "🥇" : idx === 1 ? "🥈" : idx === 2 ? "🥉" : idx + 1}
+                        </Typography>
+                        <Avatar sx={{ width: 32, height: 32, fontSize: 12, fontWeight: 700, bgcolor: idx === 0 ? "#fef3c7" : idx === 1 ? "#f1f5f9" : idx === 2 ? "#fef2e8" : alpha(theme.palette.primary.main, 0.1), color: idx === 0 ? "#b45309" : idx === 1 ? "#475569" : idx === 2 ? "#c2410c" : "primary.main" }}>
+                          {rep.name?.[0]?.toUpperCase() || "?"}
+                        </Avatar>
+                        <Box sx={{ flex: 1 }}>
+                          <Typography variant="body2" fontWeight={700}>{rep.name}</Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            {rep.totalOrders} orders · {rep.delivered} delivered
+                          </Typography>
+                        </Box>
+                        <Typography variant="body2" fontWeight={900} color="primary.main">
+                          ${(rep.totalRevenue ?? 0).toFixed(0)}
+                        </Typography>
+                      </Box>
+                    ))}
+                  </Box>
+                </Paper>
+              </Grid>
+            </Grid>
+          )}
 
           <Grid container spacing={3}>
             <Grid item xs={12} md={8}>

@@ -17,6 +17,12 @@ export class DashboardController {
     return this.dashboardService.getSummary(orgId);
   }
 
+  @Get('expiry-alerts')
+  @Roles('OWNER', 'MANAGER', 'STORE_KEEPER', 'STORE_MAN')
+  getExpiryAlerts(@CurrentOrg() orgId: string) {
+    return this.dashboardService.getExpiryAlerts(orgId);
+  }
+
   @Get('today-orders')
   @Roles(Role.SALES_REP, Role.MANAGER, Role.OWNER, Role.SYSTEM_ADMIN)
   getTodayOrders(@CurrentOrg() orgId: string, @Req() req: any) {
